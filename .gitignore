@@ -1,0 +1,17 @@
+.venv/
+node_modules/
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+dist/
+build/
+output/*.xlsx
+output/*.docx
+output/*.pdf
+output/*.zip
+!output/.gitkeep
+*.db
+data/
+chroma_db/

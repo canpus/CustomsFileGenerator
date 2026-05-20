@@ -1,0 +1,35 @@
+{
+    "company": {
+        "name": "CYG CHANGTONG NEW MATERIAL CO., LTD",
+        "name_cn": "长园长通新材料股份有限公司",
+        "address": "No. 707, Block A, Building 1, Yunzhi Technology Park, South Side of Shuangming Avenue, Dongzhou Community, Guangming Street, Guangming District, Shenzhen"
+    },
+    "shipper": {
+        "name": "CYG CHANGTONG NEW MATERIAL CO., LTD",
+        "address": "No. 707, Block A, Building 1, Yunzhi Technology Park, South Side of Shuangming Avenue, Dongzhou Community, Guangming Street, Guangming District, Shenzhen.",
+        "contact": "",
+        "phone": ""
+    },
+    "defaults": {
+        "origin_country": "China",
+        "port_of_loading": "Shenzhen",
+        "currency": "USD",
+        "trade_term": "FOB",
+        "payment_method": "100% T/T IN ADVANCE"
+    },
+    "output_dir": "",
+    "template_coordinates": {
+        "_comment": "模板单元格坐标映射，阶段 3 锚点扫描后填入实际坐标",
+        "packing": {},
+        "invoice": {},
+        "contract": {},
+        "customs": {}
+    },
+    "assertion_rules": {
+        "_comment": "模板断言规则，阶段 7 实现",
+        "packing": {},
+        "invoice": {},
+        "contract": {},
+        "customs": {}
+    }
+}

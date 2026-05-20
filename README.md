@@ -1,6 +1,6 @@
 # 报关资料自动生成系统（CustomsFileGenerator）
 
-> **版本**: 6.0.1-a | **状态**: 阶段 0 完成 — 项目骨架与环境自检就绪
+> **版本**: 6.0.1-a | **状态**: 阶段 1 完成 — 统一数据模型就绪
 > **技术栈**: tkinter + ttkbootstrap + openpyxl + python-docx + msgspec + sqlite3
 
 ---
@@ -77,4 +77,4 @@ CustomsFileGenerator/
 
 | 版本 | 日期 | 变更说明 |
 |------|------|---------|
-| 6.0.1-a | 2026-05-20 | 阶段 0 完成：项目骨架搭建、环境自检、配置管理、依赖锁定 |
+| 6.0.1-a | 2026-05-20 | 阶段 1 完成：msgspec 数据模型（OrderData 等 9 个结构体）、业务校验器（5 条规则）、ValidationError 中文映射器、25 个单元测试全部通过 |

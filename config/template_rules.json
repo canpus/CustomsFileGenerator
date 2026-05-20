@@ -1,0 +1,137 @@
+{
+  "$schema": "内部配置 — 锚点扫描规则",
+  "version": "6.0.1-a",
+  "description": "定义各 XLSX 模板的锚点扫描规则。扫描引擎通过关键词匹配定位数据起始行和汇总行，不依赖硬编码行号。",
+
+  "scanner": {
+    "search_rows_limit": 30,
+    "comment": "扫描前 N 行寻找关键词，超出行号范围则报错"
+  },
+
+  "templates": {
+    "packing": {
+      "file": "template_packing.xlsx",
+      "description": "装箱单（Packing List）",
+      "sheet": 0,
+
+      "header_anchor": {
+        "row_keywords": ["序号", "No.", "Item"],
+        "col_keywords": ["商品描述", "Description", "Specification", "规格"],
+        "comment": "定位标题行：在该行的任意单元格中匹配关键词。标题行的下一行为数据起始行。"
+      },
+
+      "data_start_offset": 1,
+      "data_start_comment": "标题行 + 1 = 数据起始行",
+
+      "summary_anchor": {
+        "row_keywords": ["Total", "TOTAL", "合计", "总"],
+        "col_keywords": ["总箱数", "总净重", "总毛重", "总体积"],
+        "comment": "定位汇总行：在该行的任意单元格中匹配关键词。优先匹配包含汇总公式的行。"
+      },
+
+      "column_mapping": {
+        "seq_no": "A",
+        "description": "B",
+        "specification": "D",
+        "unit": "E",
+        "qty_per_carton": "F",
+        "carton_count": "G",
+        "pallet_no": "H",
+        "net_weight": "I",
+        "gross_weight": "J",
+        "volume": "K",
+        "comment": "列字母映射，供生成器使用"
+      },
+
+      "summary_columns": {
+        "total_cartons": "G",
+        "total_net_weight": "I",
+        "total_gross_weight": "J",
+        "total_volume": "K",
+        "comment": "汇总行各列的公式列"
+      },
+
+      "merge_ranges": [
+        "B:C",
+        "comment": "商品描述列（B:C）每行合并为一个单元格"
+      ]
+    },
+
+    "invoice": {
+      "file": "template_invoice.xlsx",
+      "description": "形式发票（Proforma Invoice）",
+      "sheet": 0,
+
+      "header_anchor": {
+        "row_keywords": ["Product", "产品", "Description", "描述"],
+        "col_keywords": ["Specification", "Unit", "Qty", "Amount", "Unit Price"],
+        "comment": "定位标题行：在该行的任意单元格中匹配关键词。"
+      },
+
+      "data_start_offset": 1,
+      "data_start_comment": "标题行 + 1 = 数据起始行",
+
+      "summary_anchor": {
+        "row_keywords": ["Total", "TOTAL", "合计", "总金额"],
+        "col_keywords": ["SAY", "USD", "TOTAL AMOUNT"],
+        "comment": "定位汇总行：匹配总金额行。发票可能有 2 行汇总（小写+大写）。"
+      },
+
+      "column_mapping": {
+        "product": "A",
+        "specification": "B",
+        "unit": "C",
+        "qty": "D",
+        "unit_price": "E",
+        "amount": "F",
+        "comment": "列字母映射"
+      },
+
+      "summary_columns": {
+        "total_amount_formula": "F",
+        "total_amount_label": "E",
+        "total_amount_upper": "A",
+        "comment": "汇总行：E 列='TOTAL'，F 列=SUM 公式，下方行=大写金额"
+      }
+    },
+
+    "contract": {
+      "file": "template_contract.xlsx",
+      "description": "形式合同（Sales Contract）",
+      "sheet": 0,
+
+      "header_anchor": {
+        "row_keywords": ["No.", "Product", "产品", "Description", "描述", "序号"],
+        "col_keywords": ["Specification", "Unit", "Qty", "Amount", "Unit Price"],
+        "comment": "定位标题行：在该行的任意单元格中匹配关键词。"
+      },
+
+      "data_start_offset": 1,
+      "data_start_comment": "标题行 + 1 = 数据起始行",
+
+      "summary_anchor": {
+        "row_keywords": ["Total", "TOTAL", "合计", "总金额"],
+        "col_keywords": ["SAY", "USD", "TOTAL AMOUNT"],
+        "comment": "定位汇总行。合同可能有 2 行汇总（小写+大写）。"
+      },
+
+      "column_mapping": {
+        "seq_no": "A",
+        "product": "B",
+        "specification": "C",
+        "unit": "D",
+        "qty": "E",
+        "unit_price": "F",
+        "amount": "G",
+        "comment": "列字母映射"
+      },
+
+      "summary_columns": {
+        "total_amount_formula": "G",
+        "total_amount_label": "F",
+        "total_amount_upper": "A",
+        "comment": "汇总行：F 列='TOTAL'，G 列=SUM 公式，下方行=大写金额"
+      }
+    }
+  }
+}

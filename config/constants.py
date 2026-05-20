@@ -33,6 +33,12 @@ DATABASE_PATH: Path = PROJECT_ROOT / "data" / "customs.db"
 # 备份模板目录（阶段 7 使用，预留）
 BACKUP_TEMPLATES_DIR: Path = PROJECT_ROOT / "src" / "assets" / "backup_templates"
 
+# 锚点扫描规则文件路径（阶段 3）
+TEMPLATE_RULES_PATH: Path = CONFIG_DIR / "template_rules.json"
+
+# 模板断言规则文件路径（阶段 7 预留）
+ASSERTION_RULES_PATH: Path = CONFIG_DIR / "assertion_rules.json"
+
 
 # ==================== 模板文件名常量 ====================
 

@@ -212,8 +212,19 @@ def main() -> None:
 
     # 解析命令行参数
     if "--gui" in sys.argv:
-        logger.info("启动 GUI 模式（阶段 9 实现）")
-        print("  GUI 模式将在阶段 9 实现，敬请期待")
+        logger.info("启动 GUI 模式")
+        try:
+            from src.gui.app import launch_gui
+            launch_gui()
+        except ImportError as e:
+            logger.error(
+                "[错误]: GUI 模块导入失败\n"
+                "[原因]: ttkbootstrap 或相关依赖未安装\n"
+                "[排查]: 请运行 pip install -r requirements.txt",
+            )
+            print(f"  [错误]: GUI 启动失败 — {e}")
+            print(f"  [排查]: 请确认已安装 ttkbootstrap: pip install ttkbootstrap")
+            sys.exit(1)
     else:
         logger.info("环境自检模式完成")
         print()

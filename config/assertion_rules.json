@@ -1,0 +1,168 @@
+{
+  "$schema": "内部配置 — 模板无损断言规则",
+  "version": "6.0.1-a",
+  "description": "定义各模板生成后需要断言的样式、格式、结构规则。断言引擎通过对比生成文件与模板的差异来检测模板是否被意外修改。",
+
+  "scanner": {
+    "comment": "全局断言配置"
+  },
+
+  "templates": {
+    "packing": {
+      "file": "template_packing.xlsx",
+      "description": "装箱单（Packing List）",
+      "sheet": 0,
+
+      "assertions": {
+        "font": {
+          "level": "warning",
+          "check_cells": ["D3"],
+          "expected": {
+            "name": "Arial",
+            "comment": "表头标签行使用 Arial 11pt 加粗"
+          },
+          "tolerance": {
+            "name": "exact",
+            "size_pt": 0.5
+          },
+          "comment": "仅检查表头标签 D3，标题行(A7)和汇总行(A58)实际使用 Calibri，明细行样式由生成器从模板继承"
+        },
+
+        "border": {
+          "level": "error",
+          "check_cells": ["D3", "K7", "A58", "K58"],
+          "expected": {
+            "has_border": true
+          },
+          "comment": "边框检查"
+        },
+
+        "merge_ranges": {
+          "level": "error",
+          "expected_ranges": ["D3:K3"],
+          "comment": "仅检查关键表头合并区域 D3:K3（客户抬头），实际日期区域为 F4:H4+I4:K4，按模板定义宽松断言"
+        },
+
+        "formula": {
+          "level": "info",
+          "check_columns": ["G", "I", "J", "K"],
+          "expected_pattern": "=SUM(",
+          "comment": "汇总行 SUM 公式"
+        },
+
+        "column_count": {
+          "level": "warning",
+          "expected": 11,
+          "comment": "装箱单数据区域共 11 列（A-K），模板可能含空列 L；检查列数 >= 期望值"
+        }
+      }
+    },
+
+    "invoice": {
+      "file": "template_invoice.xlsx",
+      "description": "形式发票（Proforma Invoice）",
+      "sheet": 0,
+
+      "assertions": {
+        "font": {
+          "level": "warning",
+          "check_cells": ["B7"],
+          "expected": {
+            "name": "Times New Roman",
+            "comment": "发票号标签 Times New Roman"
+          },
+          "tolerance": {
+            "name": "exact",
+            "size_pt": 0.5
+          }
+        },
+
+        "border": {
+          "level": "error",
+          "check_cells": ["B7", "F7", "A65", "F65"],
+          "expected": {
+            "has_border": true
+          }
+        },
+
+        "merge_ranges": {
+          "level": "error",
+          "expected_ranges": ["B7:F7", "B9:F9", "B10:F10"],
+          "comment": "关键表头合并区域：发票号、客户抬头、客户地址"
+        },
+
+        "formula": {
+          "level": "info",
+          "check_columns": ["F"],
+          "expected_pattern": "=SUM(",
+          "comment": "金额汇总公式"
+        },
+
+        "column_count": {
+          "level": "warning",
+          "expected": 6,
+          "comment": "形式发票数据区域 6 列（A-F），检查列数 >= 期望值"
+        }
+      }
+    },
+
+    "contract": {
+      "file": "template_contract.xlsx",
+      "description": "形式合同（Sales Contract）",
+      "sheet": 0,
+
+      "assertions": {
+        "font": {
+          "level": "warning",
+          "check_cells": ["C3"],
+          "expected": {
+            "name": "Times New Roman",
+            "comment": "客户抬头 Times New Roman 14pt 加粗"
+          },
+          "tolerance": {
+            "name": "exact",
+            "size_pt": 0.5
+          }
+        },
+
+        "border": {
+          "level": "error",
+          "check_cells": ["C3", "G3", "A58", "G58"],
+          "expected": {
+            "has_border": true
+          }
+        },
+
+        "merge_ranges": {
+          "level": "error",
+          "expected_ranges": ["C3:G3"],
+          "comment": "关键表头合并区域：客户抬头 C3:G3"
+        },
+
+        "formula": {
+          "level": "info",
+          "check_columns": ["G"],
+          "expected_pattern": "=SUM(",
+          "comment": "金额汇总公式"
+        },
+
+        "column_count": {
+          "level": "warning",
+          "expected": 7,
+          "comment": "形式合同数据区域 7 列（A-G），检查列数 >= 期望值"
+        }
+      }
+    },
+
+    "customs": {
+      "_comment": "TODO:待确认 — 阶段 6（DOCX 报关单生成器）暂缓，customs 断言规则预留空节，待恢复阶段 6 后补充",
+      "file": "template_customs.docx",
+      "description": "报关单（Customs Declaration）— 暂缓",
+      "enabled": false,
+
+      "assertions": {
+        "_comment": "待阶段 6 完成后定义 docx 断言规则：表格数量、表头行数、关键占位符存在性等"
+      }
+    }
+  }
+}

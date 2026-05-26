@@ -77,6 +77,7 @@ CustomsFileGenerator/
 
 | 版本 | 日期 | 变更说明 |
 |------|------|---------|
+| 6.0.1-a | 2026-05-26 | 阶段 5 完成：BaseGenerator 抽象基类、InvoiceGenerator 发票生成器（按商品聚合、金额大写 num2words 集成、表头填充 D6-E13）、ContractGenerator 合同生成器（按商品聚合、金额大写、表头填充 C3-D6）、_find_actual_summary_row 行调整后动态定位汇总行、22 个单元测试全部通过（含 5 项金额大写、6 项数据聚合、11 项集成测试） |
 | 6.0.1-a | 2026-05-26 | 阶段 4 完成：装箱单生成器（flatten_for_packing 数据展平、PackingGenerator 沙箱生成、表头填充、明细写入、公式修正）、16 个单元测试全部通过（含真实订单第 11 托结构测试）。修复锚点扫描误匹配标题行、data_end_row 估算、汇总行关键词、净重列格式问题 |
 | 6.0.1-a | 2026-05-20 | 阶段 2 完成：SQLite 数据库层（schema.sql 四张表、connection.py WAL 模式、repository.py CRUD + 模糊搜索）、8 个单元测试全部通过 |
 | 6.0.1-a | 2026-05-20 | 阶段 1 完成：msgspec 数据模型（OrderData 等 9 个结构体）、业务校验器（5 条规则）、ValidationError 中文映射器、25 个单元测试全部通过 |

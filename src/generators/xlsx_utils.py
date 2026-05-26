@@ -381,24 +381,42 @@ def safe_write_cell(
         value: 要写入的值。
         preserve_style: 是否保留目标单元格原有样式（默认 True）。
     """
-    cell: Cell = ws.cell(row=row, column=col)  # type: ignore[arg-type]
+    # 将列字母转换为列索引
+    if isinstance(col, str):
+        col = openpyxl.utils.column_index_from_string(col)
+
+    cell: Cell = ws.cell(row=row, column=col)
+
+    # 如果目标是合并单元格（MergedCell），则获取合并区域左上角实际 Cell
+    from openpyxl.cell.cell import MergedCell
+
+    if isinstance(cell, MergedCell):
+        # 遍历合并区域，找到包含此单元格的区域
+        for merged_range in ws.merged_cells.ranges:
+            bounds = openpyxl.utils.range_boundaries(str(merged_range))
+            min_col, min_row, max_col, max_row = int(bounds[0]), int(bounds[1]), int(bounds[2]), int(bounds[3])
+            if min_row <= row <= max_row and min_col <= col <= max_col:
+                cell = ws.cell(row=min_row, column=min_col)
+                break
+        else:
+            # 未找到合并区域，这不是预期情况，但仍尝试写入
+            pass
 
     if not preserve_style:
         cell.value = value
         return
 
-    # 先保存原有样式，再写入值
-    saved_font = copy.deepcopy(cell.font)
-    saved_border = copy.deepcopy(cell.border)
-    saved_fill = copy.deepcopy(cell.fill)
-    saved_alignment = copy.deepcopy(cell.alignment)
-    saved_number_format = cell.number_format
+    # 先保存原有样式（属性级拷贝避免 openpyxl 代理对象 deepcopy 递归），再写入值
+    saved_font = _copy_font(cell.font)
+    saved_border = _copy_border(cell.border)
+    saved_fill = _copy_fill(cell.fill)
+    saved_alignment = _copy_alignment(cell.alignment)
+    saved_number_format = _copy_number_format(cell.number_format)
 
     cell.value = value
 
-    # 恢复样式（如果原单元格没有样式，保留默认值）
-    if saved_font and saved_font.name:
-        cell.font = saved_font
+    # 恢复样式
+    cell.font = saved_font
     if saved_border:
         cell.border = saved_border
     if saved_fill:

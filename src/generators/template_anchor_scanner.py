@@ -248,6 +248,9 @@ def _estimate_data_end_row(ws: Worksheet, data_start_row: int, summary_row: int)
     在 data_start_row 和 summary_row 之间查找第一个空数据行（整行所有列均为空），
     则该行的上一行即为数据预设结束行。
 
+    注意：data_start_row 本身为空是正常情况（空模板尚无数据），
+    必须跳过至少一行再开始检测空行。
+
     Args:
         ws: Worksheet 对象。
         data_start_row: 数据起始行。
@@ -258,7 +261,7 @@ def _estimate_data_end_row(ws: Worksheet, data_start_row: int, summary_row: int)
     """
     max_col: int = ws.max_column or 1
 
-    for row_idx in range(data_start_row, summary_row):
+    for row_idx in range(data_start_row + 1, summary_row):
         all_empty: bool = True
         for col_idx in range(1, max_col + 1):
             try:
@@ -314,19 +317,24 @@ def scan_packing_template(ws: Worksheet, rules: dict | None = None) -> AnchorRes
 
     # 2. 查找标题行
     header_anchor: dict = template_rules.get("header_anchor", {})
-    row_keywords: List[str] = header_anchor.get("row_keywords", ["序号", "No."])
-    col_keywords: List[str] = header_anchor.get("col_keywords", ["商品描述", "Description"])
+    row_keywords: List[str] = header_anchor.get("row_keywords", ["序号", "No.", "QTY.", "Item"])
+    col_keywords: List[str] = header_anchor.get(
+        "col_keywords", ["商品描述", "Description", "Spec."]
+    )
 
+    # 搜索范围：从表头区域下方开始（行6之后），避免误匹配 "Contact No." 等行
+    search_start: int = max(template_rules.get("header_search_start", 6), 1)
     result.header_row = _find_row_by_keywords(
         ws, row_keywords, col_keywords,
-        row_start=max(8, 1), row_end=min(search_limit, 30),
+        row_start=search_start, row_end=min(search_limit, 30),
+        require_both=True,  # 必须同时匹配行+列关键词，避免误匹配
     )
 
     if result.header_row <= 0:
         # 宽松匹配：仅用行关键词
         result.header_row = _find_row_by_keywords(
             ws, row_keywords, None,
-            row_start=5, row_end=min(search_limit, 30),
+            row_start=search_start, row_end=min(search_limit, 30),
         )
 
     # 3. 计算数据起始行

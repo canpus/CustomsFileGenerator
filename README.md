@@ -1,6 +1,6 @@
 # 报关资料自动生成系统（CustomsFileGenerator）
 
-> **版本**: 6.0.1-a | **状态**: 阶段 3 完成 — XLSX 工具库就绪
+> **版本**: 6.0.1-a | **状态**: 阶段 4 完成 — 装箱单生成器就绪
 > **技术栈**: tkinter + ttkbootstrap + openpyxl + python-docx + msgspec + sqlite3
 
 ---
@@ -77,7 +77,7 @@ CustomsFileGenerator/
 
 | 版本 | 日期 | 变更说明 |
 |------|------|---------|
-| 6.0.1-a | 2026-05-20 | 阶段 3 完成：XLSX 工具库（clone_row_style 属性级拷贝、insert_rows_with_style、delete_rows_safely 逆序解除合并、update_sum_formula、resize_data_rows 扩缩容）、动态锚点扫描引擎（3 模板 + _create_default_wb 默认工厂）、template_rules.json 可配置规则、23 个单元测试全部通过 |
+| 6.0.1-a | 2026-05-26 | 阶段 4 完成：装箱单生成器（flatten_for_packing 数据展平、PackingGenerator 沙箱生成、表头填充、明细写入、公式修正）、16 个单元测试全部通过（含真实订单第 11 托结构测试）。修复锚点扫描误匹配标题行、data_end_row 估算、汇总行关键词、净重列格式问题 |
 | 6.0.1-a | 2026-05-20 | 阶段 2 完成：SQLite 数据库层（schema.sql 四张表、connection.py WAL 模式、repository.py CRUD + 模糊搜索）、8 个单元测试全部通过 |
 | 6.0.1-a | 2026-05-20 | 阶段 1 完成：msgspec 数据模型（OrderData 等 9 个结构体）、业务校验器（5 条规则）、ValidationError 中文映射器、25 个单元测试全部通过 |
 | 6.0.1-a | 2026-05-20 | 阶段 0 完成：项目骨架、环境自检、配置管理、依赖锁定 |

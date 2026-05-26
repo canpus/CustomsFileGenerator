@@ -113,3 +113,64 @@
 2026-05-26 10:59:30 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
 2026-05-26 10:59:30 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
 2026-05-26 10:59:31 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-26 11:05:32 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 11:05:32 | INFO     | __main__ | 启动 GUI 模式
+2026-05-26 11:05:32 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-26 11:05:33 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-26 11:05:33 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 11:05:33 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-26 11:05:33 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-26 11:05:34 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-26 11:07:22 | INFO     | src.gui.app | 切换页面: tree_editor
+2026-05-26 11:07:25 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #1
+2026-05-26 11:07:32 | INFO     | src.gui.pages.tree_editor_page | 保存 pallet 修改: pi=0, ci=-1, pri=-1
+2026-05-26 11:07:53 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=0, ci=0, pri=-1
+2026-05-26 11:08:34 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=0, ci=0, pri=0
+2026-05-26 11:08:35 | INFO     | src.gui.app | 切换页面: generate
+2026-05-26 11:08:44 | INFO     | src.generators.template_guard | 模板文件校验通过: 4/4 存在
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 装箱单数据展平完成: 共 1 行
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 开始生成装箱单: 发票号=20251202-01, 托盘数=1, 明细行数=1
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 已加载锚点扫描规则: D:\Coding_Programs\CustomsFileGenerator\config\template_rules.json
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 装箱单锚点扫描: header=7, data_start=8, data_end=8, summary=58, errors=0
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 锚点扫描成功: data_start=8, data_end=8, summary=58
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行调整: 当前 1 行 → 目标 1 行 (diff=+0)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行数无需调整（1 行）
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 数据行调整完成: 新结束行=8
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 装箱单表头填充完成
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 装箱单明细填充完成: 1 行 (第 8 行 → 第 8 行)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 汇总公式已修正: 范围 8→8
+2026-05-26 11:08:44 | INFO     | src.generators.packing_generator | 装箱单已生成: D:\Coding_Programs\CustomsFileGenerator\output\装箱单_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 装箱单 生成成功: D:\Coding_Programs\CustomsFileGenerator\output\装箱单_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.invoice_generator | 发票数据聚合完成: 共 1 行（1 种商品）
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 开始生成形式发票: 发票号=20251202-01, 托盘数=1, 明细行数=1
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 已加载锚点扫描规则: D:\Coding_Programs\CustomsFileGenerator\config\template_rules.json
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 发票锚点扫描: header=14, data_start=15, data_end=15, summary=65, errors=0
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 锚点扫描成功: data_start=15, data_end=15, summary=65
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行调整: 当前 1 行 → 目标 1 行 (diff=+0)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行数无需调整（1 行）
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 数据行调整完成: 新结束行=15
+2026-05-26 11:08:44 | INFO     | src.generators.invoice_generator | 发票表头填充完成
+2026-05-26 11:08:44 | INFO     | src.generators.invoice_generator | 发票明细填充完成: 1 行 (第 15 行 → 第 15 行)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.invoice_generator | 发票汇总修正完成: 总金额=1165.50, 实际汇总行=65, 大写=USD ONE THOUSAND ONE HUNDRED SIXTY-FIVE AND CENTS FIFTY
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 形式发票已生成: D:\Coding_Programs\CustomsFileGenerator\output\形式发票_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 形式发票 生成成功: D:\Coding_Programs\CustomsFileGenerator\output\形式发票_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.invoice_generator | 发票数据聚合完成: 共 1 行（1 种商品）
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 开始生成形式合同: 发票号=20251202-01, 托盘数=1, 明细行数=1
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 已加载锚点扫描规则: D:\Coding_Programs\CustomsFileGenerator\config\template_rules.json
+2026-05-26 11:08:44 | INFO     | src.generators.template_anchor_scanner | 合同锚点扫描: header=7, data_start=8, data_end=8, summary=58, errors=0
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 锚点扫描成功: data_start=8, data_end=8, summary=58
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行调整: 当前 1 行 → 目标 1 行 (diff=+0)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 数据行数无需调整（1 行）
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 数据行调整完成: 新结束行=8
+2026-05-26 11:08:44 | INFO     | src.generators.contract_generator | 合同表头填充完成
+2026-05-26 11:08:44 | INFO     | src.generators.contract_generator | 合同明细填充完成: 1 行 (第 8 行 → 第 8 行)
+2026-05-26 11:08:44 | INFO     | src.generators.xlsx_utils | 公式修正完成: 共修正 1 个 SUM 公式
+2026-05-26 11:08:44 | INFO     | src.generators.contract_generator | 合同汇总修正完成: 总金额=1165.50, 实际汇总行=58, 大写=USD ONE THOUSAND ONE HUNDRED SIXTY-FIVE AND CENTS FIFTY
+2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 形式合同已生成: D:\Coding_Programs\CustomsFileGenerator\output\形式合同_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 形式合同 生成成功: D:\Coding_Programs\CustomsFileGenerator\output\形式合同_20251202-01.xlsx
+2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 一键生成完成: 成功 3/3, 失败 0/3, 跳过 0/3

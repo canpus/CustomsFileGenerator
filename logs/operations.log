@@ -17,3 +17,99 @@
 2026-05-26 10:29:26 | INFO     | __main__ | 日志系统初始化完成
 2026-05-26 10:29:26 | INFO     | __main__ | 环境自检模式完成
 2026-05-26 10:34:32 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:36:21 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:36:21 | INFO     | __main__ | 启动 GUI 模式
+2026-05-26 10:36:21 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-26 10:36:22 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-26 10:36:22 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:36:22 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-26 10:36:22 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-26 10:36:23 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-26 10:37:22 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:37:36 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:37:38 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:37:39 | INFO     | src.gui.app | 切换页面: template
+2026-05-26 10:37:39 | INFO     | src.db.connection | 数据库表结构初始化完成: D:\Coding_Programs\CustomsFileGenerator\data\customs.db
+2026-05-26 10:37:39 | INFO     | src.db.connection | 已为线程 MainThread 创建数据库连接
+2026-05-26 10:37:39 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-26 10:37:39 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-26 10:37:41 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:37:41 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:37:42 | INFO     | src.gui.app | 切换页面: template
+2026-05-26 10:37:42 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-26 10:37:42 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-26 10:37:51 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:37:52 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:37:53 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:37:58 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:37:59 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:38:49 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:39:07 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:39:08 | INFO     | __main__ | 启动 GUI 模式
+2026-05-26 10:39:08 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-26 10:39:08 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-26 10:39:08 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:39:08 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-26 10:39:08 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-26 10:39:09 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-26 10:40:18 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:40:18 | INFO     | __main__ | 启动 GUI 模式
+2026-05-26 10:40:18 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-26 10:40:19 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-26 10:40:19 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:40:19 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-26 10:40:19 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-26 10:40:19 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-26 10:40:30 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:40:31 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:40:35 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:40:36 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:40:41 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:42:51 | INFO     | src.gui.app | 切换页面: tree_editor
+2026-05-26 10:42:56 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #1
+2026-05-26 10:43:17 | INFO     | src.gui.pages.tree_editor_page | 保存 pallet 修改: pi=0, ci=-1, pri=-1
+2026-05-26 10:43:57 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=0, ci=0, pri=-1
+2026-05-26 10:45:04 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=0, ci=0, pri=0
+2026-05-26 10:45:14 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #2
+2026-05-26 10:45:24 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #2
+2026-05-26 10:45:29 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #3
+2026-05-26 10:45:34 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #4
+2026-05-26 10:45:37 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #5
+2026-05-26 10:45:40 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #6
+2026-05-26 10:45:47 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #7
+2026-05-26 10:45:50 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #8
+2026-05-26 10:46:04 | INFO     | src.gui.pages.tree_editor_page | 保存 pallet 修改: pi=7, ci=-1, pri=-1
+2026-05-26 10:48:21 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=0, pri=0
+2026-05-26 10:48:23 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=0, pri=0
+2026-05-26 10:48:34 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=0, pri=0
+2026-05-26 10:48:56 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=7, ci=1, pri=-1
+2026-05-26 10:49:08 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=7, ci=1, pri=-1
+2026-05-26 10:49:17 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=7, ci=0, pri=-1
+2026-05-26 10:50:27 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=1, pri=0
+2026-05-26 10:50:37 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=1, pri=0
+2026-05-26 10:50:55 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #9
+2026-05-26 10:52:08 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=1, pri=0
+2026-05-26 10:52:12 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=7, ci=0, pri=0
+2026-05-26 10:52:16 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=6, ci=0, pri=0
+2026-05-26 10:52:20 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=5, ci=0, pri=0
+2026-05-26 10:52:27 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=4, ci=0, pri=0
+2026-05-26 10:52:37 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=3, ci=0, pri=0
+2026-05-26 10:52:41 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=2, ci=0, pri=0
+2026-05-26 10:52:45 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=1, ci=0, pri=0
+2026-05-26 10:52:49 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=0, ci=0, pri=0
+2026-05-26 10:53:18 | INFO     | src.gui.app | 切换页面: customer
+2026-05-26 10:53:21 | INFO     | src.gui.app | 切换页面: product
+2026-05-26 10:53:27 | INFO     | src.gui.pages.tree_editor_page | 新增托盘 #1
+2026-05-26 10:53:32 | INFO     | src.gui.pages.tree_editor_page | 保存 pallet 修改: pi=0, ci=-1, pri=-1
+2026-05-26 10:53:38 | INFO     | src.gui.pages.tree_editor_page | 保存 carton 修改: pi=0, ci=0, pri=-1
+2026-05-26 10:54:48 | INFO     | src.gui.pages.tree_editor_page | 保存 product 修改: pi=0, ci=0, pri=0
+2026-05-26 10:59:23 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:59:23 | INFO     | __main__ | 环境自检模式完成
+2026-05-26 10:59:29 | INFO     | __main__ | 日志系统初始化完成
+2026-05-26 10:59:29 | INFO     | __main__ | 启动 GUI 模式
+2026-05-26 10:59:29 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-26 10:59:30 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-26 10:59:30 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-26 10:59:30 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-26 10:59:30 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-26 10:59:31 | INFO     | src.gui.app | GUI 主循环启动

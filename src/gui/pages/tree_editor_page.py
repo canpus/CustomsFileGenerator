@@ -789,9 +789,6 @@ class TreeEditorPage(PageBase):
             Pallet,
             Product,
             Totals,
-            TradeTerm,
-            TransportMode,
-            PackageType,
         )
         from src.models.validators import validate_order_consistency
 
@@ -805,15 +802,15 @@ class TreeEditorPage(PageBase):
                 invoice_no=meta_data.get("invoice_no", "UNKNOWN"),
                 contract_no=meta_data.get("contract_no", "UNKNOWN"),
                 date=meta_data.get("date", "2025-01-01"),
-                trade_term=TradeTerm(meta_data.get("trade_term", "FOB")),
+                trade_term=meta_data.get("trade_term", "FOB"),
                 payment_term=meta_data.get("payment_term", "100% T/T IN ADVANCE"),
                 country_of_origin=meta_data.get("country_of_origin", "China"),
                 order_no=meta_data.get("order_no", ""),
-                transport_mode=TransportMode(meta_data.get("transport_mode", "海运")),
+                transport_mode=meta_data.get("transport_mode", "海运"),
                 vessel_flight=meta_data.get("vessel_flight", ""),
                 bill_of_lading_no=meta_data.get("bill_of_lading_no", ""),
                 currency=meta_data.get("currency", "USD"),
-                package_type=PackageType(meta_data.get("package_type", "pallet")),
+                package_type=meta_data.get("package_type", "pallet"),
                 goods_summary=meta_data.get("goods_summary", ""),
                 declaration_elements_template=meta_data.get("declaration_elements_template", ""),
             )

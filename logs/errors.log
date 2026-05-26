@@ -1,3 +1,36 @@
 2026-05-20 11:54:27 | ERROR    | __main__ | 环境自检未通过，程序退出
 2026-05-20 11:55:54 | ERROR    | __main__ | 环境自检未通过，程序退出
 2026-05-26 10:34:32 | ERROR    | __main__ | 环境自检未通过，程序退出
+2026-05-26 10:51:11 | ERROR    | src.gui.pages.tree_editor_page | [错误]: 构建 OrderData 失败
+Traceback (most recent call last):
+  File "D:\Coding_Programs\CustomsFileGenerator\src\gui\pages\tree_editor_page.py", line 808, in build_order_data
+    trade_term=TradeTerm(meta_data.get("trade_term", "FOB")),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 1184, in __call__
+    result = self.__origin__(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 501, in __call__
+    raise TypeError(f"Cannot instantiate {self!r}")
+TypeError: Cannot instantiate typing.Literal
+2026-05-26 10:52:51 | ERROR    | src.gui.pages.tree_editor_page | [错误]: 构建 OrderData 失败
+Traceback (most recent call last):
+  File "D:\Coding_Programs\CustomsFileGenerator\src\gui\pages\tree_editor_page.py", line 808, in build_order_data
+    trade_term=TradeTerm(meta_data.get("trade_term", "FOB")),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 1184, in __call__
+    result = self.__origin__(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 501, in __call__
+    raise TypeError(f"Cannot instantiate {self!r}")
+TypeError: Cannot instantiate typing.Literal
+2026-05-26 10:54:55 | ERROR    | src.gui.pages.tree_editor_page | [错误]: 构建 OrderData 失败
+Traceback (most recent call last):
+  File "D:\Coding_Programs\CustomsFileGenerator\src\gui\pages\tree_editor_page.py", line 808, in build_order_data
+    trade_term=TradeTerm(meta_data.get("trade_term", "FOB")),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 1184, in __call__
+    result = self.__origin__(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 501, in __call__
+    raise TypeError(f"Cannot instantiate {self!r}")
+TypeError: Cannot instantiate typing.Literal

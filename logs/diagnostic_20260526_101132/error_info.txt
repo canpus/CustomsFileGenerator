@@ -1,0 +1,7 @@
+诊断时间: 2026-05-26T10:11:32.275904
+程序版本: 报关资料自动生成系统 v6.0.1-a
+============================================================
+生成装箱单失败
+File "<PROJECT_ROOT>\src\generators\packing_generator.py", line 42, in generate
+    raise ValueError("模板单元格 D3 为空")
+ValueError: 模板单元格 D3 为空

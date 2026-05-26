@@ -1,0 +1,15 @@
+程序: 报关资料自动生成系统 v6.0.1-a
+时间: 2026-05-26T10:11:32.276907
+Python: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+平台: Windows-11-10.0.26200-SP0
+系统: Windows 11
+架构: AMD64
+处理器: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+工作目录: D:\Coding_Programs\CustomsFileGenerator
+项目根目录: D:\Coding_Programs\CustomsFileGenerator
+  openpyxl: 3.1.5
+  msgspec: 0.18.6
+  python-docx: NOT INSTALLED
+  ttkbootstrap: unknown
+  python-dotenv: NOT INSTALLED
+  num2words: unknown

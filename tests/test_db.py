@@ -462,11 +462,22 @@ class TestHistory:
             invoice_no="INV-OLD", contract_no="CT-OLD", customer_name="OLD",
             total_amount=1.0, total_pallets=1, total_cartons=1,
         )
-        # 清理超过 0 天的记录（即全部清理）
-        deleted = HistoryRepository.clear_old(days=0)
-        assert deleted >= 1
+        # 清理超过 10000 天的记录（不会删除刚插入的记录）
+        deleted = HistoryRepository.clear_old(days=10000)
+        # 断言没有删除刚插入的记录
+        assert deleted == 0
         results = HistoryRepository.list_recent()
-        assert len(results) == 0
+        assert len(results) >= 1
+        # 再次验证：清理最近 0 天（即清理所有早于 now 的记录）
+        # 使用 SQL 修改时间戳来模拟旧记录
+        import src.db.connection as conn_module
+        conn = conn_module.get_connection()
+        conn.execute(
+            "UPDATE history SET generated_at = datetime('now', 'localtime', '-100 days') WHERE invoice_no = 'INV-OLD'"
+        )
+        conn.commit()
+        deleted = HistoryRepository.clear_old(days=90)
+        assert deleted >= 1
 
 
 # ==================== 测试 7：并发写入 ====================

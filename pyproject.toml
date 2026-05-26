@@ -1,0 +1,41 @@
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+# 启用规则
+select = [
+    "E",    # pycodestyle 错误
+    "W",    # pycodestyle 警告
+    "F",    # pyflakes
+    "I",    # isort（导入排序）
+    "N",    # pep8-naming（命名规范）
+    "UP",   # pyupgrade（Python 新语法）
+    "B",    # flake8-bugbear（Bug 检测）
+    "SIM",  # flake8-simplify（简化代码）
+]
+
+ignore = [
+    "E501",  # 行长度由 line-length 控制
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # 允许 __init__.py 中未使用的导入
+
+[tool.mypy]
+python_version = "3.11"
+strict = false  # 逐步启用，先设为 false
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+ignore_missing_imports = true  # 第三方库类型缺失时不报错
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]

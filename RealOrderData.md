@@ -30,7 +30,7 @@ Filler|1.5mm*50mm*5m|200|Roll|3.15|630
 Repair Patch|250mm*2.4mm*5m|25|Roll|12.5|312.5
 
 3. 装箱数据：
-No.|Item Description|Spec.|Carton(cm)|QTY/Carton|Carton No.|Tray(M)|Pallet No.|N.W/Kg|G.W/kg|Volume/M3
+托盘序号|产品描述|产品规格|外箱尺寸(cm)|每箱数量|箱数|装托尺寸(M)|托盘号|N.W/Kg|G.W/kg|Volume/M3
 1|50℃ Type 2A-1 Heat Shrink Sleeve|330mm*2.0mm*30M|32*32*34|1|45|1.16*1.01*1.97|1|1003.5|1048.5|2.308 
 2|50℃ Type 2A-1 Heat Shrink Sleeve|330mm*2.0mm*30M|32*32*34|1|45|1.16*1.01*1.97|2|1003.5|1043.5|2.308 
 3|50℃ Type 2A-1 Heat Shrink Sleeve|330mm*2.0mm*30M|32*32*34|1|45|1.16*1.01*1.97|3|1003.5|1064|2.308 

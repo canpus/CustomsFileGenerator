@@ -84,3 +84,19 @@ CREATE TABLE IF NOT EXISTS history (
 CREATE INDEX IF NOT EXISTS idx_history_invoice  ON history(invoice_no);
 CREATE INDEX IF NOT EXISTS idx_history_date     ON history(generated_at);
 CREATE INDEX IF NOT EXISTS idx_history_customer ON history(customer_name);
+
+
+-- ==================== template_blocks 分块模板表 ====================
+-- 存储客户/商品/装运/整单等可分块复用的模板数据
+CREATE TABLE IF NOT EXISTS template_blocks (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    block_type      TEXT    NOT NULL CHECK(block_type IN ('customer', 'product_set', 'shipping', 'order_full')),
+    block_name      TEXT    NOT NULL,
+    block_json      TEXT    NOT NULL,
+    description     TEXT    DEFAULT '',
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+    updated_at      TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+    is_deleted      INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_template_blocks_type ON template_blocks(block_type);

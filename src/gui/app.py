@@ -45,6 +45,8 @@ from src.gui.pages.line_item_table_page import LineItemTablePage
 from src.gui.pages.generate_page import GeneratePage
 from src.gui.pages.template_page import TemplatePage
 from src.gui.pages.import_page import ImportPage
+from src.gui.pages.customer_page import CustomerPage
+from src.gui.pages.product_page import ProductPage
 
 logger = logging.getLogger(__name__)
 
@@ -435,64 +437,13 @@ class GuiApp:
         elif page_name == "import":
             return ImportPage(self._workspace_frame, self)
 
-        elif page_name in ("customer", "product"):
-            return self._create_placeholder_page(page_name)
+        elif page_name == "customer":
+            return CustomerPage(self._workspace_frame, self)
+
+        elif page_name == "product":
+            return ProductPage(self._workspace_frame, self)
 
         return None
-
-    def _create_placeholder_page(self, page_name: str) -> PageBase:
-        """创建功能占位页面.
-
-        Args:
-            page_name: 页面标识符（customer / product）.
-
-        Returns:
-            显示"功能开发中"的占位页.
-        """
-        name_map: dict[str, str] = {
-            "customer": "客户管理",
-            "product": "产品库",
-        }
-        display_name: str = name_map.get(page_name, page_name)
-
-        class PlaceholderPage(PageBase):
-            def build(self_ph) -> None:
-                self_ph.frame = ttk.Frame(self_ph.parent)
-                self_ph.frame.pack(fill=BOTH, expand=YES)
-
-                # 居中容器
-                center_frame = ttk.Frame(self_ph.frame)
-                center_frame.place(relx=0.5, rely=0.5, anchor="center")
-
-                ttk.Label(
-                    center_frame,
-                    text=display_name,
-                    font=self_ph.app.get_heading_font(),
-                    bootstyle="primary",
-                ).pack(pady=(0, 15))
-
-                ttk.Label(
-                    center_frame,
-                    text="功能开发中，敬请期待",
-                    font=self_ph.app.get_font(size=FONT_SIZE_NORMAL),
-                    bootstyle="secondary",
-                ).pack()
-
-                ttk.Label(
-                    center_frame,
-                    text="该模块将在后续版本中上线",
-                    font=self_ph.app.get_font(size=FONT_SIZE_SMALL),
-                    bootstyle="secondary",
-                ).pack(pady=(5, 20))
-
-                ttk.Button(
-                    center_frame,
-                    text="返回新建单据",
-                    bootstyle="primary-outline",
-                    command=lambda: self_ph.app.switch_page("order_info"),
-                ).pack()
-
-        return PlaceholderPage(self._workspace_frame, self)
 
     def _highlight_nav_button(self, page_name: str) -> None:
         """高亮当前选中的导航按钮.

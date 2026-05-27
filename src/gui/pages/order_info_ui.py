@@ -95,6 +95,16 @@ class OrderInfoUIMixin:
         self._add_field(row5, "手机号:", "mobile", 0)
         self._add_field(row5, "目的地/卸货港:", "destination", 1)
 
+        # "从客户库选择"按钮
+        btn_row = ttk.Frame(section)
+        btn_row.pack(fill=X, pady=(5, 0))
+        ttk.Button(
+            btn_row,
+            text="从客户库选择...",
+            bootstyle="info-outline",
+            command=self._on_select_from_customer_lib,
+        ).pack(side=LEFT)
+
     # ==================== 运输信息区块 ====================
 
     def _build_shipping_section(self: OrderInfoPage, parent: ttk.Frame) -> None:

@@ -17,7 +17,6 @@ from typing import Any
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-from src.db.product_repository import ProductRepository
 from src.gui.components.editable_table import ColumnDef, EditableTable
 from src.gui.page_base import PageBase
 from src.models.order_data import (
@@ -291,24 +290,10 @@ class LineItemTablePage(PageBase):
         if self._table is None:
             return
 
-        try:
-            products = ProductRepository.list_all(limit=200)
-        except Exception as e:
-            logger.exception("[错误]: 查询产品库失败")
-            messagebox.showerror(
-                "数据库错误",
-                f"[错误]: 无法读取产品库\n[原因]: {e}\n[排查]: 请检查数据库连接",
-            )
-            return
+        from src.gui.pages.product_page import ProductSelectDialog
 
-        if not products:
-            messagebox.showinfo("提示", "产品库为空，请先在「产品库」中添加产品。")
-            return
-
-        # 弹出产品选择对话框
-        dialog = _ProductSelectDialog(self.frame, products, self.app.get_font())
-        self.frame.wait_window(dialog.top)
-        selected = dialog.result
+        dialog = ProductSelectDialog(self.frame)
+        selected = dialog.show()
 
         if selected:
             self._insert_product_rows(selected)
@@ -701,151 +686,6 @@ class LineItemTablePage(PageBase):
 
 
 # ==================== 产品选择对话框 ====================
-
-
-class _ProductSelectDialog:
-    """产品库选择对话框.
-
-    显示产品列表，支持搜索和多选，返回选中的产品记录列表。
-    """
-
-    def __init__(
-        self,
-        parent: ttk.Frame,
-        products: list[dict[str, Any]],
-        font: tuple,
-    ):
-        self.result: list[dict[str, Any]] = []
-        self._products: list[dict[str, Any]] = products
-        self._font = font
-
-        self.top = ttk.Toplevel(parent)
-        self.top.title("从产品库选择")
-        self.top.geometry("750x500")
-        self.top.transient(parent.winfo_toplevel())
-        self.top.grab_set()
-
-        self._build_ui()
-
-    def _build_ui(self) -> None:
-        """构建对话框 UI."""
-        # 搜索栏
-        search_frame = ttk.Frame(self.top, padding=10)
-        search_frame.pack(fill=X)
-
-        ttk.Label(search_frame, text="搜索:", font=self._font).pack(side=LEFT)
-        self._search_var = ttk.StringVar()
-        search_entry = ttk.Entry(search_frame, textvariable=self._search_var, width=30)
-        search_entry.pack(side=LEFT, padx=(5, 10))
-        search_entry.bind("<KeyRelease>", lambda e: self._filter())
-
-        ttk.Label(
-            search_frame,
-            text=f"共 {len(self._products)} 个产品",
-            font=self._font,
-            bootstyle="secondary",
-        ).pack(side=LEFT)
-
-        # 表格
-        table_frame = ttk.Frame(self.top)
-        table_frame.pack(fill=BOTH, expand=YES, padx=10, pady=5)
-
-        columns = [
-            ("product_name", "商品名称", 180),
-            ("specification", "规格型号", 120),
-            ("hs_code", "HS Code", 100),
-            ("unit", "单位", 50),
-            ("unit_price", "单价", 60),
-            ("destination_country", "目的国", 70),
-        ]
-
-        self._tree = ttk.Treeview(
-            table_frame,
-            columns=[c[0] for c in columns],
-            show="headings",
-            height=15,
-            selectmode="extended",
-        )
-        for key, name, width in columns:
-            self._tree.heading(key, text=name)
-            self._tree.column(key, width=width, minwidth=30, stretch=True)
-
-        vsb = ttk.Scrollbar(table_frame, orient=VERTICAL, command=self._tree.yview)
-        self._tree.configure(yscrollcommand=vsb.set)
-        self._tree.pack(side=LEFT, fill=BOTH, expand=YES)
-        vsb.pack(side=RIGHT, fill=Y)
-
-        # 按钮
-        btn_frame = ttk.Frame(self.top, padding=10)
-        btn_frame.pack(fill=X)
-
-        ttk.Button(
-            btn_frame,
-            text="确定 (插入选中产品)",
-            bootstyle="success",
-            command=self._on_confirm,
-        ).pack(side=RIGHT, padx=(5, 0))
-
-        ttk.Button(
-            btn_frame,
-            text="取消",
-            bootstyle="secondary-outline",
-            command=self.top.destroy,
-        ).pack(side=RIGHT)
-
-        # 初始填充
-        self._populate(self._products)
-
-    def _populate(self, products: list[dict[str, Any]]) -> None:
-        """填充表格."""
-        for item in self._tree.get_children():
-            self._tree.delete(item)
-        for p in products:
-            values = [
-                str(p.get("product_name", "")),
-                str(p.get("specification", "")),
-                str(p.get("hs_code", "")),
-                str(p.get("unit", "")),
-                str(p.get("unit_price", "")),
-                str(p.get("destination_country", "")),
-            ]
-            self._tree.insert("", END, values=values)
-
-    def _filter(self) -> None:
-        """搜索过滤."""
-        keyword = self._search_var.get().strip().lower()
-        if not keyword:
-            self._populate(self._products)
-            return
-        filtered = [
-            p for p in self._products
-            if keyword in str(p.get("product_name", "")).lower()
-            or keyword in str(p.get("hs_code", "")).lower()
-            or keyword in str(p.get("specification", "")).lower()
-        ]
-        self._populate(filtered)
-
-    def _on_confirm(self) -> None:
-        """确认选择."""
-        selection = self._tree.selection()
-        if not selection:
-            messagebox.showinfo("提示", "请至少选择一个产品。")
-            return
-
-        # 获取选中产品
-        selected_names = []
-        for iid in selection:
-            values = self._tree.item(iid)["values"]
-            if values:
-                selected_names.append(str(values[0]))
-
-        # 从原始列表中匹配
-        self.result = [
-            p for p in self._products
-            if str(p.get("product_name", "")) in selected_names
-        ]
-
-        self.top.destroy()
 
 
 # ==================== 辅助函数 ====================

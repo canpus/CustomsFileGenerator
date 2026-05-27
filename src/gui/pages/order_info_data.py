@@ -280,6 +280,36 @@ class OrderInfoDataMixin:
                 f"[错误]: Excel 导入失败\n[原因]: {e}\n[排查]: 请检查文件是否为标准订单 Excel 格式",
             )
 
+    def _on_select_from_customer_lib(self: OrderInfoPage) -> None:
+        """点击"从客户库选择"按钮."""
+        from src.gui.pages.customer_page import CustomerSelectDialog
+
+        dialog = CustomerSelectDialog(self.frame)
+        customer = dialog.show()
+
+        if customer is None:
+            return
+
+        # 将客户数据填充到表单
+        field_map: dict[str, str] = {
+            "company_name_en": "company_name_en",
+            "company_name_cn": "company_name_cn",
+            "country": "country",
+            "address": "address",
+            "contact_person": "contact_person",
+            "phone": "phone",
+            "mobile": "mobile",
+            "destination": "destination",
+        }
+        for db_field, form_field in field_map.items():
+            val = customer.get(db_field, "")
+            if val and form_field in self._variables:
+                self._variables[form_field].set(str(val))
+
+        self.app.set_status(
+            f"已从客户库选择: {customer.get('company_name_en', '')}"
+        )
+
     def _on_clear(self: OrderInfoPage) -> None:
         """清空所有表单."""
         if messagebox.askyesno("确认清空", "确定要清空所有已填写的表单数据吗？"):

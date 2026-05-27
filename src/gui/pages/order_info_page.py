@@ -14,7 +14,10 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.models.order_data import OrderData
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -556,14 +559,12 @@ class OrderInfoPage(PageBase):
                 f"[错误]: Excel 导入失败\n[原因]: {e}\n[排查]: 请检查文件是否为标准订单 Excel 格式",
             )
 
-    def _fill_from_order(self, order: Any) -> None:
+    def _fill_from_order(self, order: OrderData) -> None:
         """从 OrderData 对象填充表单.
 
         Args:
             order: OrderData 实例.
         """
-        from src.models.order_data import OrderData
-
         if order is None:
             return
 

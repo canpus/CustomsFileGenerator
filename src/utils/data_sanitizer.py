@@ -35,8 +35,6 @@ from src.models.order_data import (
     Product,
     Totals,
     TemplateMeta,
-    TradeTerm,
-    TransportMode,
     PackageType,
     encode_order,
 )

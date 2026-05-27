@@ -143,6 +143,9 @@ class CustomerRepository:
         if not fields:
             return False
 
+        # 安全边界：updates 的 key 已经过 allowed set 白名单过滤，
+        # 仅包含已知安全列名（company_name_en 等 8 个字段），
+        # 不存在 SQL 注入风险。
         allowed = {
             "company_name_en", "company_name_cn", "country", "address",
             "contact_person", "phone", "mobile", "destination",
@@ -320,6 +323,9 @@ class ProductRepository:
         if not fields:
             return False
 
+        # 安全边界：updates 的 key 已经过 allowed set 白名单过滤，
+        # 仅包含已知安全列名（product_name 等 9 个字段），
+        # 不存在 SQL 注入风险。
         allowed = {
             "product_name", "specification", "hs_code", "declaration_elements",
             "unit", "unit_price", "net_weight_per_unit_kg", "destination_country", "currency",

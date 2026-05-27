@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+
 import logging
 import os
 import subprocess
@@ -20,7 +21,10 @@ import sys
 import threading
 from pathlib import Path
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.models.order_data import OrderData
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -253,7 +257,7 @@ class GeneratePage(PageBase):
         thread = threading.Thread(target=self._do_generate, args=(order,), daemon=True)
         thread.start()
 
-    def _do_generate(self, order: Any) -> None:
+    def _do_generate(self, order: OrderData) -> None:
         """在后台线程中执行生成.
 
         Args:

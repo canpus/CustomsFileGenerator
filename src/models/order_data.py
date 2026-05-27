@@ -12,14 +12,9 @@ from typing import Literal
 import msgspec
 
 
-# ==================== TradeTerm 贸易条款 ====================
+# ==================== TradeTerm / TransportMode（统一来源于 config.constants） ====================
 
-TradeTerm = Literal["FOB", "CIF", "DAP", "DDP", "EXW", "CFR"]
-
-
-# ==================== TransportMode 运输方式 ====================
-
-TransportMode = Literal["海运", "空运", "陆运"]
+from config.constants import TradeTerm, TransportModeCN as TransportMode  # noqa: E402
 
 
 # ==================== PackageType 包装类型 ====================

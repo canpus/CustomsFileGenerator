@@ -11,10 +11,14 @@
 
 from __future__ import annotations
 
+
 import copy
 import logging
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.models.order_data import OrderData
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -774,7 +778,7 @@ class TreeEditorPage(PageBase):
         """
         return copy.deepcopy(self._pallets)
 
-    def build_order_data(self) -> Any | None:
+    def build_order_data(self) -> OrderData | None:
         """从表单数据 + 树数据构建 OrderData 对象.
 
         Returns:

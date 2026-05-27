@@ -15,7 +15,10 @@ import logging
 import sys
 from pathlib import Path
 from tkinter import font as tkfont
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.models.order_data import OrderData
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -139,7 +142,7 @@ class GuiApp:
 
         # 4. 共享数据（当前编辑的订单）
         self._current_order_data: dict[str, Any] = {}
-        self._current_order: Any = None  # OrderData 对象
+        self._current_order: OrderData | None = None  # OrderData 对象
 
         # 5. 页面缓存
         self._pages: dict[str, PageBase] = {}
@@ -380,12 +383,12 @@ class GuiApp:
         return self._heading_font
 
     @property
-    def current_order(self) -> Any:
+    def current_order(self) -> OrderData | None:
         """获取当前编辑的订单数据."""
         return self._current_order
 
     @current_order.setter
-    def current_order(self, order: Any) -> None:
+    def current_order(self, order: OrderData) -> None:
         """设置当前订单数据."""
         self._current_order = order
 

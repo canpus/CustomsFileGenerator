@@ -84,11 +84,18 @@ class PaymentMethod(str, Enum):
 
 
 class TransportMode(str, Enum):
-    """运输方式."""
+    """运输方式（英文码，供外部接口使用）."""
     SEA = "SEA"
     AIR = "AIR"
     RAIL = "RAIL"
     TRUCK = "TRUCK"
+
+
+class TransportModeCN(str, Enum):
+    """运输方式（中文显示值）."""
+    SEA = "海运"
+    AIR = "空运"
+    LAND = "陆运"
 
 
 class Currency(str, Enum):

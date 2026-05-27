@@ -379,18 +379,22 @@ def _amount_to_english_upper(amount: float) -> str:
         else:
             return f"USD {integer_words}"
     except ImportError:
-        logger.warning(
-            "[警告]: num2words 未安装，使用数字替代"
-        )
-        return f"USD {amount:,.2f}"
-    except Exception as e:
         logger.error(
-            "[错误]: 金额大写转换失败: %s\n"
-            "[原因]: num2words 内部错误\n"
-            "[排查]: 请检查 num2words 版本是否为 0.5.14+",
-            e,
+            "[错误]: num2words 未安装，金额大写转换不可用\n"
+            "[原因]: 缺少运行时依赖\n"
+            "[排查]: 执行 pip install num2words==0.5.14"
         )
         return f"USD {amount:,.2f}"
+    except Exception:
+        logger.exception(
+            "[错误]: 金额大写转换失败\n"
+            "[原因]: num2words 内部错误，金额=%.2f\n"
+            "[排查]: 请检查金额数值是否在合理范围内",
+            amount,
+        )
+        raise ValueError(
+            f"金额大写转换失败: {amount}, 请检查 num2words 版本和金额数值"
+        ) from None
 
 
 # ========== 运行说明 ==========

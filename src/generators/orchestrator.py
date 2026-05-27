@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -326,17 +327,20 @@ class Orchestrator:
 # ==================== 模块级便捷函数 ====================
 
 _DEFAULT_ORCHESTRATOR: Orchestrator | None = None
+_ORCHESTRATOR_LOCK = threading.Lock()
 
 
 def get_orchestrator() -> Orchestrator:
-    """获取默认协调器单例.
+    """获取默认协调器单例（线程安全）.
 
     Returns:
         全局唯一的 Orchestrator 实例.
     """
     global _DEFAULT_ORCHESTRATOR
     if _DEFAULT_ORCHESTRATOR is None:
-        _DEFAULT_ORCHESTRATOR = Orchestrator()
+        with _ORCHESTRATOR_LOCK:
+            if _DEFAULT_ORCHESTRATOR is None:
+                _DEFAULT_ORCHESTRATOR = Orchestrator()
     return _DEFAULT_ORCHESTRATOR
 
 

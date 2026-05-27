@@ -34,3 +34,4 @@ Traceback (most recent call last):
   File "C:\Users\1\AppData\Local\Programs\Python\Python312\Lib\typing.py", line 501, in __call__
     raise TypeError(f"Cannot instantiate {self!r}")
 TypeError: Cannot instantiate typing.Literal
+2026-05-27 14:55:34 | ERROR    | __main__ | 环境自检未通过，程序退出

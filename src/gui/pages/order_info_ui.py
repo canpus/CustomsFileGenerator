@@ -34,7 +34,7 @@ class OrderInfoUIMixin:
 
     def _build_order_meta_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
         """构建订单元信息区块."""
-        section = self._add_section(parent, "📄 订单元信息")
+        section = self._add_section(parent, "订单元信息")
 
         row1 = ttk.Frame(section)
         row1.pack(fill=X, pady=2)
@@ -70,7 +70,7 @@ class OrderInfoUIMixin:
 
     def _build_customer_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
         """构建客户信息区块."""
-        section = self._add_section(parent, "👤 客户信息")
+        section = self._add_section(parent, "客户信息")
 
         row1 = ttk.Frame(section)
         row1.pack(fill=X, pady=2)
@@ -99,7 +99,7 @@ class OrderInfoUIMixin:
 
     def _build_shipping_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
         """构建运输贸易信息区块."""
-        section = self._add_section(parent, "🚢 运输与发货信息")
+        section = self._add_section(parent, "运输与发货信息")
 
         row1 = ttk.Frame(section)
         row1.pack(fill=X, pady=2)
@@ -114,7 +114,7 @@ class OrderInfoUIMixin:
 
     def _build_origin_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
         """构建境内信息区块（默认值预填）."""
-        section = self._add_section(parent, "🏭 境内信息（默认值可修改）")
+        section = self._add_section(parent, "境内信息（默认值可修改）")
 
         company_defaults = self._settings.get("company", {})
 

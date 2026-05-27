@@ -53,7 +53,7 @@ class ImportPage(PageBase):
 
         ttk.Label(
             title_frame,
-            text="📥 数据导入",
+            text="数据导入",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
@@ -67,14 +67,14 @@ class ImportPage(PageBase):
 
         ttk.Button(
             row1,
-            text="📂 从 Excel 文件导入订单数据...",
+            text="从 Excel 文件导入订单数据...",
             bootstyle="primary-outline",
             command=self._on_import_from_excel,
         ).pack(side=LEFT, padx=(0, 20))
 
         ttk.Button(
             row1,
-            text="🗄 从数据库加载模板...",
+            text="从数据库加载模板...",
             bootstyle="info-outline",
             command=self._on_load_template,
         ).pack(side=LEFT)
@@ -124,7 +124,7 @@ class ImportPage(PageBase):
 
         self._confirm_btn = ttk.Button(
             bottom,
-            text="✅ 确认导入 → 编辑商品明细",
+            text="确认导入 → 编辑商品明细",
             bootstyle="success",
             command=self._on_confirm_import,
             state="disabled",
@@ -193,7 +193,7 @@ class ImportPage(PageBase):
 
         ttk.Label(
             dialog,
-            text="📁 选择要导入的订单模板",
+            text="选择要导入的订单模板",
             font=self.app.get_font(bold=True, size=12),
             bootstyle="primary",
         ).pack(padx=15, pady=(15, 10))
@@ -261,7 +261,7 @@ class ImportPage(PageBase):
                 logger.exception("[错误]: 加载模板失败")
                 messagebox.showerror("加载失败", f"[错误]: {e}")
 
-        ttk.Button(btn_frame, text="✅ 加载选中模板", bootstyle="success", command=_on_select).pack(side=RIGHT)
+        ttk.Button(btn_frame, text="加载选中模板", bootstyle="success", command=_on_select).pack(side=RIGHT)
         ttk.Button(btn_frame, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=RIGHT, padx=(0, 10))
 
     # ==================== 预览显示 ====================

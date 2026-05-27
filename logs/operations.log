@@ -174,3 +174,61 @@
 2026-05-26 11:08:44 | INFO     | src.generators.base_generator | 形式合同已生成: D:\Coding_Programs\CustomsFileGenerator\output\形式合同_20251202-01.xlsx
 2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 形式合同 生成成功: D:\Coding_Programs\CustomsFileGenerator\output\形式合同_20251202-01.xlsx
 2026-05-26 11:08:44 | INFO     | src.generators.orchestrator | 一键生成完成: 成功 3/3, 失败 0/3, 跳过 0/3
+2026-05-27 14:55:34 | INFO     | __main__ | 日志系统初始化完成
+2026-05-27 14:56:03 | INFO     | __main__ | 日志系统初始化完成
+2026-05-27 14:56:03 | INFO     | __main__ | 启动 GUI 模式
+2026-05-27 14:56:03 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-27 14:56:03 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-27 14:56:03 | INFO     | src.gui.services.preferences_service | 偏好设置文件不存在，使用默认值: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:56:03 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-27 14:56:04 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-27 14:56:04 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-27 14:56:04 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-27 14:56:05 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:56:12 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:56:14 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:56:15 | INFO     | src.gui.app | 切换页面: tree_editor
+2026-05-27 14:56:19 | INFO     | src.gui.app | 切换页面: template
+2026-05-27 14:56:19 | INFO     | src.db.connection | 数据库表结构初始化完成: D:\Coding_Programs\CustomsFileGenerator\data\customs.db
+2026-05-27 14:56:19 | INFO     | src.db.connection | 已为线程 MainThread 创建数据库连接
+2026-05-27 14:56:19 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-27 14:56:19 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-27 14:56:20 | INFO     | src.gui.app | 切换页面: tree_editor
+2026-05-27 14:56:23 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-27 14:56:26 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:56:37 | INFO     | src.gui.app | 切换页面: tree_editor
+2026-05-27 14:56:40 | INFO     | src.gui.app | 切换页面: template
+2026-05-27 14:56:40 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-27 14:56:40 | INFO     | src.importer.template_loader | 列出模板: 0 条
+2026-05-27 14:56:41 | INFO     | src.gui.app | 切换页面: import
+2026-05-27 14:56:44 | INFO     | src.gui.app | 切换页面: customer
+2026-05-27 14:56:47 | INFO     | src.gui.app | 切换页面: product
+2026-05-27 14:56:49 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-27 14:57:05 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:05 | INFO     | src.gui.app | 用户退出应用
+2026-05-27 14:57:09 | INFO     | __main__ | 日志系统初始化完成
+2026-05-27 14:57:09 | INFO     | __main__ | 启动 GUI 模式
+2026-05-27 14:57:09 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-27 14:57:09 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-27 14:57:09 | INFO     | src.gui.services.preferences_service | 偏好设置已加载: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:09 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-27 14:57:09 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-27 14:57:09 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-27 14:57:09 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-27 14:57:10 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:13 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:14 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:14 | INFO     | src.gui.app | 用户退出应用
+2026-05-27 14:57:16 | INFO     | __main__ | 日志系统初始化完成
+2026-05-27 14:57:17 | INFO     | __main__ | 启动 GUI 模式
+2026-05-27 14:57:17 | INFO     | config.settings | .env 文件不存在，使用 .env.example 作为参考模板
+2026-05-27 14:57:17 | INFO     | config.settings | 已加载业务配置文件: D:\Coding_Programs\CustomsFileGenerator\config\settings.json
+2026-05-27 14:57:17 | INFO     | src.gui.services.preferences_service | 偏好设置已加载: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:17 | INFO     | src.gui.app | DPI 感知已激活
+2026-05-27 14:57:17 | INFO     | src.gui.app | GUI 主窗口初始化完成
+2026-05-27 14:57:17 | INFO     | src.gui.app | 切换页面: order_info
+2026-05-27 14:57:17 | INFO     | src.gui.app | GUI 主循环启动
+2026-05-27 14:57:18 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:19 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:20 | INFO     | src.gui.services.preferences_service | 偏好设置已保存: D:\Coding_Programs\CustomsFileGenerator\data\preferences.json
+2026-05-27 14:57:20 | INFO     | src.gui.app | 用户退出应用

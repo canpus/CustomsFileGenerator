@@ -71,7 +71,7 @@ class OrderInfoPage(PageBase, OrderInfoUIMixin, OrderInfoDataMixin):
         title_frame.pack(fill=X, padx=15, pady=(10, 5))
 
         ttk.Label(
-            title_frame, text="📋 新建报关单据",
+            title_frame, text="新建报关单据",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)

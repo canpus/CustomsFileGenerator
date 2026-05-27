@@ -93,7 +93,7 @@ class GenerateEventsMixin:
             return
 
         self._is_generating = True
-        self._generate_btn.configure(state="disabled", text="⏳ 正在生成...")
+        self._generate_btn.configure(state="disabled", text="正在生成...")
         self._reset_results()
         self._update_progress(0, "正在初始化...")
 
@@ -127,10 +127,10 @@ class GenerateEventsMixin:
     def _on_generation_complete(self: GeneratePage, report: Any) -> None:
         """生成完成回调（主线程）."""
         self._is_generating = False
-        self._generate_btn.configure(state="normal", text="🚀 一键生成报关资料")
+        self._generate_btn.configure(state="normal", text="一键生成报关资料")
 
         if report.success:
-            self._update_progress(100, "✅ 全部生成完成！")
+            self._update_progress(100, "全部生成完成！")
             self._generate_btn.configure(bootstyle="success")
 
             for result in report.results:
@@ -163,7 +163,7 @@ class GenerateEventsMixin:
                           for r in report.results if r.status == "success"),
             )
         else:
-            self._update_progress(100, "⚠️ 生成完成（有错误）")
+            self._update_progress(100, "生成完成（有错误）")
             self._generate_btn.configure(bootstyle="warning")
 
             if self._diagnostic_btn is not None:
@@ -198,8 +198,8 @@ class GenerateEventsMixin:
     def _on_generation_error(self: GeneratePage, error_msg: str) -> None:
         """生成异常回调（主线程）."""
         self._is_generating = False
-        self._generate_btn.configure(state="normal", text="🚀 重试生成", bootstyle="danger")
-        self._update_progress(0, f"❌ 生成失败: {error_msg[:60]}")
+        self._generate_btn.configure(state="normal", text="重试生成", bootstyle="danger")
+        self._update_progress(0, f"生成失败: {error_msg[:60]}")
 
         if self._diagnostic_btn is not None:
             self._diagnostic_btn.pack(side=LEFT, padx=(10, 0))

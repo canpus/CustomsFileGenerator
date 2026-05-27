@@ -57,7 +57,7 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         title_frame.pack(fill=X, padx=5, pady=(5, 10))
 
         ttk.Label(
-            title_frame, text="🚀 生成报关资料",
+            title_frame, text="生成报关资料",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
@@ -99,20 +99,20 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         ).pack(side=LEFT)
 
         self._open_folder_btn = ttk.Button(
-            bottom, text="📂 打开输出文件夹",
+            bottom, text="打开输出文件夹",
             bootstyle="info-outline",
             command=self._on_open_folder,
         )
         self._open_folder_btn.pack(side=LEFT, padx=(10, 0))
 
         self._diagnostic_btn = ttk.Button(
-            bottom, text="🩺 导出诊断包",
+            bottom, text="导出诊断包",
             bootstyle="warning-outline",
             command=self._on_export_diagnostic,
         )
 
         self._generate_btn = ttk.Button(
-            bottom, text="🚀 一键生成报关资料",
+            bottom, text="一键生成报关资料",
             bootstyle="success",
             command=self._on_generate,
         )
@@ -120,7 +120,7 @@ class GeneratePage(PageBase, GenerateEventsMixin):
 
     def _build_summary_section(self) -> None:
         """构建订单摘要区域."""
-        summary_frame = ttk.Labelframe(self.frame, text="📋 订单摘要", padding=10, bootstyle="primary")
+        summary_frame = ttk.Labelframe(self.frame, text="订单摘要", padding=10, bootstyle="primary")
         summary_frame.pack(fill=X, pady=(0, 10))
 
         self._summary_text = ttk.Text(
@@ -132,15 +132,15 @@ class GeneratePage(PageBase, GenerateEventsMixin):
     def _build_result_section(self) -> None:
         """构建生成结果区域."""
         self._result_frame = ttk.Labelframe(
-            self.frame, text="📄 生成结果", padding=10, bootstyle="success",
+            self.frame, text="生成结果", padding=10, bootstyle="success",
         )
         self._result_frame.pack(fill=X, pady=(0, 10))
 
         items: list[tuple[str, str, str]] = [
-            ("packing", "📦 装箱单", "等待生成..."),
-            ("invoice", "🧾 形式发票", "等待生成..."),
-            ("contract", "📝 形式合同", "等待生成..."),
-            ("customs", "📋 报关单", "⏳ 暂未就绪（阶段 6 开发中）"),
+            ("packing", "装箱单", "等待生成..."),
+            ("invoice", "形式发票", "等待生成..."),
+            ("contract", "形式合同", "等待生成..."),
+            ("customs", "报关单", "暂未就绪（阶段 6 开发中）"),
         ]
 
         for file_type, label, default_status in items:

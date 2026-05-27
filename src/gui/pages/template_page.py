@@ -51,7 +51,7 @@ class TemplatePage(PageBase):
 
         ttk.Label(
             title_frame,
-            text="📁 历史模板",
+            text="历史模板",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
@@ -62,28 +62,28 @@ class TemplatePage(PageBase):
 
         ttk.Button(
             toolbar,
-            text="💾 保存当前订单为模板",
+            text="保存当前订单为模板",
             bootstyle="success-outline",
             command=self._on_save_template,
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
             toolbar,
-            text="📥 加载选中模板",
+            text="加载选中模板",
             bootstyle="primary-outline",
             command=self._on_load_template,
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
             toolbar,
-            text="🗑 删除选中模板",
+            text="删除选中模板",
             bootstyle="danger-outline",
             command=self._on_delete_template,
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
             toolbar,
-            text="🔄 刷新列表",
+            text="刷新列表",
             bootstyle="secondary-outline",
             command=self._refresh_list,
         ).pack(side=LEFT)
@@ -102,7 +102,7 @@ class TemplatePage(PageBase):
 
         ttk.Button(
             search_frame,
-            text="🔍 搜索",
+            text="搜索",
             bootstyle="info-outline",
             command=self._on_search,
         ).pack(side=LEFT)
@@ -178,7 +178,7 @@ class TemplatePage(PageBase):
 
         ttk.Label(
             dialog,
-            text="💾 保存订单为模板",
+            text="保存订单为模板",
             font=self.app.get_font(bold=True, size=12),
             bootstyle="primary",
         ).pack(padx=20, pady=(20, 10))
@@ -214,7 +214,7 @@ class TemplatePage(PageBase):
                 logger.exception("[错误]: 保存模板失败")
                 messagebox.showerror("保存失败", f"[错误]: {e}")
 
-        ttk.Button(dialog, text="💾 保存", bootstyle="success", command=_do_save).pack(side=LEFT, padx=(20, 10))
+        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(side=LEFT, padx=(20, 10))
         ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=LEFT)
 
     def _on_load_template(self) -> None:

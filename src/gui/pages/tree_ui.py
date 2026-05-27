@@ -59,7 +59,7 @@ class TreeUIMixin:
 
         ttk.Label(
             title_frame,
-            text="📦 商品明细编辑（托盘 → 纸箱 → 商品）",
+            text="商品明细编辑（托盘 → 纸箱 → 商品）",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
@@ -93,7 +93,7 @@ class TreeUIMixin:
         ).pack(side=LEFT)
 
         ttk.Button(
-            bottom, text="🗑 清空所有商品",
+            bottom, text="清空所有商品",
             bootstyle="danger-outline",
             command=self._on_clear_all,
         ).pack(side=LEFT, padx=(10, 0))
@@ -189,7 +189,7 @@ class TreeUIMixin:
 
         ttk.Label(
             self._detail_frame,
-            text="👈 从左侧树中选择一个节点，\n即可在此处查看和编辑详细信息。\n\n"
+            text="从左侧树中选择一个节点，\n即可在此处查看和编辑详细信息。\n\n"
                  "• 选中托盘 → 编辑托盘尺寸和重量\n"
                  "• 选中纸箱 → 编辑纸箱尺寸和毛重\n"
                  "• 选中商品 → 编辑商品规格和价格",

@@ -181,7 +181,7 @@ class TreeDetailMixin:
 
         ttk.Button(
             self._detail_frame,
-            text="💾 保存修改",
+            text="保存修改",
             bootstyle="success",
             command=lambda: self._save_detail(level, pi, ci, pri),
         ).pack(padx=15, pady=(0, 10), fill=X)

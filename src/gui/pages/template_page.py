@@ -20,11 +20,7 @@ from ttkbootstrap.constants import *
 
 logger = logging.getLogger(__name__)
 
-try:
-    from src.gui.app import PageBase, GuiApp
-except ImportError:
-    PageBase = object
-    GuiApp = object
+from src.gui.page_base import PageBase
 
 
 class TemplatePage(PageBase):
@@ -33,7 +29,7 @@ class TemplatePage(PageBase):
     显示已保存的模板列表，支持加载、删除和保存操作。
     """
 
-    def __init__(self, parent: ttk.Frame, app: GuiApp):
+    def __init__(self, parent: ttk.Frame, app: object):
         """初始化.
 
         Args:

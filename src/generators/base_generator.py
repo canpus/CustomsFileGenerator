@@ -19,6 +19,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from config.constants import FILE_PREFIX_MAP, OUTPUT_DIR
 from src.generators.template_anchor_scanner import AnchorResult
+from src.generators.xlsx_utils import resize_data_rows
 from src.models.order_data import OrderData
 
 logger = logging.getLogger(__name__)
@@ -137,7 +138,6 @@ class BaseGenerator(abc.ABC):
 
             # 步骤 4：行数调整
             self._report_progress(progress_callback, "正在调整数据行数...", 0.20)
-            from src.generators.xlsx_utils import resize_data_rows
 
             new_data_end: int = resize_data_rows(
                 ws,

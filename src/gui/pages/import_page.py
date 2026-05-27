@@ -19,11 +19,7 @@ from ttkbootstrap.constants import *
 
 logger = logging.getLogger(__name__)
 
-try:
-    from src.gui.app import PageBase, GuiApp
-except ImportError:
-    PageBase = object
-    GuiApp = object
+from src.gui.page_base import PageBase
 
 
 class ImportPage(PageBase):
@@ -35,7 +31,7 @@ class ImportPage(PageBase):
     3. 预览导入结果
     """
 
-    def __init__(self, parent: ttk.Frame, app: GuiApp):
+    def __init__(self, parent: ttk.Frame, app: object):
         """初始化.
 
         Args:

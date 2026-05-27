@@ -24,6 +24,14 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 from config.constants import APP_NAME, APP_VERSION
+from src.gui.page_base import PageBase
+
+# 页面导入（PageBase 已独立，不再有循环导入问题）
+from src.gui.pages.order_info_page import OrderInfoPage
+from src.gui.pages.tree_editor_page import TreeEditorPage
+from src.gui.pages.generate_page import GeneratePage
+from src.gui.pages.template_page import TemplatePage
+from src.gui.pages.import_page import ImportPage
 
 logger = logging.getLogger(__name__)
 
@@ -57,50 +65,6 @@ def _get_available_font(font_size: int = 11) -> tuple[str, int]:
         # 无显示器环境（如 CI/测试），使用默认字体
         pass
     return "TkDefaultFont", font_size
-
-
-# ==================== 页面基类 ====================
-
-
-class PageBase:
-    """所有页面的基类.
-
-    每个页面负责构建自己的 UI，处理数据输入/展示。
-    页面之间通过 App 控制器（GuiApp）通信。
-
-    Attributes:
-        parent: 父级 Widget（右侧工作区 Frame）.
-        app: GuiApp 主控制器实例.
-    """
-
-    def __init__(self, parent: ttk.Frame, app: GuiApp):
-        """初始化页面.
-
-        Args:
-            parent: 父级容器.
-            app: 主应用控制器.
-        """
-        self.parent: ttk.Frame = parent
-        self.app: GuiApp = app
-        self.frame: ttk.Frame | None = None
-
-    def build(self) -> None:
-        """构建页面 UI（子类必须实现）."""
-        raise NotImplementedError("子类必须实现 build() 方法")
-
-    def destroy(self) -> None:
-        """销毁页面 UI."""
-        if self.frame is not None:
-            self.frame.destroy()
-            self.frame = None
-
-    def on_enter(self) -> None:
-        """页面被切换到时调用（可选覆盖）."""
-        pass
-
-    def on_leave(self) -> None:
-        """页面被切换走时调用（可选覆盖）."""
-        pass
 
 
 # ==================== GuiApp 主应用 ====================
@@ -308,35 +272,27 @@ class GuiApp:
         Returns:
             页面实例，不支持则返回 None.
         """
-        # 延迟导入，避免循环依赖
         if page_name == "order_info":
-            from src.gui.pages.order_info_page import OrderInfoPage
             return OrderInfoPage(self._workspace_frame, self)
 
         elif page_name == "tree_editor":
-            from src.gui.pages.tree_editor_page import TreeEditorPage
             return TreeEditorPage(self._workspace_frame, self)
 
         elif page_name == "generate":
-            from src.gui.pages.generate_page import GeneratePage
             return GeneratePage(self._workspace_frame, self)
 
         elif page_name == "template":
-            from src.gui.pages.template_page import TemplatePage
             return TemplatePage(self._workspace_frame, self)
 
         elif page_name == "customer":
             # 客户管理页面（简化实现：复用订单录入页面的客户部分）
-            from src.gui.pages.order_info_page import OrderInfoPage
             return OrderInfoPage(self._workspace_frame, self)
 
         elif page_name == "product":
             # 产品库页面（简化实现：显示为树状编辑器只读模式）
-            from src.gui.pages.tree_editor_page import TreeEditorPage
             return TreeEditorPage(self._workspace_frame, self)
 
         elif page_name == "import":
-            from src.gui.pages.import_page import ImportPage
             return ImportPage(self._workspace_frame, self)
 
     def _highlight_nav_button(self, page_name: str) -> None:

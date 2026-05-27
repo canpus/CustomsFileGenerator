@@ -1,0 +1,23 @@
+{
+  "typeCheckingMode": "basic",
+  "reportWildcardImportFromLibrary": "none",
+  "reportUnusedVariable": "warning",
+  "reportOptionalMemberAccess": "warning",
+  "reportOptionalSubscript": "warning",
+  "reportPrivateImportUsage": "none",
+  "reportCallIssue": "none",
+  "reportArgumentType": "warning",
+  "reportGeneralTypeIssues": "warning",
+  "reportAttributeAccessIssue": "warning",
+  "exclude": [
+    "**/__pycache__",
+    ".venv",
+    ".git",
+    "output",
+    "data",
+    "logs",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache"
+  ]
+}

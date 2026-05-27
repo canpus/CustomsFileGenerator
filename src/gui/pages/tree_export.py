@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import copy
 import logging
 from tkinter import messagebox
@@ -25,7 +26,7 @@ from src.models.order_data import (
 from src.models.validators import validate_order_consistency
 
 if TYPE_CHECKING:
-    from src.gui.pages.tree_editor_page import TreeEditorPage
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -39,13 +40,13 @@ class TreeExportMixin:
     """
 
     _pallets: list[dict[str, Any]]
-    app: object
+    app: GuiApp
 
-    def collect_tree_data(self: TreeEditorPage) -> list[dict[str, Any]]:
+    def collect_tree_data(self) -> list[dict[str, Any]]:
         """收集所有托盘/纸箱/商品数据."""
         return copy.deepcopy(self._pallets)
 
-    def build_order_data(self: TreeEditorPage) -> OrderData | None:
+    def build_order_data(self) -> OrderData | None:
         """从表单数据 + 树数据构建 OrderData 对象."""
         meta_data = self.app.current_order_data.get("order_meta", {})
         customer_data = self.app.current_order_data.get("customer", {})

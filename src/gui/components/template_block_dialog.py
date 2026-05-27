@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import logging
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -85,7 +88,7 @@ class TemplateBlockDialog:
         dialog.show()
     """
 
-    def __init__(self, parent: ttk.Frame, app: object) -> None:
+    def __init__(self, parent: ttk.Frame, app: GuiApp) -> None:
         """初始化对话框.
 
         Args:
@@ -179,7 +182,7 @@ class TemplateBlockDialog:
         for _label, key, _ in ORDER_FULL_FIELD_GROUPS:
             cb = ttk.Checkbutton(
                 self._scope_frame,
-                text=label,
+                text=_label,
                 variable=self._scope_vars[key],
                 bootstyle="info-round-toggle",
             )

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import copy
 import logging
+from typing import Any, cast
 
-import openpyxl
 from openpyxl.cell.cell import Cell, MergedCell
 from openpyxl.styles import Alignment, Border, Font, PatternFill
+from openpyxl.utils.cell import column_index_from_string, range_boundaries
 from openpyxl.worksheet.worksheet import Worksheet
 
 logger = logging.getLogger(__name__)
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 # ==================== 样式深拷贝 ====================
 
 
-def _copy_font(src: Font | None) -> Font:
-    """安全拷贝 Font 对象（属性级拷贝）."""
+def _copy_font(src: Any) -> Font:
+    """安全拷贝 Font 对象（属性级拷贝，接受 StyleProxy 等兼容对象）."""
     if src is None:
         return Font()
     return Font(
@@ -33,8 +34,8 @@ def _copy_font(src: Font | None) -> Font:
     )
 
 
-def _copy_border(src: Border | None) -> Border:
-    """安全拷贝 Border 对象（属性级拷贝）."""
+def _copy_border(src: Any) -> Border:
+    """安全拷贝 Border 对象（属性级拷贝，接受 StyleProxy 等兼容对象）."""
     if src is None:
         return Border()
     return Border(
@@ -49,8 +50,8 @@ def _copy_border(src: Border | None) -> Border:
     )
 
 
-def _copy_fill(src: PatternFill | None) -> PatternFill:
-    """安全拷贝 Fill 对象（属性级拷贝）."""
+def _copy_fill(src: Any) -> PatternFill:
+    """安全拷贝 Fill 对象（属性级拷贝，接受 StyleProxy 等兼容对象）."""
     if src is None:
         return PatternFill()
     return PatternFill(
@@ -61,8 +62,8 @@ def _copy_fill(src: PatternFill | None) -> PatternFill:
     )
 
 
-def _copy_alignment(src: Alignment | None) -> Alignment:
-    """安全拷贝 Alignment 对象（属性级拷贝）."""
+def _copy_alignment(src: Any) -> Alignment:
+    """安全拷贝 Alignment 对象（属性级拷贝，接受 StyleProxy 等兼容对象）."""
     if src is None:
         return Alignment()
     return Alignment(
@@ -75,7 +76,7 @@ def _copy_alignment(src: Alignment | None) -> Alignment:
     )
 
 
-def _copy_number_format(src: str | None) -> str:
+def _copy_number_format(src: Any) -> str:
     """安全拷贝数字格式字符串."""
     if src is None:
         return "General"
@@ -103,11 +104,8 @@ def clone_row_style(ws: Worksheet, source_row: int, target_row: int) -> None:
 
     for col_idx in range(1, max_col + 1):
         try:
-            src_cell: Cell | None = ws.cell(row=source_row, column=col_idx)
-            tgt_cell: Cell | None = ws.cell(row=target_row, column=col_idx)
-
-            if src_cell is None or tgt_cell is None:
-                continue
+            src_cell: Cell = cast(Cell, ws.cell(row=source_row, column=col_idx))
+            tgt_cell: Cell = cast(Cell, ws.cell(row=target_row, column=col_idx))
 
             tgt_cell.font = _copy_font(src_cell.font)
             tgt_cell.border = _copy_border(src_cell.border)
@@ -149,22 +147,20 @@ def safe_write_cell(
         preserve_style: 是否保留目标单元格原有样式（默认 True）。
     """
     if isinstance(col, str):
-        col = openpyxl.utils.column_index_from_string(col)
+        col = column_index_from_string(col)
     col_i: int = col  # type: ignore[assignment]
 
-    cell: Cell = ws.cell(row=row, column=col_i)
+    cell: Cell = cast(Cell, ws.cell(row=row, column=col_i))
 
     if isinstance(cell, MergedCell):
         for merged_range in ws.merged_cells.ranges:
-            bounds = openpyxl.utils.range_boundaries(str(merged_range))
-            min_col, min_row, max_col, max_row = (
-                int(bounds[0]),
-                int(bounds[1]),
-                int(bounds[2]),
-                int(bounds[3]),
-            )
+            bounds = range_boundaries(str(merged_range))
+            min_col: int = int(bounds[0] or 0)
+            min_row: int = int(bounds[1] or 0)
+            max_col: int = int(bounds[2] or 0)
+            max_row: int = int(bounds[3] or 0)
             if min_row <= row <= max_row and min_col <= col_i <= max_col:
-                cell = ws.cell(row=min_row, column=min_col)
+                cell = cast(Cell, ws.cell(row=min_row, column=min_col))
                 break
 
     if not preserve_style:
@@ -198,4 +194,4 @@ def get_column_index(col_letter: str) -> int:
     """
     if not col_letter or not col_letter.isalpha():
         raise ValueError(f"[错误]: 无效的列字母: {col_letter!r}")
-    return openpyxl.utils.column_index_from_string(col_letter)
+    return column_index_from_string(col_letter)

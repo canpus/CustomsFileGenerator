@@ -15,8 +15,8 @@ import contextlib
 import ctypes
 import logging
 import sys
+from tkinter import Event, messagebox
 from tkinter import font as tkfont
-from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -37,6 +37,8 @@ from src.gui.pages.order_info_page import OrderInfoPage
 from src.gui.pages.product_page import ProductPage
 from src.gui.pages.template_page import TemplatePage
 from src.gui.pages.tree_editor_page import TreeEditorPage
+from src.gui.services.draft_service import DraftService
+from src.gui.services.preferences_service import PreferencesService
 from src.gui.styles import (
     FONT_SIZE_NAV,
     FONT_SIZE_NORMAL,
@@ -91,7 +93,7 @@ class GuiApp:
     def __init__(self) -> None:
         """初始化主窗口."""
         # 0. 偏好设置服务
-        self._prefs = self._init_preferences()
+        self._prefs: PreferencesService = self._init_preferences()
 
         # 1. DPI 感知（Windows）
         self._activate_dpi_awareness()
@@ -135,7 +137,7 @@ class GuiApp:
         self._save_state_timer: str | None = None
 
         # 10. 草稿服务（自动保存/恢复）
-        self._draft_service = self._init_draft_service()
+        self._draft_service: DraftService = self._init_draft_service()
 
         # 11. 构建 UI
         self._setup_ui()
@@ -151,17 +153,13 @@ class GuiApp:
     # ==================== 偏好设置 ====================
 
     @staticmethod
-    def _init_preferences() -> object:
-        """延迟导入偏好设置服务，避免启动时的循环依赖."""
-        from src.gui.services.preferences_service import PreferencesService
-
+    def _init_preferences() -> PreferencesService:
+        """初始化偏好设置服务."""
         return PreferencesService()
 
     @staticmethod
-    def _init_draft_service() -> object:
-        """延迟导入草稿服务."""
-        from src.gui.services.draft_service import DraftService
-
+    def _init_draft_service() -> DraftService:
+        """初始化草稿服务."""
         return DraftService()
 
     # ==================== DPI 感知 ====================
@@ -220,7 +218,7 @@ class GuiApp:
         self.root.bind("<Unmap>", lambda e: None)
         self.root.bind("<Map>", lambda e: None)
 
-    def _on_window_configure(self, event: object) -> None:
+    def _on_window_configure(self, event: Event) -> None:
         """窗口大小/位置变化时延迟保存状态."""
         # 仅响应根窗口事件
         if event.widget != self.root:
@@ -597,7 +595,7 @@ class GuiApp:
         self._current_order_data = data
 
     @property
-    def preferences(self) -> object:
+    def preferences(self) -> PreferencesService:
         """获取偏好设置服务."""
         return self._prefs
 

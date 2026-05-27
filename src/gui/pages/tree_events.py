@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import logging
 from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
@@ -12,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
-    from src.gui.pages.tree_editor_page import TreeEditorPage
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,11 @@ class TreeEventsMixin:
 
     _pallets: list[dict[str, Any]]
     _product_seq: int
-    app: object
+    app: GuiApp
 
     # ==================== 事件处理 ====================
 
-    def _on_generate(self: TreeEditorPage) -> None:
+    def _on_generate(self) -> None:
         """点击一键生成按钮."""
         if not self._pallets:
             messagebox.showwarning("无商品数据", "请至少添加一个托盘和商品后再生成。")
@@ -66,7 +67,7 @@ class TreeEventsMixin:
         self.app.current_order = order
         self.app.switch_page("generate")
 
-    def _on_import_excel(self: TreeEditorPage) -> None:
+    def _on_import_excel(self) -> None:
         """从 Excel 导入商品明细."""
         from tkinter import filedialog
 
@@ -145,7 +146,7 @@ class TreeEventsMixin:
             logger.exception("[错误]: Excel 导入失败")
             messagebox.showerror("导入失败", f"[错误]: {e}")
 
-    def _on_clear_all(self: TreeEditorPage) -> None:
+    def _on_clear_all(self) -> None:
         """清空所有托盘和商品."""
         if not self._pallets:
             return

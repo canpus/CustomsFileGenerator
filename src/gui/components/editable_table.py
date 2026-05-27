@@ -14,13 +14,7 @@ from __future__ import annotations
 import copy
 import logging
 from collections.abc import Callable
-from tkinter import (
-    END,
-    HORIZONTAL,
-    VERTICAL,
-    Menu,
-    messagebox,
-)
+from tkinter import Menu, messagebox
 from typing import Any
 
 import ttkbootstrap as ttk

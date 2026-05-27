@@ -15,6 +15,7 @@ from src.db.template_block_repository import TemplateBlockRepository
 logger = logging.getLogger(__name__)
 
 # 各 block_type 对应的数据字段集合
+# order_full 为整单模板，不限定字段范围（空集合表示"不限制"）
 BLOCK_FIELDS_MAP: dict[str, set[str]] = {
     "customer": {
         "company_name_en",
@@ -40,9 +41,7 @@ BLOCK_FIELDS_MAP: dict[str, set[str]] = {
     "product_set": {
         "pallets",
     },
-    "order_full": {
-        # order_full 包含整单数据，不限定字段
-    },
+    "order_full": set(),
 }
 
 

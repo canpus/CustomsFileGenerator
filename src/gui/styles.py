@@ -6,6 +6,11 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import ttkbootstrap as ttk
+
 # ==================== 字体 ====================
 
 FONT_FAMILY: str = "Microsoft YaHei"
@@ -46,7 +51,7 @@ BUTTON_HEIGHT: int = 32
 NAV_PANEL_WIDTH: int = 200
 
 
-def apply_theme(root: object) -> None:
+def apply_theme(root: ttk.Window) -> None:
     """应用全局主题样式配置.
 
     在 ttkbootstrap 主题基础上，注册自定义样式变体。

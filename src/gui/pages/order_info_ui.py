@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 from typing import TYPE_CHECKING
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
-    from src.gui.pages.order_info_page import OrderInfoPage
+    from src.gui.app import GuiApp
 
 
 class OrderInfoUIMixin:
@@ -25,11 +26,11 @@ class OrderInfoUIMixin:
     _variables: dict[str, ttk.StringVar | ttk.IntVar]
     _entry_widgets: dict[str, ttk.Entry]
     _settings: dict
-    app: object
+    app: GuiApp
 
     # ==================== 订单元信息区块 ====================
 
-    def _build_order_meta_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
+    def _build_order_meta_section(self, parent: ttk.Frame) -> None:
         """构建订单元信息区块."""
         section = self._add_section(parent, "订单元信息")
 
@@ -67,7 +68,7 @@ class OrderInfoUIMixin:
 
     # ==================== 客户信息区块 ====================
 
-    def _build_customer_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
+    def _build_customer_section(self, parent: ttk.Frame) -> None:
         """构建客户信息区块."""
         section = self._add_section(parent, "客户信息")
 
@@ -106,7 +107,7 @@ class OrderInfoUIMixin:
 
     # ==================== 运输信息区块 ====================
 
-    def _build_shipping_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
+    def _build_shipping_section(self, parent: ttk.Frame) -> None:
         """构建运输贸易信息区块."""
         section = self._add_section(parent, "运输与发货信息")
 
@@ -123,7 +124,7 @@ class OrderInfoUIMixin:
 
     # ==================== 境内信息区块 ====================
 
-    def _build_origin_section(self: OrderInfoPage, parent: ttk.Frame) -> None:
+    def _build_origin_section(self, parent: ttk.Frame) -> None:
         """构建境内信息区块（默认值预填）."""
         section = self._add_section(parent, "境内信息（默认值可修改）")
 
@@ -162,14 +163,14 @@ class OrderInfoUIMixin:
 
     # ==================== UI 工具方法 ====================
 
-    def _add_section(self: OrderInfoPage, parent: ttk.Frame, title: str) -> ttk.Labelframe:
+    def _add_section(self, parent: ttk.Frame, title: str) -> ttk.Labelframe:
         """添加一个区块."""
         section = ttk.Labelframe(parent, text=title, padding=10, bootstyle="primary")
         section.pack(fill=X, pady=(5, 10))
         return section
 
     def _add_field(
-        self: OrderInfoPage,
+        self,
         parent: ttk.Frame,
         label: str,
         field_name: str,
@@ -192,7 +193,7 @@ class OrderInfoUIMixin:
         return f
 
     def _add_date_field(
-        self: OrderInfoPage,
+        self,
         parent: ttk.Frame,
         label: str,
         field_name: str,
@@ -207,7 +208,7 @@ class OrderInfoUIMixin:
         self._add_field(parent, label, field_name, col, default=default, width=18)
 
     def _add_combobox(
-        self: OrderInfoPage,
+        self,
         parent: ttk.Frame,
         label: str,
         field_name: str,

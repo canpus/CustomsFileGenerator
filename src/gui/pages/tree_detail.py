@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import logging
 from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
@@ -13,7 +14,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
-    from src.gui.pages.tree_editor_page import TreeEditorPage
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +37,11 @@ class TreeDetailMixin:
     _selected_pallet_idx: int
     _selected_carton_idx: int
     _selected_product_idx: int
-    app: object
+    app: GuiApp
 
     # ==================== 详情表单展示 ====================
 
-    def _show_pallet_detail(self: TreeEditorPage) -> None:
+    def _show_pallet_detail(self) -> None:
         """显示托盘详情表单."""
         self._clear_detail_frame()
 
@@ -68,7 +69,7 @@ class TreeDetailMixin:
             command=lambda: self._add_carton(),
         ).pack(padx=15, pady=(10, 5), fill=X)
 
-    def _show_carton_detail(self: TreeEditorPage) -> None:
+    def _show_carton_detail(self) -> None:
         """显示纸箱详情表单."""
         self._clear_detail_frame()
 
@@ -102,7 +103,7 @@ class TreeDetailMixin:
             command=lambda: self._add_product(),
         ).pack(padx=15, pady=(10, 5), fill=X)
 
-    def _show_product_detail(self: TreeEditorPage) -> None:
+    def _show_product_detail(self) -> None:
         """显示商品详情表单."""
         self._clear_detail_frame()
 
@@ -151,7 +152,7 @@ class TreeDetailMixin:
 
     # ==================== 详情框架工具方法 ====================
 
-    def _clear_detail_frame(self: TreeEditorPage) -> None:
+    def _clear_detail_frame(self) -> None:
         """清空详情框架."""
         if self._detail_frame is None:
             return
@@ -159,7 +160,7 @@ class TreeDetailMixin:
         for widget in self._detail_frame.winfo_children():
             widget.destroy()
 
-    def _add_detail_field(self: TreeEditorPage, label: str, key: str, value: str) -> None:
+    def _add_detail_field(self, label: str, key: str, value: str) -> None:
         """添加详情字段."""
         if self._detail_frame is None:
             return
@@ -176,7 +177,7 @@ class TreeDetailMixin:
         entry.pack(side=LEFT, fill=X, expand=YES, padx=(5, 0))
         self._detail_vars[key] = var
 
-    def _add_detail_checkbox(self: TreeEditorPage, label: str, key: str, checked: bool) -> None:
+    def _add_detail_checkbox(self, label: str, key: str, checked: bool) -> None:
         """添加详情复选框."""
         if self._detail_frame is None:
             return
@@ -193,9 +194,7 @@ class TreeDetailMixin:
         cb.pack(side=LEFT, padx=(5, 0))
         self._detail_vars[key] = var
 
-    def _add_save_button(
-        self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1
-    ) -> None:
+    def _add_save_button(self, level: str, pi: int, ci: int = -1, pri: int = -1) -> None:
         """添加保存按钮."""
         if self._detail_frame is None:
             return
@@ -209,9 +208,7 @@ class TreeDetailMixin:
             command=lambda: self._save_detail(level, pi, ci, pri),
         ).pack(padx=15, pady=(0, 10), fill=X)
 
-    def _save_detail(
-        self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1
-    ) -> None:
+    def _save_detail(self, level: str, pi: int, ci: int = -1, pri: int = -1) -> None:
         """保存详情修改."""
         try:
             if level == "pallet":

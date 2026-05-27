@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import logging
 import os
 import subprocess
@@ -21,7 +22,7 @@ from config.constants import OUTPUT_DIR
 from src.generators.orchestrator import Orchestrator
 
 if TYPE_CHECKING:
-    from src.gui.pages.generate_page import GeneratePage
+    from src.gui.app import GuiApp
     from src.models.order_data import OrderData
 
 logger = logging.getLogger(__name__)
@@ -61,12 +62,12 @@ class GenerateEventsMixin:
     _open_folder_btn: ttk.Button | None
     _is_generating: bool
     _report: Any
-    app: object
+    app: GuiApp
     frame: ttk.Frame
 
     # ==================== 生成操作 ====================
 
-    def _on_generate(self: GeneratePage) -> None:
+    def _on_generate(self) -> None:
         """点击一键生成按钮."""
         if self._is_generating:
             messagebox.showinfo("提示", "正在生成中，请等待完成。")
@@ -100,7 +101,7 @@ class GenerateEventsMixin:
         thread = threading.Thread(target=self._do_generate, args=(order,), daemon=True)
         thread.start()
 
-    def _do_generate(self: GeneratePage, order: OrderData) -> None:
+    def _do_generate(self, order: OrderData) -> None:
         """在后台线程中执行生成."""
         try:
             orchestrator = Orchestrator()
@@ -123,7 +124,7 @@ class GenerateEventsMixin:
             err_msg = str(exc)
             self.frame.after(0, lambda msg=err_msg: self._on_generation_error(msg))
 
-    def _on_generation_complete(self: GeneratePage, report: Any) -> None:
+    def _on_generation_complete(self, report: Any) -> None:
         """生成完成回调（主线程）."""
         self._is_generating = False
         self._generate_btn.configure(state="normal", text="一键生成报关资料")
@@ -199,7 +200,7 @@ class GenerateEventsMixin:
                 f"可点击「导出诊断包」按钮获取详细信息。",
             )
 
-    def _on_generation_error(self: GeneratePage, error_msg: str) -> None:
+    def _on_generation_error(self, error_msg: str) -> None:
         """生成异常回调（主线程）."""
         self._is_generating = False
         self._generate_btn.configure(state="normal", text="重试生成", bootstyle="danger")
@@ -220,7 +221,7 @@ class GenerateEventsMixin:
 
     # ==================== 诊断包导出 ====================
 
-    def _on_export_diagnostic(self: GeneratePage) -> None:
+    def _on_export_diagnostic(self) -> None:
         """导出诊断包."""
         order = self.app.current_order
         if order is None:
@@ -256,7 +257,7 @@ class GenerateEventsMixin:
             logger.exception("[错误]: 导出诊断包失败")
             messagebox.showerror("导出失败", f"[错误]: {e}")
 
-    def _on_open_folder(self: GeneratePage) -> None:
+    def _on_open_folder(self) -> None:
         """打开输出文件夹."""
         try:
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

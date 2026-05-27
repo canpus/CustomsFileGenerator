@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import logging
 from typing import TYPE_CHECKING, Any
 
@@ -13,7 +14,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
-    from src.gui.pages.tree_editor_page import TreeEditorPage
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +44,12 @@ class TreeUIMixin:
     _selected_carton_idx: int
     _selected_product_idx: int
     _selected_level: str
-    app: object
+    app: GuiApp
     parent: ttk.Frame
 
     # ==================== 构建 UI ====================
 
-    def build(self: TreeEditorPage) -> None:
+    def build(self) -> None:
         """构建树状编辑器 UI."""
         self.frame = ttk.Frame(self.parent)
         self.frame.pack(fill=BOTH, expand=YES, padx=10, pady=10)
@@ -115,7 +116,7 @@ class TreeUIMixin:
 
         self._setup_context_menu()
 
-    def _build_tree_view(self: TreeEditorPage, parent: ttk.Frame) -> None:
+    def _build_tree_view(self, parent: ttk.Frame) -> None:
         """构建左侧树状视图."""
         toolbar = ttk.Frame(parent)
         toolbar.pack(fill=X, pady=(0, 5))
@@ -166,7 +167,7 @@ class TreeUIMixin:
         self._tree.bind("<<TreeviewSelect>>", self._on_tree_select)
         self._tree.bind("<Button-3>", self._on_right_click)
 
-    def _build_detail_panel(self: TreeEditorPage, parent: ttk.Frame) -> None:
+    def _build_detail_panel(self, parent: ttk.Frame) -> None:
         """构建右侧详情表单面板."""
         self._detail_title_var = ttk.StringVar(value="选择左侧节点查看详情")
         ttk.Label(
@@ -211,7 +212,7 @@ class TreeUIMixin:
 
     # ==================== 右键菜单 ====================
 
-    def _setup_context_menu(self: TreeEditorPage) -> None:
+    def _setup_context_menu(self) -> None:
         """设置右键菜单."""
         self._context_menu = ttk.Menu(self.frame, tearoff=0)
         self._context_menu.add_command(label="➕ 新增托盘", command=lambda: self._add_pallet())
@@ -222,7 +223,7 @@ class TreeUIMixin:
         self._context_menu.add_separator()
         self._context_menu.add_command(label="🗑 删除当前节点", command=self._on_delete_node)
 
-    def _on_right_click(self: TreeEditorPage, event: Any) -> None:
+    def _on_right_click(self, event: Any) -> None:
         """右键点击事件."""
         item = self._tree.identify_row(event.y)
         if item:
@@ -235,7 +236,7 @@ class TreeUIMixin:
 
     # ==================== 节点选择路由 ====================
 
-    def _on_tree_select(self: TreeEditorPage, event: Any) -> None:
+    def _on_tree_select(self, event: Any) -> None:
         """Treeview 节点选中事件 — 路由到对应的详情展示方法."""
         if self._tree is None:
             return

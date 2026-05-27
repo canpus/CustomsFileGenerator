@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import logging
 import re
 from datetime import datetime
@@ -23,7 +24,7 @@ from config.constants import (
 from src.importer.excel_importer import import_order_from_excel
 
 if TYPE_CHECKING:
-    from src.gui.pages.order_info_page import OrderInfoPage
+    from src.gui.app import GuiApp
     from src.models.order_data import OrderData
 
 logger = logging.getLogger(__name__)
@@ -39,11 +40,11 @@ class OrderInfoDataMixin:
 
     _variables: dict[str, ttk.StringVar | ttk.IntVar]
     _entry_widgets: dict[str, ttk.Entry]
-    app: object
+    app: GuiApp
 
     # ==================== 实时校验 ====================
 
-    def _setup_validation(self: OrderInfoPage) -> None:
+    def _setup_validation(self) -> None:
         """设置字段实时校验.
 
         1. 日期字段 (date): KeyRelease 时校验 YYYY-MM-DD 格式
@@ -67,7 +68,7 @@ class OrderInfoDataMixin:
             if field in self._entry_widgets:
                 self._validate_required_field(field)
 
-    def _validate_date_field(self: OrderInfoPage) -> None:
+    def _validate_date_field(self) -> None:
         """校验日期字段格式 (YYYY-MM-DD)."""
         entry = self._entry_widgets.get("date")
         var = self._variables.get("date")
@@ -89,7 +90,7 @@ class OrderInfoDataMixin:
             except ValueError:
                 entry.configure(bootstyle="danger")
 
-    def _validate_required_field(self: OrderInfoPage, field_name: str) -> None:
+    def _validate_required_field(self, field_name: str) -> None:
         """校验必填字段非空."""
         entry = self._entry_widgets.get(field_name)
         var = self._variables.get(field_name)
@@ -108,7 +109,7 @@ class OrderInfoDataMixin:
 
     # ==================== 数据收集 ====================
 
-    def collect_data(self: OrderInfoPage) -> dict[str, Any]:
+    def collect_data(self) -> dict[str, Any]:
         """收集所有表单数据，组装为字典."""
         data: dict[str, Any] = {
             "order_meta": {},
@@ -170,14 +171,14 @@ class OrderInfoDataMixin:
 
         return data
 
-    def _get_var(self: OrderInfoPage, field_name: str) -> str:
+    def _get_var(self, field_name: str) -> str:
         """安全获取字段值."""
         var = self._variables.get(field_name)
         if var is None:
             return ""
         return var.get().strip()
 
-    def _fill_from_order(self: OrderInfoPage, order: OrderData) -> None:
+    def _fill_from_order(self, order: OrderData) -> None:
         """从 OrderData 对象填充表单."""
         if order is None:
             return
@@ -234,7 +235,7 @@ class OrderInfoDataMixin:
 
     # ==================== 事件处理 ====================
 
-    def _on_next_step(self: OrderInfoPage) -> None:
+    def _on_next_step(self) -> None:
         """点击"下一步"按钮."""
         required_fields: dict[str, str] = {
             "invoice_no": "发票号",
@@ -278,7 +279,7 @@ class OrderInfoDataMixin:
 
         self.app.switch_page("line_items")
 
-    def _on_import_excel(self: OrderInfoPage) -> None:
+    def _on_import_excel(self) -> None:
         """点击从 Excel 导入按钮."""
         from tkinter import filedialog
 
@@ -317,7 +318,7 @@ class OrderInfoDataMixin:
                 f"[错误]: Excel 导入失败\n[原因]: {e}\n[排查]: 请检查文件是否为标准订单 Excel 格式",
             )
 
-    def _on_select_from_customer_lib(self: OrderInfoPage) -> None:
+    def _on_select_from_customer_lib(self) -> None:
         """点击"从客户库选择"按钮."""
         from src.gui.pages.customer_page import CustomerSelectDialog
 
@@ -345,7 +346,7 @@ class OrderInfoDataMixin:
 
         self.app.set_status(f"已从客户库选择: {customer.get('company_name_en', '')}")
 
-    def _on_apply_template(self: OrderInfoPage) -> None:
+    def _on_apply_template(self) -> None:
         """点击"套用模板"按钮 — 打开分块模板对话框."""
         from src.gui.components.template_block_dialog import TemplateBlockDialog
 
@@ -357,7 +358,7 @@ class OrderInfoDataMixin:
         if data:
             self._fill_from_order_data_dict(data)
 
-    def _on_save_as_block(self: OrderInfoPage) -> None:
+    def _on_save_as_block(self) -> None:
         """保存当前订单为分块模板."""
         data = self.collect_data()
 
@@ -479,7 +480,7 @@ class OrderInfoDataMixin:
             side=LEFT
         )
 
-    def _fill_from_order_data_dict(self: OrderInfoPage, data: dict[str, Any]) -> None:
+    def _fill_from_order_data_dict(self, data: dict[str, Any]) -> None:
         """从字典数据填充表单（用于套用模板后刷新）.
 
         Args:
@@ -541,7 +542,7 @@ class OrderInfoDataMixin:
                 if val and field in self._variables:
                     self._variables[field].set(str(val))
 
-    def _on_clear(self: OrderInfoPage) -> None:
+    def _on_clear(self) -> None:
         """清空所有表单."""
         if messagebox.askyesno("确认清空", "确定要清空所有已填写的表单数据吗？"):
             for var in self._variables.values():

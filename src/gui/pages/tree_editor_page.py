@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 
@@ -39,7 +42,7 @@ class TreeEditorPage(
 ):
     """托盘-纸箱-商品树状编辑器."""
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         super().__init__(parent, app)
         self._pallets: list[dict[str, Any]] = []
         self._tree: ttk.Treeview | None = None

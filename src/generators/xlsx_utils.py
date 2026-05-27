@@ -12,7 +12,8 @@ from __future__ import annotations
 import logging
 import re
 
-from openpyxl.utils import range_boundaries
+from openpyxl.cell.cell import MergedCell
+from openpyxl.utils.cell import range_boundaries
 from openpyxl.worksheet.worksheet import Worksheet
 
 from src.generators.xlsx_styles import (  # noqa: F401
@@ -40,7 +41,8 @@ def get_merged_ranges_in_row(ws: Worksheet, row: int) -> list:
     for merged_range in ws.merged_cells.ranges:
         try:
             bounds = range_boundaries(str(merged_range))
-            min_row, max_row = int(bounds[1]), int(bounds[3])
+            min_row: int = int(bounds[1] or 0)
+            max_row: int = int(bounds[3] or 0)
             if min_row <= row <= max_row:
                 merged_ranges.append(merged_range)
         except Exception as e:
@@ -100,6 +102,8 @@ def update_sum_formula(ws: Worksheet, col_letter: str, start_row: int, end_row: 
 
     for row in ws.iter_rows():
         for cell in row:
+            if isinstance(cell, MergedCell):
+                continue
             if isinstance(cell.value, str) and cell.value.startswith("="):
                 match = _SUM_FORMULA_PATTERN.match(cell.value)
                 if match:

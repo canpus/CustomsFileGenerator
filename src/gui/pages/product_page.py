@@ -12,7 +12,10 @@ from __future__ import annotations
 import contextlib
 import logging
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -327,7 +330,7 @@ class ProductPage(PageBase):
     显示所有产品列表，支持搜索、新增、编辑、删除及插入到商品表格。
     """
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         """初始化.
 
         Args:

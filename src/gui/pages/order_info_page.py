@@ -16,7 +16,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -32,7 +35,7 @@ logger = logging.getLogger(__name__)
 class OrderInfoPage(PageBase, OrderInfoUIMixin, OrderInfoDataMixin):
     """订单信息录入页."""
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         super().__init__(parent, app)
         self._settings: dict[str, Any] = get_all_settings()
         self._variables: dict[str, ttk.StringVar | ttk.IntVar] = {}

@@ -20,7 +20,7 @@ from src.db.repository import CustomerRepository
 from src.gui.page_base import PageBase
 
 if TYPE_CHECKING:
-    pass
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -315,7 +315,7 @@ class CustomerPage(PageBase):
     显示所有客户列表，支持搜索、新增、编辑、删除及套用到当前订单。
     """
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         """初始化.
 
         Args:

@@ -16,8 +16,10 @@ from __future__ import annotations
 import copy
 import logging
 from pathlib import Path
+from typing import cast
 
 import openpyxl
+from openpyxl.cell.cell import Cell
 from openpyxl.styles import Alignment, Border, Font, Side
 
 from src.generators.anchor_core import (  # noqa: F401 — 重导出
@@ -120,6 +122,11 @@ def _create_default_wb(template_type: str) -> openpyxl.Workbook:
     """
     wb = openpyxl.Workbook()
     ws = wb.active
+    assert ws is not None, "新建工作簿后 active worksheet 不应为 None"
+
+    def _c(cell_or_merged: object) -> Cell:
+        """将 ws.cell() 返回值安全转型为 Cell（仅在新建工作簿使用）."""
+        return cast(Cell, cell_or_merged)
 
     thin_border = Border(
         left=Side(style="thin"),
@@ -146,41 +153,41 @@ def _create_default_wb(template_type: str) -> openpyxl.Workbook:
             "体积(m³)",
         ]
         for col_idx, h in enumerate(headers, 1):
-            cell = ws.cell(row=7, column=col_idx)
+            cell = _c(ws.cell(row=7, column=col_idx))
             cell.value = h
             cell.font = copy.deepcopy(header_font)
             cell.alignment = copy.deepcopy(header_align)
             cell.border = copy.deepcopy(thin_border)
         ws.merge_cells("B7:C7")
-        ws.cell(row=58, column=1).value = "总"
-        ws.cell(row=58, column=7).value = "=SUM(G8:G57)"
-        ws.cell(row=58, column=9).value = "=SUM(I8:I57)"
-        ws.cell(row=58, column=10).value = "=SUM(J8:J57)"
-        ws.cell(row=58, column=11).value = "=SUM(K8:K57)"
+        _c(ws.cell(row=58, column=1)).value = "总"
+        _c(ws.cell(row=58, column=7)).value = "=SUM(G8:G57)"
+        _c(ws.cell(row=58, column=9)).value = "=SUM(I8:I57)"
+        _c(ws.cell(row=58, column=10)).value = "=SUM(J8:J57)"
+        _c(ws.cell(row=58, column=11)).value = "=SUM(K8:K57)"
     elif template_type == "invoice":
         ws.title = "Proforma Invoice"
         headers = ["Product", "Specification", "Unit", "Qty", "Unit Price", "Amount"]
         for col_idx, h in enumerate(headers, 1):
-            cell = ws.cell(row=14, column=col_idx)
+            cell = _c(ws.cell(row=14, column=col_idx))
             cell.value = h
             cell.font = copy.deepcopy(Font(name="Times New Roman", size=14, bold=True))
             cell.alignment = copy.deepcopy(header_align)
             cell.border = copy.deepcopy(thin_border)
-        ws.cell(row=65, column=5).value = "TOTAL:"
-        ws.cell(row=65, column=6).value = "=SUM(F15:F64)"
-        ws.cell(row=66, column=1).value = "SAY: USD ... ONLY"
+        _c(ws.cell(row=65, column=5)).value = "TOTAL:"
+        _c(ws.cell(row=65, column=6)).value = "=SUM(F15:F64)"
+        _c(ws.cell(row=66, column=1)).value = "SAY: USD ... ONLY"
     elif template_type == "contract":
         ws.title = "Sales Contract"
         headers = ["No.", "Product", "Specification", "Unit", "Qty", "Unit Price", "Amount"]
         for col_idx, h in enumerate(headers, 1):
-            cell = ws.cell(row=7, column=col_idx)
+            cell = _c(ws.cell(row=7, column=col_idx))
             cell.value = h
             cell.font = copy.deepcopy(Font(name="Times New Roman", size=14, bold=True))
             cell.alignment = copy.deepcopy(header_align)
             cell.border = copy.deepcopy(thin_border)
-        ws.cell(row=58, column=6).value = "TOTAL:"
-        ws.cell(row=58, column=7).value = "=SUM(G8:G57)"
-        ws.cell(row=59, column=1).value = "SAY: USD ... ONLY"
+        _c(ws.cell(row=58, column=6)).value = "TOTAL:"
+        _c(ws.cell(row=58, column=7)).value = "=SUM(G8:G57)"
+        _c(ws.cell(row=59, column=1)).value = "SAY: USD ... ONLY"
     else:
         raise ValueError(
             f"[错误]: 不支持的模板类型: {template_type!r}\n"

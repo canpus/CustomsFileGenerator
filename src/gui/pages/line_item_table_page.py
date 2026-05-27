@@ -11,7 +11,10 @@ from __future__ import annotations
 
 import logging
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -76,7 +79,7 @@ class LineItemTablePage(PageBase):
     每行 = 一个纸箱 + 一个商品组合。
     """
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         super().__init__(parent, app)
         self._table: EditableTable | None = None
         self._summary_vars: dict[str, ttk.StringVar] = {}

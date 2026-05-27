@@ -5,7 +5,12 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import ttkbootstrap as ttk
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 
 class PageBase:
@@ -19,7 +24,7 @@ class PageBase:
         app: GuiApp 主控制器实例.
     """
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         """初始化页面.
 
         Args:
@@ -27,7 +32,7 @@ class PageBase:
             app: 主应用控制器（GuiApp 实例）.
         """
         self.parent: ttk.Frame = parent
-        self.app: object = app
+        self.app: GuiApp = app
         self.frame: ttk.Frame | None = None
 
     def build(self) -> None:

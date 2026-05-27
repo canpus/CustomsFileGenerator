@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+# pyright: reportAttributeAccessIssue=false
 import copy
 import logging
 from tkinter import messagebox
@@ -15,7 +16,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
-    from src.gui.pages.tree_editor_page import TreeEditorPage
+    from src.gui.app import GuiApp
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +41,11 @@ class TreeDataMixin:
     _selected_product_idx: int
     _selected_level: str
     _stats_var: ttk.StringVar
-    app: object
+    app: GuiApp
 
     # ==================== 数据操作 ====================
 
-    def _add_pallet(self: TreeEditorPage, data: dict[str, Any] | None = None) -> None:
+    def _add_pallet(self, data: dict[str, Any] | None = None) -> None:
         """新增托盘."""
         if data is None:
             pallet_no = len(self._pallets) + 1
@@ -69,7 +70,7 @@ class TreeDataMixin:
         self._update_stats()
         logger.info("新增托盘 #%d", data["pallet_no"])
 
-    def _add_carton(self: TreeEditorPage, data: dict[str, Any] | None = None) -> None:
+    def _add_carton(self, data: dict[str, Any] | None = None) -> None:
         """在当前选中的托盘下新增纸箱."""
         if self._selected_pallet_idx < 0:
             messagebox.showinfo("提示", "请先在左侧选择一个托盘，再新增纸箱。")
@@ -97,7 +98,7 @@ class TreeDataMixin:
         self._refresh_tree()
         self._update_stats()
 
-    def _add_product(self: TreeEditorPage, data: dict[str, Any] | None = None) -> None:
+    def _add_product(self, data: dict[str, Any] | None = None) -> None:
         """在当前选中的纸箱下新增商品."""
         if self._selected_pallet_idx < 0 or self._selected_carton_idx < 0:
             messagebox.showinfo("提示", "请先在左侧选择一个纸箱，再新增商品。")
@@ -129,7 +130,7 @@ class TreeDataMixin:
         self._refresh_tree()
         self._update_stats()
 
-    def _on_clone(self: TreeEditorPage) -> None:
+    def _on_clone(self) -> None:
         """克隆当前选中的节点."""
         if self._selected_level == "pallet" and self._selected_pallet_idx >= 0:
             src = self._pallets[self._selected_pallet_idx]
@@ -159,7 +160,7 @@ class TreeDataMixin:
             self._add_product(src)
             messagebox.showinfo("克隆成功", "已克隆商品")
 
-    def _on_delete_node(self: TreeEditorPage) -> None:
+    def _on_delete_node(self) -> None:
         """删除当前选中的节点."""
         if self._selected_level == "pallet" and self._selected_pallet_idx >= 0:
             pallet = self._pallets[self._selected_pallet_idx]
@@ -204,7 +205,7 @@ class TreeDataMixin:
                 self._refresh_tree()
                 self._update_stats()
 
-    def _clear_selection(self: TreeEditorPage) -> None:
+    def _clear_selection(self) -> None:
         """清除选中状态."""
         self._selected_pallet_idx = -1
         self._selected_carton_idx = -1
@@ -213,7 +214,7 @@ class TreeDataMixin:
 
     # ==================== Treeview 刷新 ====================
 
-    def _refresh_tree(self: TreeEditorPage) -> None:
+    def _refresh_tree(self) -> None:
         """根据 _pallets 数据重建 Treeview."""
         if self._tree is None:
             return
@@ -266,7 +267,7 @@ class TreeDataMixin:
         for i, p in enumerate(self._pallets):
             p["pallet_no"] = i + 1
 
-    def _update_stats(self: TreeEditorPage) -> None:
+    def _update_stats(self) -> None:
         """更新统计信息."""
         total_pallets = len(self._pallets)
         total_cartons = sum(len(p.get("cartons", [])) for p in self._pallets)
@@ -277,7 +278,7 @@ class TreeDataMixin:
             f"托盘: {total_pallets} | 纸箱: {total_cartons} | 商品: {total_products}"
         )
 
-    def _expand_all(self: TreeEditorPage) -> None:
+    def _expand_all(self) -> None:
         """展开所有节点."""
         if self._tree is None:
             return
@@ -286,7 +287,7 @@ class TreeDataMixin:
             for child in self._tree.get_children(item):
                 self._tree.item(child, open=True)
 
-    def _collapse_all(self: TreeEditorPage) -> None:
+    def _collapse_all(self) -> None:
         """折叠所有节点."""
         if self._tree is None:
             return

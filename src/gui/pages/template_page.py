@@ -11,7 +11,10 @@ from __future__ import annotations
 
 import logging
 from tkinter import messagebox
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.gui.app import GuiApp
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -27,7 +30,7 @@ class TemplatePage(PageBase):
     显示已保存的模板列表，支持加载、删除和保存操作。
     """
 
-    def __init__(self, parent: ttk.Frame, app: object):
+    def __init__(self, parent: ttk.Frame, app: GuiApp):
         """初始化.
 
         Args:

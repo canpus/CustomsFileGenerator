@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """形式合同生成器（Contract Generator）— 阶段 5.
 
 基于形式合同 XLSX 模板，根据订单数据动态生成合同文件。
@@ -102,7 +101,9 @@ class ContractGenerator(BaseGenerator):
         export_port: str = origin.export_port or "Shenzhen"
         destination: str = cust.destination or cust.country
         safe_write_cell(
-            ws, 6, "D",
+            ws,
+            6,
+            "D",
             f"From {export_port} To {destination}",
         )
 
@@ -166,9 +167,7 @@ class ContractGenerator(BaseGenerator):
 
     # ---- 汇总公式修正 ----
 
-    def _fix_summary_formulas(
-        self, ws: Worksheet, anchor: AnchorResult, new_data_end: int
-    ) -> None:
+    def _fix_summary_formulas(self, ws: Worksheet, anchor: AnchorResult, new_data_end: int) -> None:
         """修正合同汇总行的 SUM 公式范围 + 填写入大写金额.
 
         G 列 = SUM(G{data_start}:G{new_data_end}) 修正范围。
@@ -208,15 +207,18 @@ class ContractGenerator(BaseGenerator):
 
         # 填入大写金额
         safe_write_cell(
-            ws, upper_row, "A",
+            ws,
+            upper_row,
+            "A",
             f"SAY: {amount_upper} ONLY",
         )
 
         logger.info(
             "合同汇总修正完成: 总金额=%.2f, 实际汇总行=%d, 大写=%s",
-            total_amount, actual_summary_row, amount_upper,
+            total_amount,
+            actual_summary_row,
+            amount_upper,
         )
-
 
 
 # ========== 运行说明 ==========

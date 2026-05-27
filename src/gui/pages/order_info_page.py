@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """订单信息录入页 — 阶段 9.2.
 
 提供：
@@ -71,7 +70,8 @@ class OrderInfoPage(PageBase, OrderInfoUIMixin, OrderInfoDataMixin):
         title_frame.pack(fill=X, padx=15, pady=(10, 5))
 
         ttk.Label(
-            title_frame, text="新建报关单据",
+            title_frame,
+            text="新建报关单据",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
@@ -89,31 +89,36 @@ class OrderInfoPage(PageBase, OrderInfoUIMixin, OrderInfoDataMixin):
         bottom.pack(fill=X, padx=15, pady=(10, 20))
 
         ttk.Button(
-            bottom, text="从 Excel 导入订单数据...",
+            bottom,
+            text="从 Excel 导入订单数据...",
             bootstyle="info-outline",
             command=self._on_import_excel,
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
-            bottom, text="套用模板...",
+            bottom,
+            text="套用模板...",
             bootstyle="info-outline",
             command=self._on_apply_template,
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
-            bottom, text="保存为模板块...",
+            bottom,
+            text="保存为模板块...",
             bootstyle="secondary-outline",
             command=self._on_save_as_block,
         ).pack(side=LEFT)
 
         ttk.Button(
-            bottom, text="下一步 → 编辑商品明细",
+            bottom,
+            text="下一步 → 编辑商品明细",
             bootstyle="success",
             command=self._on_next_step,
         ).pack(side=RIGHT)
 
         ttk.Button(
-            bottom, text="清空表单",
+            bottom,
+            text="清空表单",
             bootstyle="secondary-outline",
             command=self._on_clear,
         ).pack(side=RIGHT, padx=(0, 10))

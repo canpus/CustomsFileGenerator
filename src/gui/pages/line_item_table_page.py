@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """商品明细表格录入页 — P6 单表格商品录入.
 
 提供：
@@ -36,31 +35,37 @@ logger = logging.getLogger(__name__)
 # ==================== 列定义 ====================
 
 _FIELD_COLUMNS: list[ColumnDef] = [
-    ("pallet_no",            "托盘号",      60,  True),
-    ("carton_no",            "纸箱号",      60,  True),
-    ("is_batch_box",         "是否批量箱",   80,  True),
-    ("batch_count",          "批量箱数",     70,  True),
-    ("length_cm",            "长(cm)",      65,  True),
-    ("width_cm",             "宽(cm)",      65,  True),
-    ("height_cm",            "高(cm)",      65,  True),
-    ("gross_weight_kg",      "毛重(kg)",     70,  True),
-    ("product_name",          "商品名称",    150, True),
-    ("specification",         "规格型号",    120, True),
-    ("hs_code",               "HS Code",    100, True),
-    ("declaration_elements",  "申报要素",    150, True),
-    ("unit",                  "单位",        60,  True),
-    ("qty_per_carton",        "每箱数量",     70,  True),
-    ("unit_price",            "单价",        70,  True),
-    ("currency",              "币种",        60,  True),
-    ("net_weight_per_unit_kg","单件净重(kg)",  80,  True),
-    ("destination_country",   "目的国",       80,  True),
+    ("pallet_no", "托盘号", 60, True),
+    ("carton_no", "纸箱号", 60, True),
+    ("is_batch_box", "是否批量箱", 80, True),
+    ("batch_count", "批量箱数", 70, True),
+    ("length_cm", "长(cm)", 65, True),
+    ("width_cm", "宽(cm)", 65, True),
+    ("height_cm", "高(cm)", 65, True),
+    ("gross_weight_kg", "毛重(kg)", 70, True),
+    ("product_name", "商品名称", 150, True),
+    ("specification", "规格型号", 120, True),
+    ("hs_code", "HS Code", 100, True),
+    ("declaration_elements", "申报要素", 150, True),
+    ("unit", "单位", 60, True),
+    ("qty_per_carton", "每箱数量", 70, True),
+    ("unit_price", "单价", 70, True),
+    ("currency", "币种", 60, True),
+    ("net_weight_per_unit_kg", "单件净重(kg)", 80, True),
+    ("destination_country", "目的国", 80, True),
 ]
 
 # 数字列（用于汇总计算和类型转换）
 _NUMERIC_KEYS: set[str] = {
-    "batch_count", "length_cm", "width_cm", "height_cm",
-    "gross_weight_kg", "qty_per_carton", "unit_price",
-    "net_weight_per_unit_kg", "pallet_no",
+    "batch_count",
+    "length_cm",
+    "width_cm",
+    "height_cm",
+    "gross_weight_kg",
+    "qty_per_carton",
+    "unit_price",
+    "net_weight_per_unit_kg",
+    "pallet_no",
 }
 
 
@@ -186,12 +191,12 @@ class LineItemTablePage(PageBase):
         summary_frame.pack(fill=X, pady=(5, 0))
 
         summary_items: list[tuple[str, str]] = [
-            ("total_rows",    "总行数: 0"),
+            ("total_rows", "总行数: 0"),
             ("total_cartons", "纸箱数: 0"),
-            ("total_gross",   "总毛重: 0 kg"),
-            ("total_net",     "总净重: 0 kg"),
-            ("total_volume",  "总体积: 0 m³"),
-            ("total_amount",  "总金额: 0"),
+            ("total_gross", "总毛重: 0 kg"),
+            ("total_net", "总净重: 0 kg"),
+            ("total_volume", "总体积: 0 m³"),
+            ("total_amount", "总金额: 0"),
         ]
 
         for key, default_text in summary_items:
@@ -241,9 +246,7 @@ class LineItemTablePage(PageBase):
         data = self._table.get_all_rows()
         if data:
             try:
-                default_pallet = max(
-                    int(r.get("pallet_no", 0) or 0) for r in data
-                )
+                default_pallet = max(int(r.get("pallet_no", 0) or 0) for r in data)
             except ValueError:
                 default_pallet = 1
 
@@ -311,9 +314,7 @@ class LineItemTablePage(PageBase):
         default_pallet = 1
         if existing:
             try:
-                default_pallet = max(
-                    int(r.get("pallet_no", 0) or 0) for r in existing
-                )
+                default_pallet = max(int(r.get("pallet_no", 0) or 0) for r in existing)
             except ValueError:
                 default_pallet = 1
 
@@ -412,7 +413,10 @@ class LineItemTablePage(PageBase):
 
         for row in data:
             is_batch = str(row.get("is_batch_box", "")).strip().lower() in (
-                "true", "1", "yes", "是",
+                "true",
+                "1",
+                "yes",
+                "是",
             )
             batch_count = _to_float(row.get("batch_count", "1"), 1.0)
             multiplier = batch_count if is_batch else 1.0
@@ -481,7 +485,10 @@ class LineItemTablePage(PageBase):
             for _cn, c_rows in carton_groups.items():
                 first = c_rows[0]
                 is_batch = str(first.get("is_batch_box", "")).strip().lower() in (
-                    "true", "1", "yes", "是",
+                    "true",
+                    "1",
+                    "yes",
+                    "是",
                 )
                 batch_count = int(_to_float(first.get("batch_count", "1"), 1.0))
 
@@ -574,26 +581,25 @@ class LineItemTablePage(PageBase):
             )
 
             total_cartons = sum(
-                c.batch_count if c.is_batch else 1
-                for p in pallets for c in p.cartons
+                c.batch_count if c.is_batch else 1 for p in pallets for c in p.cartons
             )
             total_gross = sum(
                 (c.gross_weight_kg * c.batch_count) if c.is_batch else c.gross_weight_kg
-                for p in pallets for c in p.cartons
+                for p in pallets
+                for c in p.cartons
             )
             total_net = sum(
-                pr.net_weight_per_unit_kg * pr.qty_per_carton
-                * (c.batch_count if c.is_batch else 1)
-                for p in pallets for c in p.cartons for pr in c.products
-            )
-            total_volume = sum(
-                p.length_m * p.width_m * p.height_m
+                pr.net_weight_per_unit_kg * pr.qty_per_carton * (c.batch_count if c.is_batch else 1)
                 for p in pallets
+                for c in p.cartons
+                for pr in c.products
             )
+            total_volume = sum(p.length_m * p.width_m * p.height_m for p in pallets)
             total_amount = sum(
-                pr.unit_price * pr.qty_per_carton
-                * (c.batch_count if c.is_batch else 1)
-                for p in pallets for c in p.cartons for pr in c.products
+                pr.unit_price * pr.qty_per_carton * (c.batch_count if c.is_batch else 1)
+                for p in pallets
+                for c in p.cartons
+                for pr in c.products
             )
 
             totals = Totals(
@@ -615,9 +621,7 @@ class LineItemTablePage(PageBase):
 
             report = validate_order_consistency(order)
             if report.errors:
-                error_msgs = "\n  • ".join(
-                    f"[{m.code}] {m.message}" for m in report.errors
-                )
+                error_msgs = "\n  • ".join(f"[{m.code}] {m.message}" for m in report.errors)
                 if not messagebox.askyesno(
                     "数据校验警告",
                     f"订单数据校验发现以下问题：\n\n  • {error_msgs}\n\n"
@@ -675,10 +679,14 @@ class LineItemTablePage(PageBase):
     def on_enter(self) -> None:
         """页面进入时：如果有 current_order 则反向填充表格."""
         order = self.app.current_order
-        if order is not None and order.pallets:
-            if self._table is not None and self._table.row_count == 0:
-                self._order_data_to_table(order)
-                logger.info("已从现有订单填充表格，共 %d 行", self._table.row_count)
+        if (
+            order is not None
+            and order.pallets
+            and self._table is not None
+            and self._table.row_count == 0
+        ):
+            self._order_data_to_table(order)
+            logger.info("已从现有订单填充表格，共 %d 行", self._table.row_count)
 
     def on_leave(self) -> None:
         """页面离开时：不自动保存（由 _on_next_step 显式构建）."""

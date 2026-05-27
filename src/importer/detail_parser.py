@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Excel 明细行解析器 — 从 excel_importer.py 拆分.
 
 将解析出的明细行按托盘-纸箱-商品三级结构构建 Pallet 列表，
@@ -100,7 +99,7 @@ def parse_detail_sheet(ws) -> tuple[list[Pallet], dict[str, list[str]]]:
         raise ValueError(
             "[错误]: 无法识别 Excel 表头\n"
             "[原因]: 第一行未找到可映射的列名\n"
-            "[排查]: 请确保第一行为表头行，包含如\"产品名称\"、\"HS编码\"等列名"
+            '[排查]: 请确保第一行为表头行，包含如"产品名称"、"HS编码"等列名'
         )
 
     # 记录无法识别的列
@@ -113,7 +112,7 @@ def parse_detail_sheet(ws) -> tuple[list[Pallet], dict[str, list[str]]]:
     for row_idx in range(2, ws.max_row + 1):
         row_data: dict[str, Any] = {}
         all_empty = True
-        for col_idx, (ssot_field, recognized, original_name) in enumerate(headers, start=1):
+        for col_idx, (ssot_field, _recognized, _original_name) in enumerate(headers, start=1):
             if ssot_field is None:
                 continue
             cell_val = ws.cell(row=row_idx, column=col_idx).value
@@ -158,7 +157,9 @@ def parse_detail_sheet(ws) -> tuple[list[Pallet], dict[str, list[str]]]:
             length_m = 1.16
             width_m = 1.01
             height_m = 2.0
-            logger.warning("托盘 %d 尺寸未提供/为零，使用默认值 %s×%s×%s", p_no, length_m, width_m, height_m)
+            logger.warning(
+                "托盘 %d 尺寸未提供/为零，使用默认值 %s×%s×%s", p_no, length_m, width_m, height_m
+            )
 
         pallets.append(
             Pallet(
@@ -218,7 +219,9 @@ def _build_cartons_from_rows(rows: list[dict[str, Any]]) -> list[Carton]:
                     qty_per_carton=safe_float(extract_field(row, "qty_per_carton", 1)),
                     unit_price=safe_float(extract_field(row, "unit_price")),
                     net_weight_per_unit_kg=safe_float(extract_field(row, "net_weight_per_unit_kg")),
-                    destination_country=safe_str(extract_field(row, "destination_country", "Turkey")),
+                    destination_country=safe_str(
+                        extract_field(row, "destination_country", "Turkey")
+                    ),
                     specification=safe_str(extract_field(row, "specification")),
                     declaration_elements=safe_str(extract_field(row, "declaration_elements")),
                     currency=safe_str(extract_field(row, "currency", "USD")),

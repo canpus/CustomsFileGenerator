@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """表格导入页 — 阶段 9.4.
 
 提供：
@@ -17,9 +16,9 @@ from typing import Any
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-logger = logging.getLogger(__name__)
-
 from src.gui.page_base import PageBase
+
+logger = logging.getLogger(__name__)
 
 
 class ImportPage(PageBase):
@@ -99,15 +98,21 @@ class ImportPage(PageBase):
         self._preview_text.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
         # 滚动条
-        scrollbar = ttk.Scrollbar(self._preview_text, orient=VERTICAL, command=self._preview_text.yview)
+        scrollbar = ttk.Scrollbar(
+            self._preview_text, orient=VERTICAL, command=self._preview_text.yview
+        )
         self._preview_text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side=RIGHT, fill=Y)
 
         self._preview_text.insert(END, "选择导入方式后，数据预览将在此显示。\n\n")
         self._preview_text.insert(END, "支持的列名包括：\n")
-        self._preview_text.insert(END, "  • 订单元信息：发票号、合同号、日期、运输方式、贸易条款等\n")
+        self._preview_text.insert(
+            END, "  • 订单元信息：发票号、合同号、日期、运输方式、贸易条款等\n"
+        )
         self._preview_text.insert(END, "  • 客户信息：客户名称、客户地址、联系人、电话、国家等\n")
-        self._preview_text.insert(END, "  • 商品明细：商品名称、规格、HS编码、单位、数量、单价、净重等\n")
+        self._preview_text.insert(
+            END, "  • 商品明细：商品名称、规格、HS编码、单位、数量、单价、净重等\n"
+        )
         self._preview_text.insert(END, "  • 托盘/纸箱：托盘号、纸箱尺寸、毛重、箱数等\n")
         self._preview_text.configure(state="disabled")
 
@@ -147,6 +152,7 @@ class ImportPage(PageBase):
 
         try:
             from src.importer.excel_importer import import_order_from_excel
+
             order, _ = import_order_from_excel(file_path)
 
             if order is None:
@@ -160,17 +166,22 @@ class ImportPage(PageBase):
 
         except Exception as e:
             logger.exception("[错误]: Excel 导入失败")
-            self._show_preview(f"❌ 导入失败\n\n[错误]: {e}\n[原因]: 文件格式可能不匹配\n[排查]: 请确认文件为标准订单 Excel 格式")
+            self._show_preview(
+                f"❌ 导入失败\n\n[错误]: {e}\n[原因]: 文件格式可能不匹配\n[排查]: 请确认文件为标准订单 Excel 格式"
+            )
             self.app.set_status("导入失败")
 
     def _on_load_template(self) -> None:
         """从数据库加载模板."""
         try:
             from src.importer.template_loader import TemplateLoader
+
             templates = TemplateLoader.list_templates(limit=50)
 
             if not templates:
-                self._show_preview("ℹ️ 数据库中暂无保存的模板。\n\n请先在「新建单据」中创建并保存订单模板。")
+                self._show_preview(
+                    "ℹ️ 数据库中暂无保存的模板。\n\n请先在「新建单据」中创建并保存订单模板。"
+                )
                 return
 
             # 显示模板选择对话框
@@ -245,6 +256,7 @@ class ImportPage(PageBase):
 
             try:
                 from src.importer.template_loader import TemplateLoader
+
                 order = TemplateLoader.load_template(template_id=int(template_id))
 
                 if order is None:
@@ -261,8 +273,12 @@ class ImportPage(PageBase):
                 logger.exception("[错误]: 加载模板失败")
                 messagebox.showerror("加载失败", f"[错误]: {e}")
 
-        ttk.Button(btn_frame, text="加载选中模板", bootstyle="success", command=_on_select).pack(side=RIGHT)
-        ttk.Button(btn_frame, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=RIGHT, padx=(0, 10))
+        ttk.Button(btn_frame, text="加载选中模板", bootstyle="success", command=_on_select).pack(
+            side=RIGHT
+        )
+        ttk.Button(
+            btn_frame, text="取消", bootstyle="secondary-outline", command=dialog.destroy
+        ).pack(side=RIGHT, padx=(0, 10))
 
     # ==================== 预览显示 ====================
 
@@ -293,7 +309,11 @@ class ImportPage(PageBase):
         lines.append("--- 客户信息 ---")
         lines.append(f"  公司: {cust.company_name_en}")
         lines.append(f"  国家: {cust.country}")
-        lines.append(f"  地址: {cust.address[:60]}..." if len(cust.address) > 60 else f"  地址: {cust.address}")
+        lines.append(
+            f"  地址: {cust.address[:60]}..."
+            if len(cust.address) > 60
+            else f"  地址: {cust.address}"
+        )
         lines.append("")
 
         lines.append("--- 商品明细 ---")

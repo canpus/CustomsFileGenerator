@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """XLSX 样式工具 — 样式深拷贝、安全写入、列索引转换."""
 
 from __future__ import annotations
 
 import copy
 import logging
-from typing import List
 
 import openpyxl
 from openpyxl.cell.cell import Cell, MergedCell
@@ -23,11 +21,15 @@ def _copy_font(src: Font | None) -> Font:
     if src is None:
         return Font()
     return Font(
-        name=src.name, size=src.size,
-        bold=src.bold, italic=src.italic,
-        underline=src.underline, strike=src.strike,
+        name=src.name,
+        size=src.size,
+        bold=src.bold,
+        italic=src.italic,
+        underline=src.underline,
+        strike=src.strike,
         color=copy.copy(src.color) if src.color else None,
-        charset=src.charset, family=src.family,
+        charset=src.charset,
+        family=src.family,
     )
 
 
@@ -42,7 +44,8 @@ def _copy_border(src: Border | None) -> Border:
         bottom=copy.copy(src.bottom) if src.bottom else None,
         diagonal=copy.copy(src.diagonal) if src.diagonal else None,
         outline=src.outline,
-        diagonalUp=src.diagonalUp, diagonalDown=src.diagonalDown,
+        diagonalUp=src.diagonalUp,
+        diagonalDown=src.diagonalDown,
     )
 
 
@@ -63,9 +66,12 @@ def _copy_alignment(src: Alignment | None) -> Alignment:
     if src is None:
         return Alignment()
     return Alignment(
-        horizontal=src.horizontal, vertical=src.vertical,
-        wrap_text=src.wrap_text, shrink_to_fit=src.shrink_to_fit,
-        indent=src.indent, text_rotation=src.text_rotation,
+        horizontal=src.horizontal,
+        vertical=src.vertical,
+        wrap_text=src.wrap_text,
+        shrink_to_fit=src.shrink_to_fit,
+        indent=src.indent,
+        text_rotation=src.text_rotation,
     )
 
 
@@ -100,7 +106,7 @@ def clone_row_style(ws: Worksheet, source_row: int, target_row: int) -> None:
             src_cell: Cell | None = ws.cell(row=source_row, column=col_idx)
             tgt_cell: Cell | None = ws.cell(row=target_row, column=col_idx)
 
-            if src_cell is None:
+            if src_cell is None or tgt_cell is None:
                 continue
 
             tgt_cell.font = _copy_font(src_cell.font)
@@ -109,14 +115,10 @@ def clone_row_style(ws: Worksheet, source_row: int, target_row: int) -> None:
             tgt_cell.alignment = _copy_alignment(src_cell.alignment)
             tgt_cell.number_format = _copy_number_format(src_cell.number_format)
         except Exception as e:
-            logger.warning(
-                "[警告]: 克隆行样式时出错 row=%d col=%d: %s", target_row, col_idx, e
-            )
+            logger.warning("[警告]: 克隆行样式时出错 row=%d col=%d: %s", target_row, col_idx, e)
 
 
-def insert_rows_with_style(
-    ws: Worksheet, anchor_row: int, count: int
-) -> None:
+def insert_rows_with_style(ws: Worksheet, anchor_row: int, count: int) -> None:
     """在锚点行之后插入 N 行，并为每一行复制锚点行的样式.
 
     Raises:
@@ -148,16 +150,20 @@ def safe_write_cell(
     """
     if isinstance(col, str):
         col = openpyxl.utils.column_index_from_string(col)
+    col_i: int = col  # type: ignore[assignment]
 
-    cell: Cell = ws.cell(row=row, column=col)
+    cell: Cell = ws.cell(row=row, column=col_i)
 
     if isinstance(cell, MergedCell):
         for merged_range in ws.merged_cells.ranges:
             bounds = openpyxl.utils.range_boundaries(str(merged_range))
             min_col, min_row, max_col, max_row = (
-                int(bounds[0]), int(bounds[1]), int(bounds[2]), int(bounds[3])
+                int(bounds[0]),
+                int(bounds[1]),
+                int(bounds[2]),
+                int(bounds[3]),
             )
-            if min_row <= row <= max_row and min_col <= col <= max_col:
+            if min_row <= row <= max_row and min_col <= col_i <= max_col:
                 cell = ws.cell(row=min_row, column=min_col)
                 break
 

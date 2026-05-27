@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """报关资料自动生成系统 — 错误映射器.
 
 将 msgspec 的 ValidationError 映射为用户可读的中文修复建议，
@@ -10,7 +9,6 @@ from __future__ import annotations
 import re
 import textwrap
 from typing import Any
-
 
 # ==================== 枚举值映射 ====================
 
@@ -225,11 +223,7 @@ def map_validation_errors(errors: str | list[Any]) -> list[str]:
             results.append(map_validation_error(err_str))
         except Exception:
             # 兜底：直接输出原始错误信息
-            results.append(
-                f"[错误]: 数据校验失败\n"
-                f"[原因]: {err_str}\n"
-                f"[排查]: 请检查输入数据格式"
-            )
+            results.append(f"[错误]: 数据校验失败\n[原因]: {err_str}\n[排查]: 请检查输入数据格式")
     return results
 
 

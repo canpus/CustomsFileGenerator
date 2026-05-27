@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """生成器抽象基类 — 阶段 5.
 
 定义所有文件生成器的统一接口和共享工具方法。
@@ -11,8 +10,8 @@ import abc
 import logging
 import shutil
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
@@ -51,9 +50,7 @@ class BaseGenerator(abc.ABC):
             template_path: 模板文件路径，默认由子类 _get_default_template_path() 提供.
         """
         self._template_path: Path = (
-            Path(template_path)
-            if template_path
-            else self._get_default_template_path()
+            Path(template_path) if template_path else self._get_default_template_path()
         )
 
     # ==================== 公开 API ====================
@@ -91,20 +88,15 @@ class BaseGenerator(abc.ABC):
         """
         # 步骤 0：入口断言
         if order is None:
-            raise ValueError(
-                f"[错误]: 订单数据为 None, 无法生成{self._get_display_name()}"
-            )
+            raise ValueError(f"[错误]: 订单数据为 None, 无法生成{self._get_display_name()}")
         if not order.pallets:
-            raise ValueError(
-                f"[错误]: 订单无托盘数据, 无法生成{self._get_display_name()}"
-            )
+            raise ValueError(f"[错误]: 订单无托盘数据, 无法生成{self._get_display_name()}")
 
         # 步骤 1：展平数据
         self._report_progress(progress_callback, "正在解析订单数据...", 0.05)
         rows: list[dict] = self._flatten_data(order)
         target_row_count: int = len(rows)
 
-        template_type: str = self._get_template_type()
         logger.info(
             "开始生成%s: 发票号=%s, 托盘数=%d, 明细行数=%d",
             self._get_display_name(),
@@ -177,9 +169,7 @@ class BaseGenerator(abc.ABC):
             wb.close()
 
             logger.info("%s已生成: %s", self._get_display_name(), output_path)
-            self._report_progress(
-                progress_callback, f"{self._get_display_name()}生成完成", 1.0
-            )
+            self._report_progress(progress_callback, f"{self._get_display_name()}生成完成", 1.0)
 
             return output_path
 
@@ -262,9 +252,7 @@ class BaseGenerator(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def _fix_summary_formulas(
-        self, ws, anchor: AnchorResult, new_data_end: int
-    ) -> None:
+    def _fix_summary_formulas(self, ws, anchor: AnchorResult, new_data_end: int) -> None:
         """修正汇总行的 SUM 公式范围.
 
         Args:
@@ -336,7 +324,8 @@ class BaseGenerator(abc.ABC):
         if not capacity_path.exists():
             logger.warning(
                 "[警告]: 容量模板 %s 不存在，降级使用基准模板 %s",
-                capacity_path.name, base_path.name,
+                capacity_path.name,
+                base_path.name,
             )
             return base_path
         return capacity_path
@@ -388,9 +377,7 @@ class BaseGenerator(abc.ABC):
             )
 
         temp_dir: str = tempfile.gettempdir()
-        sandbox_name: str = (
-            f"{self._get_template_type()}_sandbox_{id(self)}.xlsx"
-        )
+        sandbox_name: str = f"{self._get_template_type()}_sandbox_{id(self)}.xlsx"
         sandbox_path: Path = Path(temp_dir) / sandbox_name
         shutil.copy2(source, sandbox_path)
         logger.debug("沙箱副本已创建: %s", sandbox_path)
@@ -406,9 +393,7 @@ class BaseGenerator(abc.ABC):
         except Exception as e:
             logger.warning("[警告]: 清理沙箱文件失败: %s — %s", sandbox_path, e)
 
-    def _resolve_output_path(
-        self, order: OrderData, output_dir: str | Path | None
-    ) -> Path:
+    def _resolve_output_path(self, order: OrderData, output_dir: str | Path | None) -> Path:
         """确定输出文件路径.
 
         命名规则：{输出目录}/{前缀}_{发票号}.xlsx
@@ -423,12 +408,8 @@ class BaseGenerator(abc.ABC):
         out_dir: Path = Path(output_dir) if output_dir else OUTPUT_DIR
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        invoice_no: str = (
-            order.order_meta.invoice_no.replace("/", "-").replace("\\", "-")
-        )
-        prefix: str = FILE_PREFIX_MAP.get(
-            self._get_template_type(), self._get_display_name()
-        )
+        invoice_no: str = order.order_meta.invoice_no.replace("/", "-").replace("\\", "-")
+        prefix: str = FILE_PREFIX_MAP.get(self._get_template_type(), self._get_display_name())
         filename: str = f"{prefix}_{invoice_no}.xlsx"
         return out_dir / filename
 

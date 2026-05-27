@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """树状编辑器 — 事件处理 mixin.
 
 包含生成、导入 Excel、清空等按钮事件处理方法。
@@ -9,6 +8,8 @@ from __future__ import annotations
 import logging
 from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
+
+from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
     from src.gui.pages.tree_editor_page import TreeEditorPage
@@ -49,10 +50,10 @@ class TreeEventsMixin:
                         )
 
         if empty_products:
+            products_list = "\n  • ".join(empty_products[:5])
             if not messagebox.askyesno(
                 "商品信息不完整",
-                f"以下 {len(empty_products)} 个商品缺少名称或 HS 编码：\n\n"
-                f"  • {'\n  • '.join(empty_products[:5])}"
+                f"以下 {len(empty_products)} 个商品缺少名称或 HS 编码：\n\n  • {products_list}"
                 f"{'  ...还有 ' + str(len(empty_products) - 5) + ' 个' if len(empty_products) > 5 else ''}"
                 f"\n\n是否仍要继续生成？",
             ):
@@ -148,7 +149,9 @@ class TreeEventsMixin:
         """清空所有托盘和商品."""
         if not self._pallets:
             return
-        if messagebox.askyesno("确认清空", "确定要清空所有托盘、纸箱和商品数据吗？此操作不可撤销。"):
+        if messagebox.askyesno(
+            "确认清空", "确定要清空所有托盘、纸箱和商品数据吗？此操作不可撤销。"
+        ):
             self._pallets = []
             self._product_seq = 1
             self._clear_selection()

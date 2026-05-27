@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板无损断言引擎 — 聚合入口.
 
 生成文件后，检查生成文件的样式、格式、结构与模板是否一致。
@@ -14,7 +13,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Dict
 
 import openpyxl
 
@@ -105,7 +103,8 @@ def assert_xlsx(
         report.add("error", "general", f"断言执行异常: {e}")
         logger.error(
             "[错误]: 断言 %s 模板时发生异常\n[原因]: %s\n[排查]: 请检查生成文件和模板文件是否损坏",
-            template_name, e,
+            template_name,
+            e,
         )
 
     err_count: int = len(report.errors)
@@ -114,14 +113,18 @@ def assert_xlsx(
 
     logger.info(
         "断言完成 [%s]: errors=%d, warnings=%d, infos=%d, passed=%s",
-        template_name, err_count, warn_count, info_count, report.passed,
+        template_name,
+        err_count,
+        warn_count,
+        info_count,
+        report.passed,
     )
 
     return report
 
 
 def assert_all_xlsx(
-    output_paths: Dict[str, Path],
+    output_paths: dict[str, Path],
     rules: dict | None = None,
 ) -> BatchAssertionReport:
     """对所有生成的 xlsx 文件执行批量断言.
@@ -156,8 +159,10 @@ def assert_all_xlsx(
 
     logger.info(
         "批量断言完成: passed=%d/%d, failed=%d/%d",
-        batch.passed_count, batch.total,
-        batch.failed_count, batch.total,
+        batch.passed_count,
+        batch.total,
+        batch.failed_count,
+        batch.total,
     )
 
     return batch

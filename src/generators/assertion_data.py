@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """断言引擎 — 数据结构与规则加载."""
 
 from __future__ import annotations
@@ -6,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import List, Literal
+from typing import Literal
 
 from config.constants import ASSERTION_RULES_PATH
 
@@ -35,18 +34,18 @@ class AssertionReport:
 
     template_name: str
     passed: bool = True
-    messages: List[AssertionMessage] = field(default_factory=list)
+    messages: list[AssertionMessage] = field(default_factory=list)
 
     @property
-    def errors(self) -> List[AssertionMessage]:
+    def errors(self) -> list[AssertionMessage]:
         return [m for m in self.messages if m.level == "error"]
 
     @property
-    def warnings(self) -> List[AssertionMessage]:
+    def warnings(self) -> list[AssertionMessage]:
         return [m for m in self.messages if m.level == "warning"]
 
     @property
-    def infos(self) -> List[AssertionMessage]:
+    def infos(self) -> list[AssertionMessage]:
         return [m for m in self.messages if m.level == "info"]
 
     def add(
@@ -78,7 +77,7 @@ class BatchAssertionReport:
     total: int = 0
     passed_count: int = 0
     failed_count: int = 0
-    reports: List[AssertionReport] = field(default_factory=list)
+    reports: list[AssertionReport] = field(default_factory=list)
 
 
 # ==================== 规则加载 ====================
@@ -94,19 +93,21 @@ def _load_assertion_rules() -> dict:
         return {}
 
     try:
-        with open(ASSERTION_RULES_PATH, "r", encoding="utf-8") as f:
+        with open(ASSERTION_RULES_PATH, encoding="utf-8") as f:
             rules = json.load(f)
         logger.info("已加载断言规则: %s", ASSERTION_RULES_PATH)
         return rules
     except json.JSONDecodeError as e:
         logger.error(
             "[错误]: 断言规则文件 JSON 解析失败: %s\n[原因]: %s\n[排查]: 请检查 JSON 格式",
-            ASSERTION_RULES_PATH, e,
+            ASSERTION_RULES_PATH,
+            e,
         )
         return {}
     except Exception as e:
         logger.error(
             "[错误]: 读取断言规则文件失败: %s\n[原因]: %s\n[排查]: 请确认文件存在且有读取权限",
-            ASSERTION_RULES_PATH, e,
+            ASSERTION_RULES_PATH,
+            e,
         )
         return {}

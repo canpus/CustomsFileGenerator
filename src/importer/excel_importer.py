@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Excel 订单数据导入器 — 阶段 8.1（门面模块）.
 
 读取用户上传的订单 Excel 表格，自动识别格式并解析为 OrderData。
@@ -74,7 +73,7 @@ def import_order_from_excel(
     if sheet_name:
         if sheet_name not in wb.sheetnames:
             raise ValueError(
-                f"[错误]: 工作表 \"{sheet_name}\" 不存在\n"
+                f'[错误]: 工作表 "{sheet_name}" 不存在\n'
                 f"[原因]: 可用的工作表: {', '.join(wb.sheetnames)}\n"
                 f"[排查]: 请指定正确的工作表名称"
             )
@@ -110,6 +109,8 @@ def quick_import(excel_path: str | Path) -> OrderData:
         for sheet, cols in unmapped.items():
             logger.info(
                 "TODO:待确认 — %s 中有 %d 个列无法自动映射: %s",
-                sheet, len(cols), ", ".join(cols),
+                sheet,
+                len(cols),
+                ", ".join(cols),
             )
     return order

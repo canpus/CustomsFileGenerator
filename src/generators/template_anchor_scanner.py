@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板动态锚点扫描引擎 — 聚合入口.
 
 扫描 XLSX 模板工作表的前 N 行，通过关键词匹配定位数据起始行和汇总行。
@@ -17,7 +16,6 @@ from __future__ import annotations
 import copy
 import logging
 from pathlib import Path
-from typing import List
 
 import openpyxl
 from openpyxl.styles import Alignment, Border, Font, Side
@@ -40,9 +38,7 @@ logger = logging.getLogger(__name__)
 # ==================== 公开 API ====================
 
 
-def scan_template(
-    template_path: str | Path, rules: dict | None = None
-) -> AnchorResult:
+def scan_template(template_path: str | Path, rules: dict | None = None) -> AnchorResult:
     """通用模板扫描入口，根据文件名自动选择扫描策略.
 
     Args:
@@ -136,7 +132,19 @@ def _create_default_wb(template_type: str) -> openpyxl.Workbook:
 
     if template_type == "packing":
         ws.title = "Packing List"
-        headers = ["序号", "商品描述", "", "规格", "单位", "单箱数量", "箱数", "托板号", "净重(kg)", "毛重(kg)", "体积(m³)"]
+        headers = [
+            "序号",
+            "商品描述",
+            "",
+            "规格",
+            "单位",
+            "单箱数量",
+            "箱数",
+            "托板号",
+            "净重(kg)",
+            "毛重(kg)",
+            "体积(m³)",
+        ]
         for col_idx, h in enumerate(headers, 1):
             cell = ws.cell(row=7, column=col_idx)
             cell.value = h

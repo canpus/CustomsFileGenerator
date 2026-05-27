@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板管理页 — 阶段 9.5.
 
 提供：
@@ -11,16 +10,15 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
 from tkinter import messagebox
 from typing import Any
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-logger = logging.getLogger(__name__)
-
 from src.gui.page_base import PageBase
+
+logger = logging.getLogger(__name__)
 
 
 class TemplatePage(PageBase):
@@ -156,18 +154,17 @@ class TemplatePage(PageBase):
             # 检查是否有树编辑器的数据
             order_data = self.app.current_order_data
             if not order_data or not order_data.get("order_meta"):
-                messagebox.showinfo("提示", "没有可保存的订单数据。\n\n请先在「新建单据」中录入订单信息和商品明细。")
+                messagebox.showinfo(
+                    "提示", "没有可保存的订单数据。\n\n请先在「新建单据」中录入订单信息和商品明细。"
+                )
                 return
 
-            # 构建 OrderData
-            try:
-                from src.gui.pages.tree_editor_page import TreeEditorPage
-                # 尝试从树编辑器页面获取
-                pass
-            except Exception:
-                pass
+            # 构建 OrderData（从树编辑器页面获取）
+            # TODO: 待实现
 
-            messagebox.showinfo("提示", "当前没有完整的订单数据。\n\n请先在「新建单据」中完成订单录入和商品编辑。")
+            messagebox.showinfo(
+                "提示", "当前没有完整的订单数据。\n\n请先在「新建单据」中完成订单录入和商品编辑。"
+            )
             return
 
         # 获取模板名称
@@ -189,7 +186,9 @@ class TemplatePage(PageBase):
         )
         ttk.Entry(dialog, textvariable=name_var, width=45).pack(padx=20, pady=(0, 5))
 
-        ttk.Label(dialog, text="备注（可选）:", font=self.app.get_font(size=10)).pack(anchor=W, padx=20)
+        ttk.Label(dialog, text="备注（可选）:", font=self.app.get_font(size=10)).pack(
+            anchor=W, padx=20
+        )
         desc_var = ttk.StringVar()
         ttk.Entry(dialog, textvariable=desc_var, width=45).pack(padx=20, pady=(0, 15))
 
@@ -201,6 +200,7 @@ class TemplatePage(PageBase):
 
             try:
                 from src.db.repository import TemplateRepository
+
                 TemplateRepository.save(
                     template_name=template_name,
                     description=desc_var.get().strip(),
@@ -214,8 +214,12 @@ class TemplatePage(PageBase):
                 logger.exception("[错误]: 保存模板失败")
                 messagebox.showerror("保存失败", f"[错误]: {e}")
 
-        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(side=LEFT, padx=(20, 10))
-        ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=LEFT)
+        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(
+            side=LEFT, padx=(20, 10)
+        )
+        ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(
+            side=LEFT
+        )
 
     def _on_load_template(self) -> None:
         """加载选中的模板."""
@@ -232,6 +236,7 @@ class TemplatePage(PageBase):
 
         try:
             from src.importer.template_loader import TemplateLoader
+
             order = TemplateLoader.load_template(template_id=int(template_id))
 
             if order is None:
@@ -268,11 +273,14 @@ class TemplatePage(PageBase):
         template_id = item["values"][0]
         template_name = item["values"][1]
 
-        if not messagebox.askyesno("确认删除", f"确定要删除模板「{template_name}」吗？\n此操作不可撤销。"):
+        if not messagebox.askyesno(
+            "确认删除", f"确定要删除模板「{template_name}」吗？\n此操作不可撤销。"
+        ):
             return
 
         try:
             from src.db.repository import TemplateRepository
+
             success = TemplateRepository.delete(template_id=int(template_id))
             if success:
                 messagebox.showinfo("删除成功", f"模板「{template_name}」已删除。")
@@ -289,6 +297,7 @@ class TemplatePage(PageBase):
         keyword = self._search_var.get().strip()
         try:
             from src.importer.template_loader import TemplateLoader
+
             if keyword:
                 templates = TemplateLoader.search_templates(keyword, limit=50)
             else:
@@ -304,6 +313,7 @@ class TemplatePage(PageBase):
         self._search_var.set("")
         try:
             from src.importer.template_loader import TemplateLoader
+
             self._templates = TemplateLoader.list_templates(limit=50)
             self._populate_tree(self._templates)
             self.app.set_status("模板列表已刷新")

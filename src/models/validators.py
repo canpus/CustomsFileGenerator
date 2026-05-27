@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """报关资料自动生成系统 — 订单业务规则校验.
 
 对 OrderData 进行一致性校验，包括：
@@ -92,6 +91,7 @@ class ValidationReport:
 
 # ==================== 辅助函数 ====================
 
+
 def _flatten_products(pallets: list[Pallet]) -> list[Product]:
     """展开所有托盘下的所有商品为一维列表."""
     result: list[Product] = []
@@ -123,7 +123,9 @@ def _safe_float(value: float) -> float:
 # ==================== 校验函数 ====================
 
 
-def validate_order_consistency(order: OrderData, large_order_threshold: int = 100) -> ValidationReport:
+def validate_order_consistency(
+    order: OrderData, large_order_threshold: int = 100
+) -> ValidationReport:
     """对订单数据进行全面一致性校验.
 
     校验规则：
@@ -176,23 +178,29 @@ def validate_order_consistency(order: OrderData, large_order_threshold: int = 10
     for idx, carton in enumerate(all_cartons):
         carton_net: float = 0.0
         for product in carton.products:
-            carton_net += _safe_float(product.net_weight_per_unit_kg) * _safe_float(product.qty_per_carton)
+            carton_net += _safe_float(product.net_weight_per_unit_kg) * _safe_float(
+                product.qty_per_carton
+            )
         carton_gross = _safe_float(carton.gross_weight_kg)
 
         if carton_gross < carton_net - 0.001:  # 允许微小浮点误差
             report.add_warning(
                 "W002",
                 (
-                    f"纸箱 \"{carton.carton_label}\"（第 {idx + 1} 个）毛重 {carton_gross:.3f} kg "
+                    f'纸箱 "{carton.carton_label}"（第 {idx + 1} 个）毛重 {carton_gross:.3f} kg '
                     f"小于箱内商品净重之和 {carton_net:.3f} kg"
                 ),
                 "纸箱毛重应 ≥ 箱内所有商品的净重之和（含包装）；可能是纸箱 gross_weight_kg 或商品 net_weight_per_unit_kg 数值有误",
-                f"请检查纸箱 \"{carton.carton_label}\" 的 gross_weight_kg 和箱内商品的 net_weight_per_unit_kg",
+                f'请检查纸箱 "{carton.carton_label}" 的 gross_weight_kg 和箱内商品的 net_weight_per_unit_kg',
             )
 
     # ---- 规则 3：托盘体积 = 长×宽×高 ----
     for pallet in order.pallets:
-        expected_volume = _safe_float(pallet.length_m) * _safe_float(pallet.width_m) * _safe_float(pallet.height_m)
+        expected_volume = (
+            _safe_float(pallet.length_m)
+            * _safe_float(pallet.width_m)
+            * _safe_float(pallet.height_m)
+        )
 
         # 托盘总体积从 totals 拿不到，这里仅做自身一致性检查
         # 同时检查 cm/m 单位是否正确（如果体积 > 100 m³，大概率是单位错误）
@@ -221,14 +229,22 @@ def validate_order_consistency(order: OrderData, large_order_threshold: int = 10
             calc_cartons += effective_count
             calc_gross += _safe_float(carton.gross_weight_kg) * effective_count
 
-            carton_net: float = 0.0
+            carton_net_total: float = 0.0
             for product in carton.products:
-                carton_net += _safe_float(product.net_weight_per_unit_kg) * _safe_float(product.qty_per_carton)
-                calc_amount += _safe_float(product.unit_price) * _safe_float(product.qty_per_carton) * effective_count
-            calc_net += carton_net * effective_count
+                carton_net_total += _safe_float(product.net_weight_per_unit_kg) * _safe_float(
+                    product.qty_per_carton
+                )
+                calc_amount += (
+                    _safe_float(product.unit_price)
+                    * _safe_float(product.qty_per_carton)
+                    * effective_count
+                )
+            calc_net += carton_net_total * effective_count
 
         calc_volume += (
-            _safe_float(pallet.length_m) * _safe_float(pallet.width_m) * _safe_float(pallet.height_m)
+            _safe_float(pallet.length_m)
+            * _safe_float(pallet.width_m)
+            * _safe_float(pallet.height_m)
         )
 
     # 托盘数

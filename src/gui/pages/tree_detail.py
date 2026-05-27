@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """树状编辑器 — 详情面板 mixin.
 
 包含选中节点后右侧详情表单的显示、字段构建与保存方法。
@@ -56,7 +55,9 @@ class TreeDetailMixin:
         self._add_detail_field("长度 (m)", "length_m", str(pallet.get("length_m", "")))
         self._add_detail_field("宽度 (m)", "width_m", str(pallet.get("width_m", "")))
         self._add_detail_field("高度 (m)", "height_m", str(pallet.get("height_m", "")))
-        self._add_detail_field("托盘自重 (kg)", "pallet_weight_kg", str(pallet.get("pallet_weight_kg", "0")))
+        self._add_detail_field(
+            "托盘自重 (kg)", "pallet_weight_kg", str(pallet.get("pallet_weight_kg", "0"))
+        )
 
         self._add_save_button("pallet", idx)
 
@@ -88,7 +89,9 @@ class TreeDetailMixin:
         self._add_detail_field("长度 (cm)", "length_cm", str(carton.get("length_cm", "")))
         self._add_detail_field("宽度 (cm)", "width_cm", str(carton.get("width_cm", "")))
         self._add_detail_field("高度 (cm)", "height_cm", str(carton.get("height_cm", "")))
-        self._add_detail_field("毛重 (kg)", "gross_weight_kg", str(carton.get("gross_weight_kg", "")))
+        self._add_detail_field(
+            "毛重 (kg)", "gross_weight_kg", str(carton.get("gross_weight_kg", ""))
+        )
 
         self._add_save_button("carton", pi, ci)
 
@@ -103,7 +106,11 @@ class TreeDetailMixin:
         """显示商品详情表单."""
         self._clear_detail_frame()
 
-        pi, ci, pri = self._selected_pallet_idx, self._selected_carton_idx, self._selected_product_idx
+        pi, ci, pri = (
+            self._selected_pallet_idx,
+            self._selected_carton_idx,
+            self._selected_product_idx,
+        )
         if pi < 0 or pi >= len(self._pallets):
             return
 
@@ -122,13 +129,23 @@ class TreeDetailMixin:
         self._add_detail_field("商品名称 *", "product_name", str(product.get("product_name", "")))
         self._add_detail_field("规格型号", "specification", str(product.get("specification", "")))
         self._add_detail_field("HS 编码 *", "hs_code", str(product.get("hs_code", "")))
-        self._add_detail_field("申报要素", "declaration_elements", str(product.get("declaration_elements", "")))
+        self._add_detail_field(
+            "申报要素", "declaration_elements", str(product.get("declaration_elements", ""))
+        )
         self._add_detail_field("计量单位", "unit", str(product.get("unit", "Roll")))
-        self._add_detail_field("每箱数量", "qty_per_carton", str(product.get("qty_per_carton", "1")))
+        self._add_detail_field(
+            "每箱数量", "qty_per_carton", str(product.get("qty_per_carton", "1"))
+        )
         self._add_detail_field("单价 (USD)", "unit_price", str(product.get("unit_price", "0")))
         self._add_detail_field("币种", "currency", str(product.get("currency", "USD")))
-        self._add_detail_field("单件净重 (kg)", "net_weight_per_unit_kg", str(product.get("net_weight_per_unit_kg", "0")))
-        self._add_detail_field("目的国", "destination_country", str(product.get("destination_country", "")))
+        self._add_detail_field(
+            "单件净重 (kg)",
+            "net_weight_per_unit_kg",
+            str(product.get("net_weight_per_unit_kg", "0")),
+        )
+        self._add_detail_field(
+            "目的国", "destination_country", str(product.get("destination_country", ""))
+        )
 
         self._add_save_button("product", pi, ci, pri)
 
@@ -150,7 +167,9 @@ class TreeDetailMixin:
         row = ttk.Frame(self._detail_frame)
         row.pack(fill=X, padx=15, pady=3)
 
-        ttk.Label(row, text=label, font=self.app.get_font(size=10), width=20, anchor=W).pack(side=LEFT)
+        ttk.Label(row, text=label, font=self.app.get_font(size=10), width=20, anchor=W).pack(
+            side=LEFT
+        )
 
         var = ttk.StringVar(value=value)
         entry = ttk.Entry(row, textvariable=var)
@@ -165,14 +184,18 @@ class TreeDetailMixin:
         row = ttk.Frame(self._detail_frame)
         row.pack(fill=X, padx=15, pady=3)
 
-        ttk.Label(row, text=label, font=self.app.get_font(size=10), width=20, anchor=W).pack(side=LEFT)
+        ttk.Label(row, text=label, font=self.app.get_font(size=10), width=20, anchor=W).pack(
+            side=LEFT
+        )
 
         var = ttk.IntVar(value=1 if checked else 0)
         cb = ttk.Checkbutton(row, variable=var, bootstyle="primary-round-toggle")
         cb.pack(side=LEFT, padx=(5, 0))
         self._detail_vars[key] = var
 
-    def _add_save_button(self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1) -> None:
+    def _add_save_button(
+        self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1
+    ) -> None:
         """添加保存按钮."""
         if self._detail_frame is None:
             return
@@ -186,7 +209,9 @@ class TreeDetailMixin:
             command=lambda: self._save_detail(level, pi, ci, pri),
         ).pack(padx=15, pady=(0, 10), fill=X)
 
-    def _save_detail(self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1) -> None:
+    def _save_detail(
+        self: TreeEditorPage, level: str, pi: int, ci: int = -1, pri: int = -1
+    ) -> None:
         """保存详情修改."""
         try:
             if level == "pallet":
@@ -204,9 +229,17 @@ class TreeDetailMixin:
                 else:
                     val = var.get().strip()
                     if key in (
-                        "length_m", "width_m", "height_m", "pallet_weight_kg",
-                        "length_cm", "width_cm", "height_cm", "gross_weight_kg",
-                        "unit_price", "qty_per_carton", "net_weight_per_unit_kg",
+                        "length_m",
+                        "width_m",
+                        "height_m",
+                        "pallet_weight_kg",
+                        "length_cm",
+                        "width_cm",
+                        "height_cm",
+                        "gross_weight_kg",
+                        "unit_price",
+                        "qty_per_carton",
+                        "net_weight_per_unit_kg",
                     ):
                         try:
                             target[key] = float(val) if val else 0.0

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """形式发票生成器（Invoice Generator）— 阶段 5.
 
 基于形式发票 XLSX 模板，根据订单数据动态生成发票文件。
@@ -10,7 +9,6 @@
 
 from __future__ import annotations
 
-import copy
 import logging
 from pathlib import Path
 
@@ -20,7 +18,7 @@ from config.constants import TEMPLATE_INVOICE_PATH
 from src.generators.base_generator import BaseGenerator
 from src.generators.template_anchor_scanner import AnchorResult, scan_invoice_template
 from src.generators.xlsx_utils import safe_write_cell, update_sum_formula
-from src.models.order_data import Carton, OrderData, Pallet, Product
+from src.models.order_data import Carton, OrderData
 
 logger = logging.getLogger(__name__)
 
@@ -286,9 +284,7 @@ class InvoiceGenerator(BaseGenerator):
 
     # ---- 汇总公式修正 ----
 
-    def _fix_summary_formulas(
-        self, ws: Worksheet, anchor: AnchorResult, new_data_end: int
-    ) -> None:
+    def _fix_summary_formulas(self, ws: Worksheet, anchor: AnchorResult, new_data_end: int) -> None:
         """修正发票汇总行的 SUM 公式范围 + 填写入大写金额.
 
         F 列 = SUM(F{data_start}:F{new_data_end}) 修正范围。
@@ -329,15 +325,18 @@ class InvoiceGenerator(BaseGenerator):
 
         # 填入大写金额（合并区域 A:F 仅写入 A 列）
         safe_write_cell(
-            ws, upper_row, "A",
+            ws,
+            upper_row,
+            "A",
             f"SAY: {amount_upper} ONLY",
         )
 
         logger.info(
             "发票汇总修正完成: 总金额=%.2f, 实际汇总行=%d, 大写=%s",
-            total_amount, actual_summary_row, amount_upper,
+            total_amount,
+            actual_summary_row,
+            amount_upper,
         )
-
 
 
 # ==================== num2words 金额大写 ====================
@@ -392,9 +391,7 @@ def _amount_to_english_upper(amount: float) -> str:
             "[排查]: 请检查金额数值是否在合理范围内",
             amount,
         )
-        raise ValueError(
-            f"金额大写转换失败: {amount}, 请检查 num2words 版本和金额数值"
-        ) from None
+        raise ValueError(f"金额大写转换失败: {amount}, 请检查 num2words 版本和金额数值") from None
 
 
 # ========== 运行说明 ==========

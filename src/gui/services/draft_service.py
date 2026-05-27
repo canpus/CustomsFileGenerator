@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """草稿服务 — 订单编辑状态的自动保存与恢复.
 
 将当前订单数据和页面位置持久化为 JSON 文件，支持：
@@ -54,7 +53,8 @@ class DraftService:
         except OSError as e:
             logger.warning(
                 "[警告]: 无法创建草稿目录 %s\n[原因]: %s\n[排查]: 检查磁盘权限",
-                DRAFT_DIR, e,
+                DRAFT_DIR,
+                e,
             )
 
     def save_draft(self, order_data: dict[str, Any], current_page: str) -> bool:
@@ -88,9 +88,7 @@ class DraftService:
             logger.info("草稿已保存: 页面=%s, 时间=%s", current_page, draft["updated_at"])
             return True
         except OSError as e:
-            logger.warning(
-                "[警告]: 草稿保存失败\n[原因]: %s\n[排查]: 检查磁盘空间和目录权限", e
-            )
+            logger.warning("[警告]: 草稿保存失败\n[原因]: %s\n[排查]: 检查磁盘空间和目录权限", e)
             return False
 
     def load_draft(self) -> dict[str, Any] | None:
@@ -103,7 +101,7 @@ class DraftService:
             return None
 
         try:
-            with open(DRAFT_FILE, "r", encoding="utf-8") as f:
+            with open(DRAFT_FILE, encoding="utf-8") as f:
                 draft: dict[str, Any] = json.load(f)
 
             required_keys = {"order_data", "current_page", "updated_at"}
@@ -111,13 +109,12 @@ class DraftService:
                 logger.warning("[警告]: 草稿文件格式不完整，忽略")
                 return None
 
-            logger.info("草稿已加载: 页面=%s, 时间=%s",
-                        draft.get("current_page"), draft.get("updated_at"))
+            logger.info(
+                "草稿已加载: 页面=%s, 时间=%s", draft.get("current_page"), draft.get("updated_at")
+            )
             return draft
         except (json.JSONDecodeError, OSError) as e:
-            logger.warning(
-                "[警告]: 草稿文件读取失败\n[原因]: %s\n[排查]: 文件可能损坏", e
-            )
+            logger.warning("[警告]: 草稿文件读取失败\n[原因]: %s\n[排查]: 文件可能损坏", e)
             return None
 
     def delete_draft(self) -> bool:

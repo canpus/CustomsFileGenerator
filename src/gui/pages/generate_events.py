@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """生成页 — 事件处理 mixin.
 
 包含生成启动、后台线程、完成/异常回调、诊断包导出、打开文件夹。
@@ -16,6 +15,7 @@ from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
 
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
 from config.constants import OUTPUT_DIR
 from src.generators.orchestrator import Orchestrator
@@ -106,9 +106,7 @@ class GenerateEventsMixin:
             orchestrator = Orchestrator()
 
             def progress_callback(description: str, progress: float) -> None:
-                self.frame.after(0, lambda: self._update_progress(
-                    int(progress * 100), description
-                ))
+                self.frame.after(0, lambda: self._update_progress(int(progress * 100), description))
 
             self.frame.after(0, lambda: self._update_progress(5, "正在校验订单数据..."))
             report = orchestrator.generate_all(
@@ -120,9 +118,10 @@ class GenerateEventsMixin:
             self._report = report
             self.frame.after(0, lambda: self._on_generation_complete(report))
 
-        except Exception as e:
+        except Exception as exc:
             logger.exception("[错误]: 生成过程中发生异常")
-            self.frame.after(0, lambda: self._on_generation_error(str(e)))
+            err_msg = str(exc)
+            self.frame.after(0, lambda msg=err_msg: self._on_generation_error(msg))
 
     def _on_generation_complete(self: GeneratePage, report: Any) -> None:
         """生成完成回调（主线程）."""
@@ -158,9 +157,12 @@ class GenerateEventsMixin:
                 f"报关资料已生成！\n\n"
                 f"成功: {report.succeeded}/{report.total}\n"
                 f"输出目录: {OUTPUT_DIR}\n\n"
-                f"生成的文件：\n" +
-                "\n".join(f"  • {Path(str(r.output_path)).name}"
-                          for r in report.results if r.status == "success"),
+                f"生成的文件：\n"
+                + "\n".join(
+                    f"  • {Path(str(r.output_path)).name}"
+                    for r in report.results
+                    if r.status == "success"
+                ),
             )
         else:
             self._update_progress(100, "生成完成（有错误）")
@@ -185,7 +187,9 @@ class GenerateEventsMixin:
                         )
 
             self._open_folder_btn.pack(side=LEFT, padx=(10, 0))
-            self.app.set_status(f"生成完成: {report.succeeded}/{report.total} 成功, {report.failed} 失败")
+            self.app.set_status(
+                f"生成完成: {report.succeeded}/{report.total} 成功, {report.failed} 失败"
+            )
 
             messagebox.showwarning(
                 "生成完成（有错误）",
@@ -231,8 +235,7 @@ class GenerateEventsMixin:
                 error_results = [r for r in self._report.results if r.status == "failed"]
                 if error_results:
                     error_info = "\n".join(
-                        f"{r.generator_name}: {r.error_message}"
-                        for r in error_results
+                        f"{r.generator_name}: {r.error_message}" for r in error_results
                     )
 
             zip_path = DiagnosticExporter.export(

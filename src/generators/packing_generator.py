@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """装箱单生成器（Packing Generator）— 阶段 4.
 
 基于装箱单 XLSX 模板，根据订单数据动态生成装箱单文件。
@@ -68,9 +67,7 @@ def flatten_for_packing(order: OrderData) -> list[dict]:
     for pallet in order.pallets:
         for carton in pallet.cartons:
             # 有效箱数（批量纸箱按 batch_count，否则为 1）
-            effective_carton_count: int = (
-                carton.batch_count if carton.is_batch else 1
-            )
+            effective_carton_count: int = carton.batch_count if carton.is_batch else 1
 
             # 单箱体积 m³ = 长(cm) × 宽(cm) × 高(cm) / 1,000,000
             single_carton_volume: float = (
@@ -82,31 +79,29 @@ def flatten_for_packing(order: OrderData) -> list[dict]:
 
                 # 本行总净重 = 单件净重 × 每箱数量 × 箱数
                 row_net_weight: float = (
-                    product.net_weight_per_unit_kg
-                    * product.qty_per_carton
-                    * effective_carton_count
+                    product.net_weight_per_unit_kg * product.qty_per_carton * effective_carton_count
                 )
 
                 # 本行总毛重 = 单箱毛重 × 箱数
-                row_gross_weight: float = (
-                    carton.gross_weight_kg * effective_carton_count
-                )
+                row_gross_weight: float = carton.gross_weight_kg * effective_carton_count
 
                 # 本行总体积 = 单箱体积 × 箱数
                 row_volume: float = single_carton_volume * effective_carton_count
 
-                rows.append({
-                    "seq_no": seq,
-                    "pallet_no": pallet.pallet_no,
-                    "product_name": product.product_name,
-                    "specification": product.specification,
-                    "unit": product.unit,
-                    "qty_per_carton": product.qty_per_carton,
-                    "carton_count": effective_carton_count,
-                    "net_weight": round(row_net_weight, 3),
-                    "gross_weight": round(row_gross_weight, 3),
-                    "volume": round(row_volume, 4),
-                })
+                rows.append(
+                    {
+                        "seq_no": seq,
+                        "pallet_no": pallet.pallet_no,
+                        "product_name": product.product_name,
+                        "specification": product.specification,
+                        "unit": product.unit,
+                        "qty_per_carton": product.qty_per_carton,
+                        "carton_count": effective_carton_count,
+                        "net_weight": round(row_net_weight, 3),
+                        "gross_weight": round(row_gross_weight, 3),
+                        "volume": round(row_volume, 4),
+                    }
+                )
 
     logger.info("装箱单数据展平完成: 共 %d 行", len(rows))
     return rows
@@ -160,9 +155,7 @@ class PackingGenerator(BaseGenerator):
 
         注意：使用 safe_write_cell，MergedCell 会被自动重定向到合并区域左上角.
         """
-        customer_name: str = (
-            order.customer.company_name_en or order.customer.company_name_cn
-        )
+        customer_name: str = order.customer.company_name_en or order.customer.company_name_cn
         # D3:K3 合并区域 - 客户抬头
         safe_write_cell(ws, 3, "D", customer_name)
 
@@ -246,12 +239,12 @@ class PackingGenerator(BaseGenerator):
 
         logger.info(
             "装箱单明细填充完成: %d 行 (第 %d 行 → 第 %d 行)",
-            len(rows), data_start_row, data_start_row + len(rows) - 1,
+            len(rows),
+            data_start_row,
+            data_start_row + len(rows) - 1,
         )
 
-    def _fix_summary_formulas(
-        self, ws: Worksheet, anchor: AnchorResult, new_data_end: int
-    ) -> None:
+    def _fix_summary_formulas(self, ws: Worksheet, anchor: AnchorResult, new_data_end: int) -> None:
         """修正汇总行的 SUM 公式范围.
 
         模板汇总行（第 58 行）实际公式列：
@@ -269,9 +262,7 @@ class PackingGenerator(BaseGenerator):
         formula_columns: list[str] = ["G", "I", "J", "K"]
 
         for col_letter in formula_columns:
-            update_sum_formula(
-                ws, col_letter, anchor.data_start_row, new_data_end
-            )
+            update_sum_formula(ws, col_letter, anchor.data_start_row, new_data_end)
 
         logger.info("汇总公式已修正: 范围 %d→%d", anchor.data_start_row, new_data_end)
 

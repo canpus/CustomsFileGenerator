@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 8 里程碑测试：Excel 导入器.
 
 运行方式：
@@ -35,6 +34,7 @@ def setup_test_db(monkeypatch):
 
     # 重置连接池
     import threading
+
     import src.db.connection as conn_module
     monkeypatch.setattr(conn_module, "_thread_local", threading.local())
 
@@ -324,10 +324,10 @@ def test_template_load_from_db():
         Customer,
         OrderData,
         OrderMeta,
+        Origin,
         Pallet,
         Product,
         Totals,
-        Origin,
     )
 
     # 构造一个完整订单

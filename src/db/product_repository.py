@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """产品数据仓库 — 从 repository.py 拆分."""
 
 from __future__ import annotations
@@ -53,11 +52,21 @@ class ProductRepository:
                    (product_name, specification, hs_code, declaration_elements,
                     unit, unit_price, net_weight_per_unit_kg, destination_country, currency)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (product_name, specification, hs_code, declaration_elements,
-                 unit, unit_price, net_weight_per_unit_kg, destination_country, currency),
+                (
+                    product_name,
+                    specification,
+                    hs_code,
+                    declaration_elements,
+                    unit,
+                    unit_price,
+                    net_weight_per_unit_kg,
+                    destination_country,
+                    currency,
+                ),
             )
             conn.commit()
             logger.info("新增产品: %s (ID=%d)", product_name, cursor.lastrowid)
+            assert cursor.lastrowid is not None, "INSERT 后未获取 rowid"
             return cursor.lastrowid
         except Exception:
             conn.rollback()
@@ -136,8 +145,15 @@ class ProductRepository:
         # 仅包含已知安全列名（product_name 等 9 个字段），
         # 不存在 SQL 注入风险。
         allowed = {
-            "product_name", "specification", "hs_code", "declaration_elements",
-            "unit", "unit_price", "net_weight_per_unit_kg", "destination_country", "currency",
+            "product_name",
+            "specification",
+            "hs_code",
+            "declaration_elements",
+            "unit",
+            "unit_price",
+            "net_weight_per_unit_kg",
+            "destination_country",
+            "currency",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:

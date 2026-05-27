@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """生成历史仓库 — 从 repository.py 拆分.
 
 记录每次一键生成的订单摘要，便于追溯。
@@ -67,11 +66,22 @@ class HistoryRepository:
                    (invoice_no, contract_no, customer_name, total_amount,
                     total_pallets, total_cartons, generated_files, order_json, status, error_message)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (invoice_no, contract_no, customer_name, total_amount,
-                 total_pallets, total_cartons, files_json, order_json_str, status, error_message),
+                (
+                    invoice_no,
+                    contract_no,
+                    customer_name,
+                    total_amount,
+                    total_pallets,
+                    total_cartons,
+                    files_json,
+                    order_json_str,
+                    status,
+                    error_message,
+                ),
             )
             conn.commit()
             logger.info("记录生成历史: %s (ID=%d)", invoice_no, cursor.lastrowid)
+            assert cursor.lastrowid is not None, "INSERT 后未获取 rowid"
             return cursor.lastrowid
         except Exception:
             conn.rollback()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """诊断包导出器 — 阶段 8.3.
 
 在生成出错时，将脱敏后的订单数据、运行日志、系统环境信息打包为 ZIP 文件，
@@ -7,7 +6,6 @@
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import platform
@@ -16,11 +14,10 @@ import tempfile
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
-from config.constants import LOGS_DIR, PROJECT_ROOT, APP_NAME, APP_VERSION
-from src.models.order_data import OrderData
-from src.utils.data_sanitizer import sanitize_order_to_json, sanitize_error_info
+from config.constants import APP_NAME, APP_VERSION, LOGS_DIR, PROJECT_ROOT, TradeTerm
+from src.models.order_data import OrderData, OrderMeta
+from src.utils.data_sanitizer import sanitize_error_info, sanitize_order_to_json
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +118,9 @@ class DiagnosticExporter:
                 # 5. operations.log（可选）
                 ops_log_path = LOGS_DIR / "operations.log"
                 if ops_log_path.exists():
-                    ops_content = ops_log_path.read_text(encoding="utf-8")[-50000:]  # 最多取最后 50KB
+                    ops_content = ops_log_path.read_text(encoding="utf-8")[
+                        -50000:
+                    ]  # 最多取最后 50KB
                     (tmp_path / "operations.log").write_text(ops_content, encoding="utf-8")
 
                 # 打包 ZIP
@@ -177,7 +176,11 @@ def _collect_system_info() -> str:
                 info_lines.append(f"  {pkg}: NOT INSTALLED")
 
         # 环境变量（脱敏 — 仅列出 KEY，不列 VALUE）
-        env_keys = [k for k in os.environ if "KEY" in k.upper() or "TOKEN" in k.upper() or "SECRET" in k.upper()]
+        env_keys = [
+            k
+            for k in os.environ
+            if "KEY" in k.upper() or "TOKEN" in k.upper() or "SECRET" in k.upper()
+        ]
         if env_keys:
             info_lines.append(f"环境变量 (含 'KEY/TOKEN/SECRET' 的键): {', '.join(env_keys)}")
 
@@ -197,7 +200,14 @@ if __name__ == "__main__":
 
     # 创建一个简单的测试订单
     from src.models.order_data import (
-        OrderData, OrderMeta, Customer, Pallet, Carton, Product, Totals, Origin,
+        Carton,
+        Customer,
+        OrderData,
+        OrderMeta,
+        Origin,
+        Pallet,
+        Product,
+        Totals,
     )
 
     test_order = OrderData(
@@ -205,7 +215,7 @@ if __name__ == "__main__":
             invoice_no="TEST-001",
             contract_no="TEST-CT-001",
             date="2026-05-26",
-            trade_term="FOB",
+            trade_term=TradeTerm("FOB"),
             payment_term="100% T/T IN ADVANCE",
             country_of_origin="China",
         ),
@@ -266,8 +276,8 @@ if __name__ == "__main__":
     # 模拟错误信息
     error_info = (
         "生成装箱单失败\n"
-        "File \"D:\\Coding_Programs\\CustomsFileGenerator\\src\\generators\\packing_generator.py\", line 42, in generate\n"
-        "    raise ValueError(\"模板单元格 D3 为空\")\n"
+        'File "D:\\Coding_Programs\\CustomsFileGenerator\\src\\generators\\packing_generator.py", line 42, in generate\n'
+        '    raise ValueError("模板单元格 D3 为空")\n'
         "ValueError: 模板单元格 D3 为空"
     )
 
@@ -277,6 +287,7 @@ if __name__ == "__main__":
 
         # 验证 ZIP 文件
         import zipfile
+
         with zipfile.ZipFile(zip_path, "r") as zf:
             names = zf.namelist()
             print(f"\nZIP 内容: {names}")
@@ -286,10 +297,11 @@ if __name__ == "__main__":
                 assert ef in names, f"诊断包缺少文件: {ef}"
             print("✅ 诊断包内容完整")
 
-        print(f"\n🚀 诊断包导出器自检通过")
+        print("\n🚀 诊断包导出器自检通过")
         print(f"诊断包位于: {zip_path}")
 
     except Exception as e:
         print(f"[错误]: 诊断包导出失败: {e}")
         import traceback
+
         traceback.print_exc()

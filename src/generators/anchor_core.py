@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板锚点扫描 — 核心工具模块.
 
 包含 AnchorResult 数据类及所有共享扫描工具函数。
@@ -10,8 +9,6 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Dict, List
 
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -47,20 +44,16 @@ class AnchorResult:
     data_start_row: int = -1
     data_end_row: int = -1
     summary_row: int = -1
-    summary_rows: List[int] = field(default_factory=list)
-    column_mapping: Dict[str, str] = field(default_factory=dict)
-    summary_columns: Dict[str, str] = field(default_factory=dict)
-    merge_ranges: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
+    summary_rows: list[int] = field(default_factory=list)
+    column_mapping: dict[str, str] = field(default_factory=dict)
+    summary_columns: dict[str, str] = field(default_factory=dict)
+    merge_ranges: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
     @property
     def is_valid(self) -> bool:
         """锚点扫描是否成功（关键锚点均已定位）."""
-        return (
-            self.header_row > 0
-            and self.data_start_row > 0
-            and self.summary_row > 0
-        )
+        return self.header_row > 0 and self.data_start_row > 0 and self.summary_row > 0
 
 
 # ==================== 规则加载 ====================
@@ -80,7 +73,7 @@ def _load_rules() -> dict:
         return {}
 
     try:
-        with open(TEMPLATE_RULES_PATH, "r", encoding="utf-8") as f:
+        with open(TEMPLATE_RULES_PATH, encoding="utf-8") as f:
             rules = json.load(f)
         logger.info("已加载锚点扫描规则: %s", TEMPLATE_RULES_PATH)
         return rules
@@ -89,15 +82,16 @@ def _load_rules() -> dict:
             "[错误]: 锚点规则文件 JSON 解析失败: %s\n"
             "[原因]: %s\n"
             "[排查]: 请检查 %s 的 JSON 格式是否正确",
-            TEMPLATE_RULES_PATH, e, TEMPLATE_RULES_PATH.name,
+            TEMPLATE_RULES_PATH,
+            e,
+            TEMPLATE_RULES_PATH.name,
         )
         return {}
     except Exception as e:
         logger.error(
-            "[错误]: 读取锚点规则文件失败: %s\n"
-            "[原因]: %s\n"
-            "[排查]: 请确认文件存在且有读取权限",
-            TEMPLATE_RULES_PATH, e,
+            "[错误]: 读取锚点规则文件失败: %s\n[原因]: %s\n[排查]: 请确认文件存在且有读取权限",
+            TEMPLATE_RULES_PATH,
+            e,
         )
         return {}
 
@@ -105,7 +99,7 @@ def _load_rules() -> dict:
 # ==================== 通用扫描逻辑 ====================
 
 
-def _contains_keyword(cell_value, keywords: List[str]) -> bool:
+def _contains_keyword(cell_value, keywords: list[str]) -> bool:
     """检查单元格值是否包含任一关键词（不区分大小写）."""
     if cell_value is None:
         return False
@@ -118,8 +112,8 @@ def _contains_keyword(cell_value, keywords: List[str]) -> bool:
 
 def _find_row_by_keywords(
     ws: Worksheet,
-    row_keywords: List[str],
-    col_keywords: List[str] | None = None,
+    row_keywords: list[str],
+    col_keywords: list[str] | None = None,
     row_start: int = 1,
     row_end: int = 30,
     require_both: bool = False,
@@ -165,13 +159,13 @@ def _find_row_by_keywords(
 
 def _find_summary_rows(
     ws: Worksheet,
-    row_keywords: List[str],
-    col_keywords: List[str] | None = None,
+    row_keywords: list[str],
+    col_keywords: list[str] | None = None,
     row_start: int = 1,
     row_end: int = 100,
-) -> List[int]:
+) -> list[int]:
     """查找汇总行（可能有多行）."""
-    matches: List[int] = []
+    matches: list[int] = []
 
     for row_idx in range(row_start, row_end + 1):
         row_ok: bool = False
@@ -183,9 +177,12 @@ def _find_summary_rows(
             except Exception:
                 continue
 
-            if isinstance(cell_value, str) and cell_value.startswith("="):
-                if _contains_keyword(cell_value, row_keywords):
-                    row_ok = True
+            if (
+                isinstance(cell_value, str)
+                and cell_value.startswith("=")
+                and _contains_keyword(cell_value, row_keywords)
+            ):
+                row_ok = True
 
             if not row_ok and _contains_keyword(cell_value, row_keywords):
                 row_ok = True

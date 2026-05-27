@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """一键生成协调器（Orchestrator）— 阶段 7.1.
 
 根据 OrderData 依次调用 3 个生成器（Packing + Invoice + Contract），
@@ -11,18 +10,18 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
 
 from config.constants import (
-    FILE_PREFIX_MAP,
     MAX_TEMPLATE_ROWS,
     OUTPUT_DIR,
     TEMPLATE_CONTRACT_PATH,
     TEMPLATE_INVOICE_PATH,
     TEMPLATE_PACKING_PATH,
 )
+from src.generators.base_generator import BaseGenerator
 from src.generators.contract_generator import ContractGenerator
 from src.generators.invoice_generator import InvoiceGenerator
 from src.generators.packing_generator import PackingGenerator
@@ -52,7 +51,7 @@ class GeneratorResult:
     generator_name: str
     file_type: str
     status: str  # "success" | "failed" | "skipped"
-    output_path: Optional[Path] = None
+    output_path: Path | None = None
     error_message: str = ""
     skipped_reason: str = ""
 
@@ -77,9 +76,9 @@ class OrchestratorReport:
     succeeded: int = 0
     failed: int = 0
     skipped: int = 0
-    results: List[GeneratorResult] = field(default_factory=list)
-    output_files: List[Path] = field(default_factory=list)
-    validation_report: Optional[ValidationReport] = None
+    results: list[GeneratorResult] = field(default_factory=list)
+    output_files: list[Path] = field(default_factory=list)
+    validation_report: ValidationReport | None = None
 
 
 # ==================== 协调器类 ====================
@@ -108,9 +107,9 @@ class Orchestrator:
         注册所有生成器（当前 3 个，阶段 6 完成后增至 4 个）。
         """
         self._guard: TemplateGuard = TemplateGuard()
-        self._generators: List[tuple[str, str, object]] = self._build_generator_list()
+        self._generators: list[tuple[str, str, BaseGenerator]] = self._build_generator_list()
 
-    def _build_generator_list(self) -> List[tuple[str, str, object]]:
+    def _build_generator_list(self) -> list[tuple[str, str, BaseGenerator]]:
         """构建生成器列表.
 
         每个元素为 (文件类型标识, 显示名称, 生成器实例)。
@@ -118,7 +117,7 @@ class Orchestrator:
         Returns:
             生成器注册列表.
         """
-        generators: List[tuple[str, str, object]] = [
+        generators: list[tuple[str, str, BaseGenerator]] = [
             ("packing", "装箱单", PackingGenerator(template_path=TEMPLATE_PACKING_PATH)),
             ("invoice", "形式发票", InvoiceGenerator(template_path=TEMPLATE_INVOICE_PATH)),
             ("contract", "形式合同", ContractGenerator(template_path=TEMPLATE_CONTRACT_PATH)),
@@ -176,9 +175,7 @@ class Orchestrator:
             report.validation_report = validation
             if validation.errors:
                 error_msgs: str = "; ".join(m.code for m in validation.errors)
-                logger.warning(
-                    "订单数据校验发现 %d 个错误: %s", len(validation.errors), error_msgs
-                )
+                logger.warning("订单数据校验发现 %d 个错误: %s", len(validation.errors), error_msgs)
             if validation.warnings:
                 logger.warning(
                     "订单数据校验发现 %d 个警告: %s",
@@ -204,9 +201,7 @@ class Orchestrator:
             except ValueError:
                 raise
             except Exception as e:
-                logger.warning(
-                    "[警告]: %s 容量预检跳过（展平数据失败）: %s", display_name, e
-                )
+                logger.warning("[警告]: %s 容量预检跳过（展平数据失败）: %s", display_name, e)
 
         # 步骤 2：模板完整性检查
         self._report_progress(progress_callback, "正在检查模板文件...", 0.05)
@@ -224,12 +219,14 @@ class Orchestrator:
             step_description: str = f"正在生成{display_name}..."
 
             # 内部进度回调：将生成器进度映射到整体进度范围
-            def gen_callback(desc: str, pct: float) -> None:
-                overall: float = base_progress + (pct / total_generators) * 0.85
+            def gen_callback(
+                desc: str, pct: float, _bp: float = base_progress, _i: int = idx
+            ) -> None:
+                overall: float = _bp + (pct / total_generators) * 0.85
                 overall = min(overall, 0.99)
                 self._report_progress(
                     progress_callback,
-                    f"[{idx + 1}/{total_generators}] {desc}",
+                    f"[{_i + 1}/{total_generators}] {desc}",
                     overall,
                 )
 
@@ -275,14 +272,17 @@ class Orchestrator:
         # 此循环自动处理，无需修改此处代码。
 
         # 步骤 4：汇总
-        report.success = (report.failed == 0)
+        report.success = report.failed == 0
         self._report_progress(progress_callback, "生成完成", 1.0)
 
         logger.info(
             "一键生成完成: 成功 %d/%d, 失败 %d/%d, 跳过 %d/%d",
-            report.succeeded, report.total,
-            report.failed, report.total,
-            report.skipped, report.total,
+            report.succeeded,
+            report.total,
+            report.failed,
+            report.total,
+            report.skipped,
+            report.total,
         )
 
         return report

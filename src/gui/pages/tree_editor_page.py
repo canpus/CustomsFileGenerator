@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """托盘-纸箱-商品树状编辑器 — 阶段 9.3.
 
 提供：
@@ -35,7 +34,9 @@ from src.gui.pages.tree_ui import TreeUIMixin
 logger = logging.getLogger(__name__)
 
 
-class TreeEditorPage(TreeUIMixin, TreeDetailMixin, TreeDataMixin, TreeExportMixin, TreeEventsMixin, PageBase):
+class TreeEditorPage(
+    TreeUIMixin, TreeDetailMixin, TreeDataMixin, TreeExportMixin, TreeEventsMixin, PageBase
+):
     """托盘-纸箱-商品树状编辑器."""
 
     def __init__(self, parent: ttk.Frame, app: object):
@@ -82,19 +83,21 @@ class TreeEditorPage(TreeUIMixin, TreeDetailMixin, TreeDataMixin, TreeExportMixi
                             "products": [],
                         }
                         for product in carton.products:
-                            c_data["products"].append({
-                                "seq_no": self._product_seq,
-                                "product_name": product.product_name,
-                                "specification": product.specification,
-                                "hs_code": product.hs_code,
-                                "declaration_elements": product.declaration_elements,
-                                "unit": product.unit,
-                                "qty_per_carton": product.qty_per_carton,
-                                "unit_price": product.unit_price,
-                                "currency": product.currency,
-                                "net_weight_per_unit_kg": product.net_weight_per_unit_kg,
-                                "destination_country": product.destination_country,
-                            })
+                            c_data["products"].append(
+                                {
+                                    "seq_no": self._product_seq,
+                                    "product_name": product.product_name,
+                                    "specification": product.specification,
+                                    "hs_code": product.hs_code,
+                                    "declaration_elements": product.declaration_elements,
+                                    "unit": product.unit,
+                                    "qty_per_carton": product.qty_per_carton,
+                                    "unit_price": product.unit_price,
+                                    "currency": product.currency,
+                                    "net_weight_per_unit_kg": product.net_weight_per_unit_kg,
+                                    "destination_country": product.destination_country,
+                                }
+                            )
                             self._product_seq += 1
                         p_data["cartons"].append(c_data)
                     self._pallets.append(p_data)

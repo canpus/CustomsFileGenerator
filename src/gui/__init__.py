@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """gui 包 — GUI 界面 (ttkbootstrap · 3 文件模式).
 
 阶段 9 实现：

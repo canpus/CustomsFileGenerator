@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """树状编辑器 — 数据操作 mixin.
 
 包含节点增删克隆、Treeview 刷新、统计更新、展开/折叠。
@@ -51,8 +50,11 @@ class TreeDataMixin:
             pallet_no = len(self._pallets) + 1
             data = {
                 "pallet_no": pallet_no,
-                "length_m": 1.16, "width_m": 1.01, "height_m": 1.97,
-                "pallet_weight_kg": 0.0, "cartons": [],
+                "length_m": 1.16,
+                "width_m": 1.01,
+                "height_m": 1.97,
+                "pallet_weight_kg": 0.0,
+                "cartons": [],
             }
         else:
             data = copy.deepcopy(data)
@@ -76,9 +78,13 @@ class TreeDataMixin:
         if data is None:
             data = {
                 "carton_label": str(len(self._pallets[self._selected_pallet_idx]["cartons"]) + 1),
-                "is_batch": False, "batch_count": 1,
-                "length_cm": 32.0, "width_cm": 32.0, "height_cm": 34.0,
-                "gross_weight_kg": 23.3, "products": [],
+                "is_batch": False,
+                "batch_count": 1,
+                "length_cm": 32.0,
+                "width_cm": 32.0,
+                "height_cm": 34.0,
+                "gross_weight_kg": 23.3,
+                "products": [],
             }
         else:
             data = copy.deepcopy(data)
@@ -101,10 +107,16 @@ class TreeDataMixin:
             seq = self._product_seq
             self._product_seq += 1
             data = {
-                "seq_no": seq, "product_name": "", "specification": "",
-                "hs_code": "", "declaration_elements": "",
-                "unit": "Roll", "qty_per_carton": 1.0, "unit_price": 0.0,
-                "currency": "USD", "net_weight_per_unit_kg": 0.0,
+                "seq_no": seq,
+                "product_name": "",
+                "specification": "",
+                "hs_code": "",
+                "declaration_elements": "",
+                "unit": "Roll",
+                "qty_per_carton": 1.0,
+                "unit_price": 0.0,
+                "currency": "USD",
+                "net_weight_per_unit_kg": 0.0,
                 "destination_country": "",
             }
         else:
@@ -122,15 +134,28 @@ class TreeDataMixin:
         if self._selected_level == "pallet" and self._selected_pallet_idx >= 0:
             src = self._pallets[self._selected_pallet_idx]
             self._add_pallet(src)
-            messagebox.showinfo("克隆成功", f"已克隆托盘 #{src['pallet_no']}（含其下所有纸箱和商品）")
+            messagebox.showinfo(
+                "克隆成功", f"已克隆托盘 #{src['pallet_no']}（含其下所有纸箱和商品）"
+            )
 
-        elif self._selected_level == "carton" and self._selected_pallet_idx >= 0 and self._selected_carton_idx >= 0:
+        elif (
+            self._selected_level == "carton"
+            and self._selected_pallet_idx >= 0
+            and self._selected_carton_idx >= 0
+        ):
             src = self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx]
             self._add_carton(src)
             messagebox.showinfo("克隆成功", "已克隆纸箱（含其中所有商品）")
 
-        elif self._selected_level == "product" and self._selected_pallet_idx >= 0 and self._selected_carton_idx >= 0 and self._selected_product_idx >= 0:
-            src = self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx]["products"][self._selected_product_idx]
+        elif (
+            self._selected_level == "product"
+            and self._selected_pallet_idx >= 0
+            and self._selected_carton_idx >= 0
+            and self._selected_product_idx >= 0
+        ):
+            src = self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx][
+                "products"
+            ][self._selected_product_idx]
             self._add_product(src)
             messagebox.showinfo("克隆成功", "已克隆商品")
 
@@ -138,24 +163,42 @@ class TreeDataMixin:
         """删除当前选中的节点."""
         if self._selected_level == "pallet" and self._selected_pallet_idx >= 0:
             pallet = self._pallets[self._selected_pallet_idx]
-            if messagebox.askyesno("确认删除", f"确定要删除托盘 #{pallet['pallet_no']} 及其下所有纸箱和商品吗？"):
+            if messagebox.askyesno(
+                "确认删除", f"确定要删除托盘 #{pallet['pallet_no']} 及其下所有纸箱和商品吗？"
+            ):
                 del self._pallets[self._selected_pallet_idx]
                 self._clear_selection()
                 self._refresh_tree()
                 self._update_stats()
 
-        elif self._selected_level == "carton" and self._selected_pallet_idx >= 0 and self._selected_carton_idx >= 0:
+        elif (
+            self._selected_level == "carton"
+            and self._selected_pallet_idx >= 0
+            and self._selected_carton_idx >= 0
+        ):
             carton = self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx]
-            if messagebox.askyesno("确认删除", f"确定要删除纸箱 {carton['carton_label']} 及其下所有商品吗？"):
+            if messagebox.askyesno(
+                "确认删除", f"确定要删除纸箱 {carton['carton_label']} 及其下所有商品吗？"
+            ):
                 del self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx]
                 self._clear_selection()
                 self._refresh_tree()
                 self._update_stats()
 
-        elif self._selected_level == "product" and self._selected_pallet_idx >= 0 and self._selected_carton_idx >= 0 and self._selected_product_idx >= 0:
-            products = self._pallets[self._selected_pallet_idx]["cartons"][self._selected_carton_idx]["products"]
+        elif (
+            self._selected_level == "product"
+            and self._selected_pallet_idx >= 0
+            and self._selected_carton_idx >= 0
+            and self._selected_product_idx >= 0
+        ):
+            products = self._pallets[self._selected_pallet_idx]["cartons"][
+                self._selected_carton_idx
+            ]["products"]
             product = products[self._selected_product_idx]
-            if messagebox.askyesno("确认删除", f"确定要删除商品 #{product['seq_no']} ({product.get('product_name', '未命名')}) 吗？"):
+            if messagebox.askyesno(
+                "确认删除",
+                f"确定要删除商品 #{product['seq_no']} ({product.get('product_name', '未命名')}) 吗？",
+            ):
                 del products[self._selected_product_idx]
                 self._clear_selection()
                 self._refresh_tree()
@@ -182,7 +225,9 @@ class TreeDataMixin:
             pallet_id = f"p_{pi}"
             vol = pallet.get("length_m", 0) * pallet.get("width_m", 0) * pallet.get("height_m", 0)
             self._tree.insert(
-                "", END, iid=pallet_id,
+                "",
+                END,
+                iid=pallet_id,
                 text=f"📦 托盘 #{pallet.get('pallet_no', '?')}",
                 values=(f"体积: {vol:.3f} m³", f"自重: {pallet.get('pallet_weight_kg', 0)} kg"),
                 open=True,
@@ -193,19 +238,28 @@ class TreeDataMixin:
                 label = carton.get("carton_label", "?")
                 batch_info = f" × {carton.get('batch_count', 1)}" if carton.get("is_batch") else ""
                 self._tree.insert(
-                    pallet_id, END, iid=carton_id,
+                    pallet_id,
+                    END,
+                    iid=carton_id,
                     text=f"📋 纸箱 {label}{batch_info}",
-                    values=(f"毛重: {carton.get('gross_weight_kg', 0)} kg",
-                            f"尺寸: {carton.get('length_cm',0)}×{carton.get('width_cm',0)}×{carton.get('height_cm',0)} cm"),
+                    values=(
+                        f"毛重: {carton.get('gross_weight_kg', 0)} kg",
+                        f"尺寸: {carton.get('length_cm', 0)}×{carton.get('width_cm', 0)}×{carton.get('height_cm', 0)} cm",
+                    ),
                     open=False,
                 )
 
                 for pri, product in enumerate(carton.get("products", [])):
                     product_id = f"p_{pi}_c_{ci}_pr_{pri}"
                     self._tree.insert(
-                        carton_id, END, iid=product_id,
+                        carton_id,
+                        END,
+                        iid=product_id,
                         text=f"📄 #{product.get('seq_no', '?')} {product.get('product_name', '未命名')[:20]}",
-                        values=(f"HS: {product.get('hs_code', '?')}", f"单价: ${product.get('unit_price', 0):.2f}"),
+                        values=(
+                            f"HS: {product.get('hs_code', '?')}",
+                            f"单价: ${product.get('unit_price', 0):.2f}",
+                        ),
                         open=False,
                     )
 
@@ -217,11 +271,11 @@ class TreeDataMixin:
         total_pallets = len(self._pallets)
         total_cartons = sum(len(p.get("cartons", [])) for p in self._pallets)
         total_products = sum(
-            len(c.get("products", []))
-            for p in self._pallets
-            for c in p.get("cartons", [])
+            len(c.get("products", [])) for p in self._pallets for c in p.get("cartons", [])
         )
-        self._stats_var.set(f"托盘: {total_pallets} | 纸箱: {total_cartons} | 商品: {total_products}")
+        self._stats_var.set(
+            f"托盘: {total_pallets} | 纸箱: {total_cartons} | 商品: {total_products}"
+        )
 
     def _expand_all(self: TreeEditorPage) -> None:
         """展开所有节点."""

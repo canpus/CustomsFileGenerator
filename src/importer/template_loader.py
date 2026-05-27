@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """订单模板加载器 — 阶段 8.2.
 
 从 SQLite 数据库加载已保存的订单模板，反序列化为 OrderData 对象。
@@ -60,7 +59,7 @@ class TemplateLoader:
         """
         try:
             templates = TemplateRepository.search(keyword=keyword, limit=limit)
-            logger.info("搜索模板 \"%s\": %d 条结果", keyword, len(templates))
+            logger.info('搜索模板 "%s": %d 条结果', keyword, len(templates))
             return templates
         except Exception:
             logger.exception("[错误]: 搜索模板失败")
@@ -128,9 +127,7 @@ class TemplateLoader:
             True 表示删除成功.
         """
         if template_id <= 0:
-            raise ValueError(
-                f"[错误]: template_id 必须为正整数，当前值: {template_id}"
-            )
+            raise ValueError(f"[错误]: template_id 必须为正整数，当前值: {template_id}")
 
         try:
             result = TemplateRepository.delete(template_id)
@@ -166,7 +163,9 @@ if __name__ == "__main__":
         # 尝试加载最新模板
         latest = TemplateLoader.load_latest()
         if latest:
-            print(f"\n最新模板: 发票号={latest.order_meta.invoice_no}, 客户={latest.customer.company_name_en}")
+            print(
+                f"\n最新模板: 发票号={latest.order_meta.invoice_no}, 客户={latest.customer.company_name_en}"
+            )
         else:
             print("\n无可用模板（首次运行，需要先保存模板）")
 
@@ -174,4 +173,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n[错误]: 模板加载器自检失败: {e}")
         import traceback
+
         traceback.print_exc()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板块服务 — 分块模板的保存、加载、套用业务逻辑.
 
 提供：
@@ -11,20 +10,32 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from src.db.template_block_repository import VALID_BLOCK_TYPES, TemplateBlockRepository
+from src.db.template_block_repository import TemplateBlockRepository
 
 logger = logging.getLogger(__name__)
 
 # 各 block_type 对应的数据字段集合
 BLOCK_FIELDS_MAP: dict[str, set[str]] = {
     "customer": {
-        "company_name_en", "company_name_cn", "country",
-        "address", "contact_person", "phone", "mobile", "destination",
+        "company_name_en",
+        "company_name_cn",
+        "country",
+        "address",
+        "contact_person",
+        "phone",
+        "mobile",
+        "destination",
     },
     "shipping": {
-        "export_port", "package_type", "transport_mode",
-        "vessel_flight", "bill_of_lading_no", "trade_term",
-        "payment_term", "currency", "declaration_elements_template",
+        "export_port",
+        "package_type",
+        "transport_mode",
+        "vessel_flight",
+        "bill_of_lading_no",
+        "trade_term",
+        "payment_term",
+        "currency",
+        "declaration_elements_template",
     },
     "product_set": {
         "pallets",
@@ -154,9 +165,16 @@ class TemplateBlockService:
             for k, v in block_data.items():
                 if not allowed or k in allowed:
                     # 运输相关字段放入 order_meta
-                    if k in {"transport_mode", "vessel_flight", "bill_of_lading_no",
-                             "trade_term", "payment_term", "currency",
-                             "declaration_elements_template", "package_type"}:
+                    if k in {
+                        "transport_mode",
+                        "vessel_flight",
+                        "bill_of_lading_no",
+                        "trade_term",
+                        "payment_term",
+                        "currency",
+                        "declaration_elements_template",
+                        "package_type",
+                    }:
                         result["order_meta"][k] = v
                     # 发货相关字段放入 origin
                     elif k in {"export_port"}:
@@ -173,21 +191,36 @@ class TemplateBlockService:
             else:
                 # 按字段选择性套用
                 section_map: dict[str, str] = {
-                    "invoice_no": "order_meta", "contract_no": "order_meta",
-                    "date": "order_meta", "order_no": "order_meta",
-                    "transport_mode": "order_meta", "vessel_flight": "order_meta",
-                    "bill_of_lading_no": "order_meta", "trade_term": "order_meta",
-                    "payment_term": "order_meta", "currency": "order_meta",
-                    "country_of_origin": "order_meta", "goods_summary": "order_meta",
-                    "declaration_elements_template": "order_meta", "package_type": "order_meta",
-                    "company_name_en": "customer", "company_name_cn": "customer",
-                    "country": "customer", "address": "customer",
-                    "contact_person": "customer", "phone": "customer",
-                    "mobile": "customer", "destination": "customer",
-                    "export_port": "origin", "domestic_source": "origin",
-                    "manufacturer": "origin", "business_entity": "origin",
-                    "trade_mode": "origin", "tax_nature": "origin",
-                    "settlement_method": "origin", "tax_rebate": "origin",
+                    "invoice_no": "order_meta",
+                    "contract_no": "order_meta",
+                    "date": "order_meta",
+                    "order_no": "order_meta",
+                    "transport_mode": "order_meta",
+                    "vessel_flight": "order_meta",
+                    "bill_of_lading_no": "order_meta",
+                    "trade_term": "order_meta",
+                    "payment_term": "order_meta",
+                    "currency": "order_meta",
+                    "country_of_origin": "order_meta",
+                    "goods_summary": "order_meta",
+                    "declaration_elements_template": "order_meta",
+                    "package_type": "order_meta",
+                    "company_name_en": "customer",
+                    "company_name_cn": "customer",
+                    "country": "customer",
+                    "address": "customer",
+                    "contact_person": "customer",
+                    "phone": "customer",
+                    "mobile": "customer",
+                    "destination": "customer",
+                    "export_port": "origin",
+                    "domestic_source": "origin",
+                    "manufacturer": "origin",
+                    "business_entity": "origin",
+                    "trade_mode": "origin",
+                    "tax_nature": "origin",
+                    "settlement_method": "origin",
+                    "tax_rebate": "origin",
                 }
                 for field in fields:
                     section = section_map.get(field)

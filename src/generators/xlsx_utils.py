@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """XLSX 工具库 — 行操作与公式管理.
 
 提供安全插入/删除行、合并单元格检测、公式修正等操作。
@@ -12,9 +11,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import List
 
-import openpyxl
 from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -65,13 +62,9 @@ def delete_rows_safely(ws: Worksheet, start_row: int, end_row: int) -> None:
         ValueError: start_row > end_row 或行号 ≤ 0 时抛出。
     """
     if start_row <= 0 or end_row <= 0:
-        raise ValueError(
-            f"[错误]: 行号必须为正整数，start_row={start_row}, end_row={end_row}"
-        )
+        raise ValueError(f"[错误]: 行号必须为正整数，start_row={start_row}, end_row={end_row}")
     if start_row > end_row:
-        raise ValueError(
-            f"[错误]: start_row({start_row}) 不能大于 end_row({end_row})"
-        )
+        raise ValueError(f"[错误]: start_row({start_row}) 不能大于 end_row({end_row})")
 
     logger.info("开始安全删除行: 第 %d 行 → 第 %d 行（逆序）", start_row, end_row)
 
@@ -93,9 +86,7 @@ def delete_rows_safely(ws: Worksheet, start_row: int, end_row: int) -> None:
 # ==================== 公式修正 ====================
 
 
-def update_sum_formula(
-    ws: Worksheet, col_letter: str, start_row: int, end_row: int
-) -> None:
+def update_sum_formula(ws: Worksheet, col_letter: str, start_row: int, end_row: int) -> None:
     """修正指定列的 SUM 公式范围.
 
     Raises:
@@ -119,19 +110,27 @@ def update_sum_formula(
                         updated_count += 1
                         logger.debug(
                             "公式修正: %s → %s (cell %s)",
-                            old_formula, new_formula, cell.coordinate,
+                            old_formula,
+                            new_formula,
+                            cell.coordinate,
                         )
 
     if updated_count == 0:
         logger.warning(
             "[警告]: 未找到需要修正的 SUM 公式，col=%s, range=%s%d:%s%d",
-            col_letter, col_letter, start_row, col_letter, end_row,
+            col_letter,
+            col_letter,
+            start_row,
+            col_letter,
+            end_row,
         )
     else:
         logger.info("公式修正完成: 共修正 %d 个 SUM 公式", updated_count)
 
 
-def delete_reserved_rows(ws: Worksheet, data_start_row: int, data_end_row: int, actual_row_count: int) -> int:
+def delete_reserved_rows(
+    ws: Worksheet, data_start_row: int, data_end_row: int, actual_row_count: int
+) -> int:
     """删除数据区中未使用的预留空行.
 
     当使用大容量模板（如 50 行）填充少量数据（如 3 行）时，
@@ -154,15 +153,11 @@ def delete_reserved_rows(ws: Worksheet, data_start_row: int, data_end_row: int, 
         ValueError: 参数无效时抛出.
     """
     if data_start_row <= 0 or data_end_row <= 0:
-        raise ValueError(
-            f"[错误]: 行号必须为正整数，start={data_start_row}, end={data_end_row}"
-        )
+        raise ValueError(f"[错误]: 行号必须为正整数，start={data_start_row}, end={data_end_row}")
     if actual_row_count <= 0:
         raise ValueError(f"[错误]: 实际行数必须为正整数，actual={actual_row_count}")
     if data_start_row > data_end_row:
-        raise ValueError(
-            f"[错误]: 数据起始行({data_start_row}) > 结束行({data_end_row})"
-        )
+        raise ValueError(f"[错误]: 数据起始行({data_start_row}) > 结束行({data_end_row})")
 
     actual_end_row: int = data_start_row + actual_row_count - 1
     reserved_start: int = actual_end_row + 1
@@ -173,7 +168,10 @@ def delete_reserved_rows(ws: Worksheet, data_start_row: int, data_end_row: int, 
     delete_count: int = data_end_row - reserved_start + 1
     logger.info(
         "删除预留空行: 第 %d 行 → 第 %d 行（共 %d 行），新数据结束行=%d",
-        reserved_start, data_end_row, delete_count, actual_end_row,
+        reserved_start,
+        data_end_row,
+        delete_count,
+        actual_end_row,
     )
     delete_rows_safely(ws, reserved_start, data_end_row)
     return actual_end_row
@@ -210,16 +208,16 @@ def resize_data_rows(
     if target_row_count <= 0:
         raise ValueError(f"[错误]: 目标行数必须为正整数，target={target_row_count}")
     if data_start_row > data_end_row:
-        raise ValueError(
-            f"[错误]: 数据起始行({data_start_row}) > 结束行({data_end_row})"
-        )
+        raise ValueError(f"[错误]: 数据起始行({data_start_row}) > 结束行({data_end_row})")
 
     current_count: int = data_end_row - data_start_row + 1
     diff: int = target_row_count - current_count
 
     logger.info(
         "数据行调整: 当前 %d 行 → 目标 %d 行 (diff=%+d)",
-        current_count, target_row_count, diff,
+        current_count,
+        target_row_count,
+        diff,
     )
 
     if diff > 0:
@@ -227,18 +225,23 @@ def resize_data_rows(
         new_data_end: int = data_end_row + diff
         logger.info(
             "已扩容: 在 %d 行后插入 %d 行，新结束行=%d",
-            data_end_row, diff, new_data_end,
+            data_end_row,
+            diff,
+            new_data_end,
         )
         return new_data_end
     elif diff < 0:
         delete_start: int = data_start_row + target_row_count
         delete_rows_safely(ws, delete_start, data_end_row)
-        new_data_end: int = delete_start - 1
+        new_end: int = delete_start - 1
         logger.info(
             "已缩容: 删除 %d 行（%d→%d），新结束行=%d",
-            -diff, delete_start, data_end_row, new_data_end,
+            -diff,
+            delete_start,
+            data_end_row,
+            new_end,
         )
-        return new_data_end
+        return new_end
     else:
         logger.info("数据行数无需调整（%d 行）", current_count)
         return data_end_row

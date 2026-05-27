@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Excel 列名映射表 — 从 excel_importer.py 拆分.
 
 提供中文/英文列名到 SSOT 字段标识的自动映射。
@@ -7,7 +6,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -152,12 +150,29 @@ _VALID_TRADE_TERMS: set[str] = {"FOB", "CIF", "CFR", "EXW", "DDP", "DAP"}
 
 # 明细级字段（与订单级字段区分，由 detail_parser 处理）
 DETAIL_FIELDS: set[str] = {
-    "pallet_no", "length_m", "width_m", "height_m", "pallet_weight_kg",
-    "carton_label", "length_cm", "width_cm", "height_cm", "gross_weight_kg",
-    "is_batch", "batch_count",
-    "seq_no", "product_name", "specification", "hs_code", "declaration_elements",
-    "unit", "qty_per_carton", "unit_price", "net_weight_per_unit_kg",
-    "destination_country", "currency",
+    "pallet_no",
+    "length_m",
+    "width_m",
+    "height_m",
+    "pallet_weight_kg",
+    "carton_label",
+    "length_cm",
+    "width_cm",
+    "height_cm",
+    "gross_weight_kg",
+    "is_batch",
+    "batch_count",
+    "seq_no",
+    "product_name",
+    "specification",
+    "hs_code",
+    "declaration_elements",
+    "unit",
+    "qty_per_carton",
+    "unit_price",
+    "net_weight_per_unit_kg",
+    "destination_country",
+    "currency",
 }
 
 

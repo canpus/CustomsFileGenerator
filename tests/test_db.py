@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 2 里程碑测试：数据库层（schema + connection + repository）.
 
 运行方式：
@@ -17,8 +16,7 @@
 
 from __future__ import annotations
 
-import json
-import os
+import contextlib
 import tempfile
 import threading
 from pathlib import Path
@@ -58,19 +56,24 @@ def setup_test_db(monkeypatch):
     if _TEST_DB_PATH.exists():
         _TEST_DB_PATH.unlink()
     if _TEST_DB_DIR.exists():
-        try:
+        with contextlib.suppress(OSError):
             _TEST_DB_DIR.rmdir()
-        except OSError:
-            pass
 
 
 # ==================== 测试辅助 ====================
 
 
-def _make_valid_order() -> "OrderData":
+def _make_valid_order() -> OrderData:
     """构建一个最小合法订单."""
     from src.models.order_data import (
-        Carton, Customer, OrderData, OrderMeta, Origin, Pallet, Product, Totals,
+        Carton,
+        Customer,
+        OrderData,
+        OrderMeta,
+        Origin,
+        Pallet,
+        Product,
+        Totals,
     )
     return OrderData(
         order_meta=OrderMeta(
@@ -136,14 +139,14 @@ class TestDatabaseAutoCreation:
 
     def test_database_file_created(self) -> None:
         """首次连接后 customs.db 文件应存在."""
-        from src.db.connection import get_connection, close_connection
-        conn = get_connection()
+        from src.db.connection import close_connection, get_connection
+        get_connection()
         assert _TEST_DB_PATH.exists(), "数据库文件未自动创建"
         close_connection()
 
     def test_tables_created(self) -> None:
         """四张表全部创建成功."""
-        from src.db.connection import get_connection, close_connection
+        from src.db.connection import close_connection, get_connection
         conn = get_connection()
         cursor = conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
@@ -155,7 +158,7 @@ class TestDatabaseAutoCreation:
 
     def test_wal_mode_enabled(self) -> None:
         """WAL 模式应已启用."""
-        from src.db.connection import get_connection, close_connection
+        from src.db.connection import close_connection, get_connection
         conn = get_connection()
         cursor = conn.execute("PRAGMA journal_mode")
         mode = cursor.fetchone()[0]
@@ -538,8 +541,8 @@ class TestSQLInjection:
 
     def test_injection_in_search(self) -> None:
         """输入 '; DROP TABLE customers;-- 不会删表."""
+        from src.db.connection import close_connection, get_connection
         from src.db.repository import CustomerRepository
-        from src.db.connection import get_connection, close_connection
 
         # 先插入一条正常数据
         CustomerRepository.insert(
@@ -567,8 +570,8 @@ class TestSQLInjection:
 
     def test_injection_in_product_search(self) -> None:
         """产品表同样不被注入."""
+        from src.db.connection import close_connection, get_connection
         from src.db.repository import ProductRepository
-        from src.db.connection import get_connection, close_connection
 
         ProductRepository.insert(
             product_name="SAFE_PRODUCT",

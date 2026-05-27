@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """树状编辑器 — UI 构建 mixin.
 
 包含 build、Treeview 构建、详情面板框架、右键菜单、节点选择路由。
@@ -87,25 +86,29 @@ class TreeUIMixin:
         bottom.pack(fill=X, padx=5, pady=(10, 5))
 
         ttk.Button(
-            bottom, text="← 返回订单信息",
+            bottom,
+            text="← 返回订单信息",
             bootstyle="secondary-outline",
             command=lambda: self.app.switch_page("order_info"),
         ).pack(side=LEFT)
 
         ttk.Button(
-            bottom, text="清空所有商品",
+            bottom,
+            text="清空所有商品",
             bootstyle="danger-outline",
             command=self._on_clear_all,
         ).pack(side=LEFT, padx=(10, 0))
 
         ttk.Button(
-            bottom, text="从 Excel 导入商品明细...",
+            bottom,
+            text="从 Excel 导入商品明细...",
             bootstyle="info-outline",
             command=self._on_import_excel,
         ).pack(side=LEFT, padx=(10, 0))
 
         ttk.Button(
-            bottom, text="一键生成报关资料 →",
+            bottom,
+            text="一键生成报关资料 →",
             bootstyle="success",
             command=self._on_generate,
         ).pack(side=RIGHT)
@@ -118,19 +121,22 @@ class TreeUIMixin:
         toolbar.pack(fill=X, pady=(0, 5))
 
         ttk.Button(
-            toolbar, text="+ 新增托盘",
+            toolbar,
+            text="+ 新增托盘",
             bootstyle="success-outline",
             command=lambda: self._add_pallet(),
         ).pack(side=LEFT, padx=(0, 5))
 
         ttk.Button(
-            toolbar, text="展开全部",
+            toolbar,
+            text="展开全部",
             bootstyle="secondary-outline",
             command=lambda: self._expand_all(),
         ).pack(side=LEFT, padx=(0, 5))
 
         ttk.Button(
-            toolbar, text="折叠全部",
+            toolbar,
+            text="折叠全部",
             bootstyle="secondary-outline",
             command=lambda: self._collapse_all(),
         ).pack(side=LEFT)
@@ -140,7 +146,10 @@ class TreeUIMixin:
 
         columns = ("field", "value")
         self._tree = ttk.Treeview(
-            tree_frame, columns=columns, show="tree headings", height=20,
+            tree_frame,
+            columns=columns,
+            show="tree headings",
+            height=20,
         )
         self._tree.heading("#0", text="结构")
         self._tree.heading("field", text="字段")
@@ -161,7 +170,8 @@ class TreeUIMixin:
         """构建右侧详情表单面板."""
         self._detail_title_var = ttk.StringVar(value="选择左侧节点查看详情")
         ttk.Label(
-            parent, textvariable=self._detail_title_var,
+            parent,
+            textvariable=self._detail_title_var,
             font=self.app.get_font(bold=True, size=12),
             bootstyle="primary",
         ).pack(anchor=W, padx=10, pady=(10, 5))
@@ -184,15 +194,16 @@ class TreeUIMixin:
 
         def _on_wheel(event: Any) -> None:
             canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
         canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", _on_wheel))
         canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
 
         ttk.Label(
             self._detail_frame,
             text="从左侧树中选择一个节点，\n即可在此处查看和编辑详细信息。\n\n"
-                 "• 选中托盘 → 编辑托盘尺寸和重量\n"
-                 "• 选中纸箱 → 编辑纸箱尺寸和毛重\n"
-                 "• 选中商品 → 编辑商品规格和价格",
+            "• 选中托盘 → 编辑托盘尺寸和重量\n"
+            "• 选中纸箱 → 编辑纸箱尺寸和毛重\n"
+            "• 选中商品 → 编辑商品规格和价格",
             font=self.app.get_font(size=10),
             bootstyle="secondary",
             justify=LEFT,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """订单信息页 — UI 构建 mixin.
 
 包含四个区块的构建及表单工具方法。
@@ -13,8 +12,6 @@ from ttkbootstrap.constants import *
 
 if TYPE_CHECKING:
     from src.gui.pages.order_info_page import OrderInfoPage
-
-from config.settings import get_all_settings
 
 
 class OrderInfoUIMixin:
@@ -54,7 +51,9 @@ class OrderInfoUIMixin:
         row4 = ttk.Frame(section)
         row4.pack(fill=X, pady=2)
         self._add_field(row4, "提单号:", "bill_of_lading_no", 0)
-        self._add_combobox(row4, "贸易条款:", "trade_term", ["FOB", "CIF", "DAP", "DDP", "EXW", "CFR"], "FOB", 1)
+        self._add_combobox(
+            row4, "贸易条款:", "trade_term", ["FOB", "CIF", "DAP", "DDP", "EXW", "CFR"], "FOB", 1
+        )
 
         row5 = ttk.Frame(section)
         row5.pack(fill=X, pady=2)
@@ -114,7 +113,9 @@ class OrderInfoUIMixin:
         row1 = ttk.Frame(section)
         row1.pack(fill=X, pady=2)
         self._add_field(row1, "装运港:", "export_port", 0)
-        self._add_combobox(row1, "包装类型:", "package_type", ["pallet", "carton", "package"], "pallet", 1)
+        self._add_combobox(
+            row1, "包装类型:", "package_type", ["pallet", "carton", "package"], "pallet", 1
+        )
 
         row2 = ttk.Frame(section)
         row2.pack(fill=X, pady=2)
@@ -130,10 +131,20 @@ class OrderInfoUIMixin:
 
         row1 = ttk.Frame(section)
         row1.pack(fill=X, pady=2)
-        self._add_field(row1, "经营单位:", "business_entity", 0,
-                        default=company_defaults.get("name_cn", "长园长通新材料股份有限公司"))
-        self._add_field(row1, "生产厂家:", "manufacturer", 1,
-                        default=company_defaults.get("name_cn", "长园长通新材料股份有限公司"))
+        self._add_field(
+            row1,
+            "经营单位:",
+            "business_entity",
+            0,
+            default=company_defaults.get("name_cn", "长园长通新材料股份有限公司"),
+        )
+        self._add_field(
+            row1,
+            "生产厂家:",
+            "manufacturer",
+            1,
+            default=company_defaults.get("name_cn", "长园长通新材料股份有限公司"),
+        )
 
         row2 = ttk.Frame(section)
         row2.pack(fill=X, pady=2)
@@ -159,8 +170,12 @@ class OrderInfoUIMixin:
 
     def _add_field(
         self: OrderInfoPage,
-        parent: ttk.Frame, label: str, field_name: str, col: int,
-        default: str = "", width: int = 30,
+        parent: ttk.Frame,
+        label: str,
+        field_name: str,
+        col: int,
+        default: str = "",
+        width: int = 30,
     ) -> ttk.Frame:
         """添加一个标签 + 输入框."""
         f = ttk.Frame(parent)
@@ -178,18 +193,27 @@ class OrderInfoUIMixin:
 
     def _add_date_field(
         self: OrderInfoPage,
-        parent: ttk.Frame, label: str, field_name: str, col: int, default: str = "",
+        parent: ttk.Frame,
+        label: str,
+        field_name: str,
+        col: int,
+        default: str = "",
     ) -> None:
         """添加日期输入字段，默认填入今天日期."""
         if not default:
             from datetime import datetime
+
             default = datetime.now().strftime("%Y-%m-%d")
         self._add_field(parent, label, field_name, col, default=default, width=18)
 
     def _add_combobox(
         self: OrderInfoPage,
-        parent: ttk.Frame, label: str, field_name: str,
-        values: list[str], default: str, col: int,
+        parent: ttk.Frame,
+        label: str,
+        field_name: str,
+        values: list[str],
+        default: str,
+        col: int,
     ) -> None:
         """添加下拉选择框."""
         f = ttk.Frame(parent)

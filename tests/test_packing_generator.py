@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 4 测试 — 装箱单生成器.
 
 测试覆盖：
@@ -12,15 +11,14 @@
 
 from __future__ import annotations
 
-import copy
-import json
+import contextlib
 import tempfile
 from pathlib import Path
 
 import openpyxl
 import pytest
 
-from config.constants import TEMPLATE_PACKING_PATH, OUTPUT_DIR
+from config.constants import OUTPUT_DIR, TEMPLATE_PACKING_PATH
 from src.generators.packing_generator import (
     PackingGenerator,
     flatten_for_packing,
@@ -34,9 +32,7 @@ from src.models.order_data import (
     Pallet,
     Product,
     Totals,
-    decode_order,
 )
-
 
 # ==================== 测试辅助：构造订单 ====================
 
@@ -454,10 +450,8 @@ class TestPackingGenerator:
             ),
         )
 
-        try:
+        with contextlib.suppress(ValueError):
             gen.generate(order)
-        except ValueError:
-            pass
 
         # 模板文件修改时间不应改变
         assert TEMPLATE_PACKING_PATH.stat().st_mtime == original_mtime, (

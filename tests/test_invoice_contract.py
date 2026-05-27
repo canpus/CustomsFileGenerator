@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 5 测试 — 发票生成器 + 合同生成器.
 
 测试覆盖：
@@ -12,7 +11,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 from pathlib import Path
@@ -24,6 +22,15 @@ PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.generators.contract_generator import (
+    ContractGenerator,
+    flatten_for_contract,
+)
+from src.generators.invoice_generator import (
+    InvoiceGenerator,
+    _amount_to_english_upper,
+    flatten_for_invoice,
+)
 from src.models.order_data import (
     Carton,
     Customer,
@@ -34,16 +41,6 @@ from src.models.order_data import (
     Product,
     Totals,
 )
-from src.generators.invoice_generator import (
-    InvoiceGenerator,
-    _amount_to_english_upper,
-    flatten_for_invoice,
-)
-from src.generators.contract_generator import (
-    ContractGenerator,
-    flatten_for_contract,
-)
-
 
 # ==================== 测试数据工厂 ====================
 
@@ -294,7 +291,7 @@ class TestInvoiceGenerator:
 
     def test_empty_order_raises_error(self):
         """空订单（0 商品） → 报错."""
-        order = _make_minimal_order()
+        _make_minimal_order()
         # 清除所有商品
         empty_pallet = Pallet(
             pallet_no=1,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """模板保护机制 — 阶段 7.2.
 
 提供模板存在性校验、完整性检查、沙箱操作和出厂默认模板自动恢复功能。
@@ -11,7 +10,6 @@ import logging
 import shutil
 import tempfile
 from pathlib import Path
-from typing import List, Optional, Tuple
 
 from config.constants import (
     ALL_TEMPLATE_FILES,
@@ -52,7 +50,7 @@ class TemplateGuard:
 
     # ==================== 公开 API ====================
 
-    def validate_all(self) -> Tuple[bool, List[str]]:
+    def validate_all(self) -> tuple[bool, list[str]]:
         """校验所有模板文件的存在性和可读性.
 
         Returns:
@@ -61,7 +59,7 @@ class TemplateGuard:
         注意：不检查模板内容完整性（由 template_assertion 负责），
         仅检查文件存在且大小 > 0。
         """
-        errors: List[str] = []
+        errors: list[str] = []
 
         for filename in ALL_TEMPLATE_FILES:
             template_path: Path = self._templates_dir / filename
@@ -81,13 +79,15 @@ class TemplateGuard:
 
         is_valid: bool = len(errors) == 0
         if is_valid:
-            logger.info("模板文件校验通过: %d/%d 存在", len(ALL_TEMPLATE_FILES), len(ALL_TEMPLATE_FILES))
+            logger.info(
+                "模板文件校验通过: %d/%d 存在", len(ALL_TEMPLATE_FILES), len(ALL_TEMPLATE_FILES)
+            )
         else:
             logger.warning("模板文件校验失败: %d 个错误", len(errors))
 
         return is_valid, errors
 
-    def validate_single(self, template_name: str) -> Tuple[bool, Optional[str]]:
+    def validate_single(self, template_name: str) -> tuple[bool, str | None]:
         """校验单个模板文件.
 
         Args:
@@ -151,7 +151,7 @@ class TemplateGuard:
         logger.debug("沙箱副本已创建: %s", sandbox_path)
         return sandbox_path
 
-    def restore_from_backup(self, template_name: str) -> Tuple[bool, str]:
+    def restore_from_backup(self, template_name: str) -> tuple[bool, str]:
         """从备份目录恢复出厂默认模板.
 
         当模板损坏或丢失时，从 src/assets/backup_templates/ 复制恢复。
@@ -193,13 +193,13 @@ class TemplateGuard:
                 f"[排查]: 请检查磁盘空间和 templates/ 目录的写入权限"
             )
 
-    def restore_all_from_backup(self) -> Tuple[int, List[str]]:
+    def restore_all_from_backup(self) -> tuple[int, list[str]]:
         """批量从备份恢复所有模板.
 
         Returns:
             (success_count, messages): 成功恢复的数量，以及每条操作的消息列表.
         """
-        messages: List[str] = []
+        messages: list[str] = []
         success_count: int = 0
 
         for filename in ALL_TEMPLATE_FILES:
@@ -208,9 +208,7 @@ class TemplateGuard:
             if success:
                 success_count += 1
 
-        logger.info(
-            "批量恢复完成: 成功 %d/%d", success_count, len(ALL_TEMPLATE_FILES)
-        )
+        logger.info("批量恢复完成: 成功 %d/%d", success_count, len(ALL_TEMPLATE_FILES))
         return success_count, messages
 
     @staticmethod
@@ -257,7 +255,7 @@ def get_guard() -> TemplateGuard:
     return _DEFAULT_GUARD
 
 
-def validate_all_templates() -> Tuple[bool, List[str]]:
+def validate_all_templates() -> tuple[bool, list[str]]:
     """校验所有模板文件（便捷函数）."""
     return get_guard().validate_all()
 

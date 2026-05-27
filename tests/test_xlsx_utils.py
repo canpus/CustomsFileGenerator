@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 3 测试 — XLSX 工具库 + 锚点扫描.
 
 测试覆盖：
@@ -23,9 +22,13 @@ import openpyxl
 import pytest
 
 from config.constants import (
-    TEMPLATE_PACKING_PATH,
-    TEMPLATE_INVOICE_PATH,
     TEMPLATE_CONTRACT_PATH,
+    TEMPLATE_INVOICE_PATH,
+    TEMPLATE_PACKING_PATH,
+)
+from src.generators.template_anchor_scanner import (
+    AnchorResult,
+    scan_template,
 )
 from src.generators.xlsx_utils import (
     clone_row_style,
@@ -35,14 +38,6 @@ from src.generators.xlsx_utils import (
     resize_data_rows,
     update_sum_formula,
 )
-from src.generators.template_anchor_scanner import (
-    AnchorResult,
-    scan_template,
-    scan_packing_template,
-    scan_invoice_template,
-    scan_contract_template,
-)
-
 
 # ==================== Fixtures ====================
 
@@ -55,7 +50,7 @@ def sample_ws():
     ws.title = "Test"
 
     # 加粗标题行
-    from openpyxl.styles import Font, Border, Side, PatternFill, Alignment
+    from openpyxl.styles import Border, Font, PatternFill, Side
 
     header_font = Font(name="Arial", size=12, bold=True)
     thin_border = Border(

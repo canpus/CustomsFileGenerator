@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """报关资料自动生成系统 — SQLite 数据库连接管理器.
 
 提供线程安全的 SQLite 连接管理，启用 WAL 模式，自动建表。
@@ -10,9 +9,9 @@ import logging
 import sqlite3
 import threading
 import time
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator
 
 from config.constants import DATABASE_PATH
 
@@ -69,9 +68,7 @@ def _load_schema(conn: sqlite3.Connection) -> None:
         schema_sql = _SCHEMA_PATH.read_text(encoding="utf-8")
     except OSError as e:
         msg = (
-            f"[错误]: 无法读取建表脚本 {_SCHEMA_PATH}\n"
-            f"[原因]: {e}\n"
-            f"[排查]: 检查文件权限和磁盘状态"
+            f"[错误]: 无法读取建表脚本 {_SCHEMA_PATH}\n[原因]: {e}\n[排查]: 检查文件权限和磁盘状态"
         )
         logger.error(msg)
         raise RuntimeError(msg) from e
@@ -148,7 +145,9 @@ def _create_connection_with_retry() -> sqlite3.Connection:
             if attempt < _MAX_RETRIES:
                 logger.warning(
                     "数据库连接失败（第 %d/%d 次），%s 后重试...",
-                    attempt, _MAX_RETRIES, _RETRY_DELAY_SECONDS,
+                    attempt,
+                    _MAX_RETRIES,
+                    _RETRY_DELAY_SECONDS,
                 )
                 time.sleep(_RETRY_DELAY_SECONDS)
 

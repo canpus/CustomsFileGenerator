@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """树状编辑器 — 数据导出 mixin.
 
 包含 collect_tree_data 与 build_order_data 方法。
@@ -10,6 +9,8 @@ import copy
 import logging
 from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
+
+from ttkbootstrap.constants import *
 
 from src.models.order_data import (
     Carton,
@@ -135,26 +136,25 @@ class TreeExportMixin:
 
             total_pallets = len(pallets)
             total_cartons = sum(
-                c.batch_count if c.is_batch else 1
-                for p in pallets for c in p.cartons
+                c.batch_count if c.is_batch else 1 for p in pallets for c in p.cartons
             )
             total_gross = sum(
                 (c.gross_weight_kg * c.batch_count) if c.is_batch else c.gross_weight_kg
-                for p in pallets for c in p.cartons
+                for p in pallets
+                for c in p.cartons
             )
             total_net = sum(
-                pr.net_weight_per_unit_kg * pr.qty_per_carton
-                * (c.batch_count if c.is_batch else 1)
-                for p in pallets for c in p.cartons for pr in c.products
-            )
-            total_volume = sum(
-                p.length_m * p.width_m * p.height_m
+                pr.net_weight_per_unit_kg * pr.qty_per_carton * (c.batch_count if c.is_batch else 1)
                 for p in pallets
+                for c in p.cartons
+                for pr in c.products
             )
+            total_volume = sum(p.length_m * p.width_m * p.height_m for p in pallets)
             total_amount = sum(
-                pr.unit_price * pr.qty_per_carton
-                * (c.batch_count if c.is_batch else 1)
-                for p in pallets for c in p.cartons for pr in c.products
+                pr.unit_price * pr.qty_per_carton * (c.batch_count if c.is_batch else 1)
+                for p in pallets
+                for c in p.cartons
+                for pr in c.products
             )
 
             totals = Totals(

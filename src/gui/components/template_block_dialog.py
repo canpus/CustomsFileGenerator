@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """套用模板对话框 — 选择并套用已保存的分块模板.
 
 提供：
@@ -27,22 +26,54 @@ BLOCK_TYPE_OPTIONS: list[tuple[str, str]] = [
 
 # order_full 套用范围选项
 ORDER_FULL_FIELD_GROUPS: list[tuple[str, str, list[str]]] = [
-    ("订单元信息", "order_meta", [
-        "invoice_no", "contract_no", "date", "order_no",
-        "transport_mode", "vessel_flight", "bill_of_lading_no",
-        "trade_term", "payment_term", "currency",
-        "country_of_origin", "goods_summary", "declaration_elements_template",
-        "package_type",
-    ]),
-    ("客户信息", "customer", [
-        "company_name_en", "company_name_cn", "country",
-        "address", "contact_person", "phone", "mobile", "destination",
-    ]),
-    ("境内信息", "origin", [
-        "export_port", "domestic_source", "manufacturer",
-        "business_entity", "trade_mode", "tax_nature",
-        "settlement_method", "tax_rebate",
-    ]),
+    (
+        "订单元信息",
+        "order_meta",
+        [
+            "invoice_no",
+            "contract_no",
+            "date",
+            "order_no",
+            "transport_mode",
+            "vessel_flight",
+            "bill_of_lading_no",
+            "trade_term",
+            "payment_term",
+            "currency",
+            "country_of_origin",
+            "goods_summary",
+            "declaration_elements_template",
+            "package_type",
+        ],
+    ),
+    (
+        "客户信息",
+        "customer",
+        [
+            "company_name_en",
+            "company_name_cn",
+            "country",
+            "address",
+            "contact_person",
+            "phone",
+            "mobile",
+            "destination",
+        ],
+    ),
+    (
+        "境内信息",
+        "origin",
+        [
+            "export_port",
+            "domestic_source",
+            "manufacturer",
+            "business_entity",
+            "trade_mode",
+            "tax_nature",
+            "settlement_method",
+            "tax_rebate",
+        ],
+    ),
 ]
 
 
@@ -86,7 +117,9 @@ class TemplateBlockDialog:
         filter_frame = ttk.Frame(self._dialog)
         filter_frame.pack(fill=X, padx=20, pady=(0, 10))
 
-        ttk.Label(filter_frame, text="模板类型:", font=self._app.get_font(size=10)).pack(side=LEFT, padx=(0, 8))
+        ttk.Label(filter_frame, text="模板类型:", font=self._app.get_font(size=10)).pack(
+            side=LEFT, padx=(0, 8)
+        )
 
         self._type_var = ttk.StringVar(value="customer")
         type_combo = ttk.Combobox(
@@ -126,20 +159,24 @@ class TemplateBlockDialog:
         self._block_list_tree.column("desc", width=180)
         self._block_list_tree.column("date", width=100, anchor=CENTER)
 
-        tree_scrollbar = ttk.Scrollbar(list_frame, orient=VERTICAL, command=self._block_list_tree.yview)
+        tree_scrollbar = ttk.Scrollbar(
+            list_frame, orient=VERTICAL, command=self._block_list_tree.yview
+        )
         self._block_list_tree.configure(yscrollcommand=tree_scrollbar.set)
         self._block_list_tree.pack(side=LEFT, fill=BOTH, expand=YES)
         tree_scrollbar.pack(side=RIGHT, fill=Y)
 
         # ---- 套用范围（仅 order_full 显示） ----
-        self._scope_frame = ttk.Labelframe(self._dialog, text="套用范围（勾选需要覆盖的字段组）", padding=8, bootstyle="warning")
+        self._scope_frame = ttk.Labelframe(
+            self._dialog, text="套用范围（勾选需要覆盖的字段组）", padding=8, bootstyle="warning"
+        )
         self._scope_vars: dict[str, ttk.BooleanVar] = {}
-        for label, key, _ in ORDER_FULL_FIELD_GROUPS:
+        for _label, key, _ in ORDER_FULL_FIELD_GROUPS:
             var = ttk.BooleanVar(value=True)
             self._scope_vars[key] = var
 
         self._scope_checkbuttons: list[ttk.Checkbutton] = []
-        for label, key, _ in ORDER_FULL_FIELD_GROUPS:
+        for _label, key, _ in ORDER_FULL_FIELD_GROUPS:
             cb = ttk.Checkbutton(
                 self._scope_frame,
                 text=label,
@@ -195,6 +232,7 @@ class TemplateBlockDialog:
 
         try:
             from src.gui.services.template_block_service import TemplateBlockService
+
             self._blocks = TemplateBlockService.load_blocks(block_type)
         except Exception as e:
             logger.exception("[错误]: 加载分块模板列表失败")
@@ -215,7 +253,9 @@ class TemplateBlockDialog:
 
         # 根据类型显示/隐藏套用范围面板
         if block_type == "order_full":
-            self._scope_frame.pack(fill=X, padx=20, pady=(0, 10), before=self._dialog.winfo_children()[-1])
+            self._scope_frame.pack(
+                fill=X, padx=20, pady=(0, 10), before=self._dialog.winfo_children()[-1]
+            )
         else:
             self._scope_frame.pack_forget()
 
@@ -249,7 +289,7 @@ class TemplateBlockDialog:
             if block_type == "order_full":
                 # 收集勾选的字段
                 selected_fields: set[str] = set()
-                for label, key, fields in ORDER_FULL_FIELD_GROUPS:
+                for _label, key, fields in ORDER_FULL_FIELD_GROUPS:
                     if self._scope_vars.get(key, ttk.BooleanVar(value=True)).get():
                         selected_fields.update(fields)
                 new_data = TemplateBlockService.apply_block(block, current_data, selected_fields)
@@ -270,8 +310,7 @@ class TemplateBlockDialog:
             block_name = block.get("block_name", "未命名")
             messagebox.showinfo(
                 "套用成功",
-                f"模板「{block_name}」已套用到当前订单。\n\n"
-                f"请检查套用后的数据是否正确。",
+                f"模板「{block_name}」已套用到当前订单。\n\n请检查套用后的数据是否正确。",
             )
             self._app.set_status(f"已套用模板: {block_name}")
 

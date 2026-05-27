@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 1 里程碑测试：数据模型 + 校验器 + 错误映射.
 
 运行方式：
@@ -22,15 +21,12 @@ import json
 import msgspec
 import pytest
 
+from src.models.error_mapper import (
+    format_validation_report,
+    map_validation_errors,
+)
 from src.models.order_data import (
-    Carton,
-    Customer,
     OrderData,
-    OrderMeta,
-    Origin,
-    Pallet,
-    Product,
-    TemplateMeta,
     Totals,
     decode_order,
     encode_order,
@@ -40,11 +36,6 @@ from src.models.validators import (
     ValidationReport,
     validate_order_consistency,
 )
-from src.models.error_mapper import (
-    map_validation_errors,
-    format_validation_report,
-)
-
 
 # ==================== 测试辅助：构造合法订单 ====================
 

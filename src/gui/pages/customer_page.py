@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """客户管理页 — P7 客户库功能.
 
 提供：
@@ -122,10 +121,7 @@ class CustomerEditDialog:
             messagebox.showwarning("必填字段缺失", "国家不能为空。")
             return
 
-        self._result = {
-            field: var.get().strip()
-            for field, var in self._vars.items()
-        }
+        self._result = {field: var.get().strip() for field, var in self._vars.items()}
         self._dialog.destroy()
 
     def show(self) -> dict[str, Any] | None:
@@ -405,9 +401,7 @@ class CustomerPage(PageBase):
         ).pack(side=LEFT)
 
         # ---- 客户列表 ----
-        list_frame = ttk.Labelframe(
-            self.frame, text="客户列表", padding=10, bootstyle="info"
-        )
+        list_frame = ttk.Labelframe(self.frame, text="客户列表", padding=10, bootstyle="info")
         list_frame.pack(fill=BOTH, expand=YES)
 
         columns = ("id", "name_en", "name_cn", "country", "contact", "phone", "destination")
@@ -432,9 +426,7 @@ class CustomerPage(PageBase):
         self._customer_tree.column("phone", width=100, anchor=CENTER)
         self._customer_tree.column("destination", width=100, anchor=CENTER)
 
-        scrollbar = ttk.Scrollbar(
-            list_frame, orient=VERTICAL, command=self._customer_tree.yview
-        )
+        scrollbar = ttk.Scrollbar(list_frame, orient=VERTICAL, command=self._customer_tree.yview)
         self._customer_tree.configure(yscrollcommand=scrollbar.set)
 
         self._customer_tree.pack(side=LEFT, fill=BOTH, expand=YES)
@@ -607,9 +599,7 @@ class CustomerPage(PageBase):
         current_data["customer"] = customer_data
         self.app.current_order_data = current_data
 
-        self.app.set_status(
-            f"已套用客户「{customer.get('company_name_en', '')}」到当前订单"
-        )
+        self.app.set_status(f"已套用客户「{customer.get('company_name_en', '')}」到当前订单")
 
         messagebox.showinfo(
             "套用成功",

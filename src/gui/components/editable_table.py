@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """可编辑表格组件 — 基于 ttk.Treeview + Entry 叠加编辑.
 
 提供：
@@ -14,17 +13,15 @@ from __future__ import annotations
 
 import copy
 import logging
+from collections.abc import Callable
 from tkinter import (
     END,
     HORIZONTAL,
-    LEFT,
-    RIGHT,
     VERTICAL,
     Menu,
-    StringVar,
     messagebox,
 )
-from typing import Any, Callable
+from typing import Any
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -211,9 +208,7 @@ class EditableTable(ttk.Frame):
             self._refresh_display()
             self._notify_change()
 
-    def update_cells_batch(
-        self, row_indices: list[int], col_key: str, value: Any
-    ) -> None:
+    def update_cells_batch(self, row_indices: list[int], col_key: str, value: Any) -> None:
         """批量更新多行同一列的值.
 
         Args:
@@ -259,15 +254,12 @@ class EditableTable(ttk.Frame):
         """右键菜单."""
         # 先选中右键所在行
         row_iid = self._tree.identify_row(event.y)
-        if row_iid:
-            if row_iid not in self._tree.selection():
-                self._tree.selection_set(row_iid)
+        if row_iid and row_iid not in self._tree.selection():
+            self._tree.selection_set(row_iid)
 
         menu = Menu(self, tearoff=0)
         menu.add_command(label="插入行 (Insert)", command=lambda: self._on_insert_row())
-        menu.add_command(
-            label="删除选中行 (Delete)", command=self.delete_selected_rows
-        )
+        menu.add_command(label="删除选中行 (Delete)", command=self.delete_selected_rows)
         menu.add_separator()
         menu.add_command(label="复制行 (Ctrl+C)", command=self.copy_selected_rows)
         menu.add_command(label="粘贴行 (Ctrl+V)", command=self.paste_rows)
@@ -282,7 +274,7 @@ class EditableTable(ttk.Frame):
             if 0 <= col_idx < len(self.columns_def):
                 target_key = self.columns_def[col_idx][0]
                 fill_menu.add_command(
-                    label=f"用首行值填充此列",
+                    label="用首行值填充此列",
                     command=lambda: self._bulk_fill_column(selected, target_key),
                 )
             menu.add_cascade(label="批量填充", menu=fill_menu)
@@ -298,10 +290,7 @@ class EditableTable(ttk.Frame):
     def _on_insert_row(self) -> None:
         """在当前选中行之后插入新行."""
         selected = self.get_selected_row_indices()
-        if selected:
-            insert_idx = max(selected) + 1
-        else:
-            insert_idx = len(self._data)
+        insert_idx = max(selected) + 1 if selected else len(self._data)
         self.add_row(index=insert_idx)
 
     def _on_clear_all(self) -> None:
@@ -374,15 +363,11 @@ class EditableTable(ttk.Frame):
         if self._edit_entry is None:
             return
         new_value = self._edit_entry.get()
-        if 0 <= self._edit_row < len(self._data) and 0 <= self._edit_col < len(
-            self.columns_def
-        ):
+        if 0 <= self._edit_row < len(self._data) and 0 <= self._edit_col < len(self.columns_def):
             col_key = self.columns_def[self._edit_col][0]
             old_value = self._data[self._edit_row].get(col_key, "")
             if str(old_value) != new_value:
-                self._data[self._edit_row][col_key] = self._try_convert_value(
-                    col_key, new_value
-                )
+                self._data[self._edit_row][col_key] = self._try_convert_value(col_key, new_value)
                 self._refresh_display()
                 self._notify_change()
         self._cancel_edit()
@@ -488,7 +473,7 @@ class EditableTable(ttk.Frame):
         children = self._tree.get_children()
         # 删除多余行
         if len(children) > len(self._data):
-            for iid in children[len(self._data):]:
+            for iid in children[len(self._data) :]:
                 self._tree.delete(iid)
 
         col_keys = [col[0] for col in self.columns_def]
@@ -518,9 +503,15 @@ class EditableTable(ttk.Frame):
         """尝试将字符串值转为数字类型."""
         # 根据列名判断是否需要数字
         numeric_keys = {
-            "batch_count", "length_cm", "width_cm", "height_cm",
-            "gross_weight_kg", "qty_per_carton", "unit_price",
-            "net_weight_per_unit_kg", "pallet_no",
+            "batch_count",
+            "length_cm",
+            "width_cm",
+            "height_cm",
+            "gross_weight_kg",
+            "qty_per_carton",
+            "unit_price",
+            "net_weight_per_unit_kg",
+            "pallet_no",
         }
         if col_key in numeric_keys:
             try:

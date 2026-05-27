@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """一键生成协调器与模板断言 — 单元测试（阶段 7）.
 
 测试覆盖：
@@ -17,17 +16,14 @@ from __future__ import annotations
 
 import copy
 import logging
-import tempfile
 from pathlib import Path
 
-import msgspec
 import openpyxl
 import pytest
 
 from src.generators.orchestrator import (
     Orchestrator,
     OrchestratorReport,
-    generate_all,
 )
 from src.generators.template_assertion import (
     AssertionReport,
@@ -180,7 +176,7 @@ class TestOrchestratorGenerate:
 
     def test_generate_all_empty_pallets_rejected(self):
         """空订单 → 抛出异常."""
-        order: OrderData = _make_test_order("TEST-EMPTY", pallet_count=1)
+        _make_test_order("TEST-EMPTY", pallet_count=1)
         # 创建一个 pallets 为空的 order（通过 msgspec 无法直接创建，
         # 因为 pallets 是必填字段且有 minItems=1，所以测试空 list 的情况）
         # 实际上 msgspec 会在解码时拦截，这里测试 orchestrator 的 None 检查
@@ -202,7 +198,7 @@ class TestOrchestratorProgress:
         def on_progress(desc: str, pct: float) -> None:
             progress_calls.append((desc, pct))
 
-        report: OrchestratorReport = orchestrator.generate_all(
+        orchestrator.generate_all(
             order,
             output_dir=tmp_path / "output",
             progress_callback=on_progress,
@@ -226,7 +222,6 @@ class TestOrchestratorErrorIsolation:
         # Monkey-patch PackingGenerator.generate 使其抛出异常
         from src.generators.packing_generator import PackingGenerator
 
-        original_generate = PackingGenerator.generate
 
         def failing_generate(self, *args, **kwargs):
             raise RuntimeError("模拟装箱单生成失败")
@@ -354,7 +349,6 @@ class TestAssertionGrading:
             if r.status == "success" and r.output_path
         }
 
-        from src.generators.template_assertion import assert_all_xlsx
 
         batch = assert_all_xlsx(output_map)
 

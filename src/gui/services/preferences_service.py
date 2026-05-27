@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """偏好设置服务 — 窗口状态记忆与持久化.
 
 将窗口大小/位置/最大化状态、最近使用的目录等持久化到 JSON 文件。
@@ -59,7 +58,7 @@ class PreferencesService:
             return dict(DEFAULT_PREFERENCES)
 
         try:
-            with open(self._file, "r", encoding="utf-8") as f:
+            with open(self._file, encoding="utf-8") as f:
                 data: dict[str, Any] = json.load(f)
             # 合并默认值：补充缺失的键
             merged: dict[str, Any] = dict(DEFAULT_PREFERENCES)
@@ -84,9 +83,7 @@ class PreferencesService:
             logger.info("偏好设置已保存: %s", self._file)
         except OSError as e:
             logger.warning(
-                "[警告]: 偏好设置保存失败\n"
-                "[原因]: %s\n"
-                "[排查]: 请检查磁盘权限和目录是否存在",
+                "[警告]: 偏好设置保存失败\n[原因]: %s\n[排查]: 请检查磁盘权限和目录是否存在",
                 e,
             )
 

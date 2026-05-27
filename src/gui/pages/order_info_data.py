@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """订单信息页 — 数据操作与事件处理 mixin.
 
 包含数据收集、表单填充、校验、导入导出、清空等。
@@ -13,6 +12,7 @@ from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
 
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
 from config.constants import (
     DEFAULT_CURRENCY,
@@ -111,15 +111,27 @@ class OrderInfoDataMixin:
     def collect_data(self: OrderInfoPage) -> dict[str, Any]:
         """收集所有表单数据，组装为字典."""
         data: dict[str, Any] = {
-            "order_meta": {}, "customer": {}, "origin": {}, "shipping": {},
+            "order_meta": {},
+            "customer": {},
+            "origin": {},
+            "shipping": {},
         }
 
         meta_fields = [
-            "invoice_no", "contract_no", "date", "order_no",
-            "transport_mode", "vessel_flight", "bill_of_lading_no",
-            "trade_term", "payment_term", "currency",
-            "country_of_origin", "goods_summary",
-            "declaration_elements_template", "package_type",
+            "invoice_no",
+            "contract_no",
+            "date",
+            "order_no",
+            "transport_mode",
+            "vessel_flight",
+            "bill_of_lading_no",
+            "trade_term",
+            "payment_term",
+            "currency",
+            "country_of_origin",
+            "goods_summary",
+            "declaration_elements_template",
+            "package_type",
         ]
         for f in meta_fields:
             val = self._get_var(f)
@@ -127,8 +139,14 @@ class OrderInfoDataMixin:
                 data["order_meta"][f] = val
 
         cust_fields = [
-            "company_name_en", "company_name_cn", "country",
-            "address", "contact_person", "phone", "mobile", "destination",
+            "company_name_en",
+            "company_name_cn",
+            "country",
+            "address",
+            "contact_person",
+            "phone",
+            "mobile",
+            "destination",
         ]
         for f in cust_fields:
             val = self._get_var(f)
@@ -136,9 +154,14 @@ class OrderInfoDataMixin:
                 data["customer"][f] = val
 
         origin_fields = [
-            "export_port", "domestic_source", "manufacturer",
-            "business_entity", "trade_mode", "tax_nature",
-            "settlement_method", "tax_rebate",
+            "export_port",
+            "domestic_source",
+            "manufacturer",
+            "business_entity",
+            "trade_mode",
+            "tax_nature",
+            "settlement_method",
+            "tax_rebate",
         ]
         for f in origin_fields:
             val = self._get_var(f)
@@ -161,12 +184,18 @@ class OrderInfoDataMixin:
 
         meta = order.order_meta
         meta_map = {
-            "invoice_no": meta.invoice_no, "contract_no": meta.contract_no,
-            "date": meta.date, "order_no": meta.order_no,
-            "transport_mode": meta.transport_mode, "vessel_flight": meta.vessel_flight,
-            "bill_of_lading_no": meta.bill_of_lading_no, "trade_term": meta.trade_term,
-            "payment_term": meta.payment_term, "currency": meta.currency,
-            "country_of_origin": meta.country_of_origin, "goods_summary": meta.goods_summary,
+            "invoice_no": meta.invoice_no,
+            "contract_no": meta.contract_no,
+            "date": meta.date,
+            "order_no": meta.order_no,
+            "transport_mode": meta.transport_mode,
+            "vessel_flight": meta.vessel_flight,
+            "bill_of_lading_no": meta.bill_of_lading_no,
+            "trade_term": meta.trade_term,
+            "payment_term": meta.payment_term,
+            "currency": meta.currency,
+            "country_of_origin": meta.country_of_origin,
+            "goods_summary": meta.goods_summary,
             "declaration_elements_template": meta.declaration_elements_template,
         }
         for k, v in meta_map.items():
@@ -175,10 +204,14 @@ class OrderInfoDataMixin:
 
         cust = order.customer
         cust_map = {
-            "company_name_en": cust.company_name_en, "company_name_cn": cust.company_name_cn,
-            "country": cust.country, "address": cust.address,
-            "contact_person": cust.contact_person, "phone": cust.phone,
-            "mobile": cust.mobile, "destination": cust.destination,
+            "company_name_en": cust.company_name_en,
+            "company_name_cn": cust.company_name_cn,
+            "country": cust.country,
+            "address": cust.address,
+            "contact_person": cust.contact_person,
+            "phone": cust.phone,
+            "mobile": cust.mobile,
+            "destination": cust.destination,
         }
         for k, v in cust_map.items():
             if k in self._variables and v:
@@ -186,10 +219,14 @@ class OrderInfoDataMixin:
 
         origin = order.origin
         origin_map = {
-            "export_port": origin.export_port, "domestic_source": origin.domestic_source,
-            "manufacturer": origin.manufacturer, "business_entity": origin.business_entity,
-            "trade_mode": origin.trade_mode, "tax_nature": origin.tax_nature,
-            "settlement_method": origin.settlement_method, "tax_rebate": origin.tax_rebate,
+            "export_port": origin.export_port,
+            "domestic_source": origin.domestic_source,
+            "manufacturer": origin.manufacturer,
+            "business_entity": origin.business_entity,
+            "trade_mode": origin.trade_mode,
+            "tax_nature": origin.tax_nature,
+            "settlement_method": origin.settlement_method,
+            "tax_rebate": origin.tax_rebate,
         }
         for k, v in origin_map.items():
             if k in self._variables and v:
@@ -215,7 +252,7 @@ class OrderInfoDataMixin:
         if missing:
             messagebox.showwarning(
                 "必填字段缺失",
-                f"以下必填字段不能为空：\n\n  • {'\n  • '.join(missing)}\n\n请填写后重试。",
+                "以下必填字段不能为空：\n\n  • " + "\n  • ".join(missing) + "\n\n请填写后重试。",
             )
             return
 
@@ -306,9 +343,7 @@ class OrderInfoDataMixin:
             if val and form_field in self._variables:
                 self._variables[form_field].set(str(val))
 
-        self.app.set_status(
-            f"已从客户库选择: {customer.get('company_name_en', '')}"
-        )
+        self.app.set_status(f"已从客户库选择: {customer.get('company_name_en', '')}")
 
     def _on_apply_template(self: OrderInfoPage) -> None:
         """点击"套用模板"按钮 — 打开分块模板对话框."""
@@ -353,9 +388,12 @@ class OrderInfoDataMixin:
         # 块类型选择
         type_frame = ttk.Frame(dialog)
         type_frame.pack(fill=X, padx=20, pady=(0, 5))
-        ttk.Label(type_frame, text="模板类型:", font=self.app.get_font(size=10)).pack(side=LEFT, padx=(0, 8))
+        ttk.Label(type_frame, text="模板类型:", font=self.app.get_font(size=10)).pack(
+            side=LEFT, padx=(0, 8)
+        )
 
         from src.gui.components.template_block_dialog import BLOCK_TYPE_OPTIONS
+
         block_type_var = ttk.StringVar(value="customer")
         type_combo = ttk.Combobox(
             type_frame,
@@ -367,12 +405,16 @@ class OrderInfoDataMixin:
         type_combo.pack(side=LEFT)
 
         # 块名称
-        ttk.Label(dialog, text="模板名称:", font=self.app.get_font(size=10)).pack(anchor=W, padx=20, pady=(10, 0))
+        ttk.Label(dialog, text="模板名称:", font=self.app.get_font(size=10)).pack(
+            anchor=W, padx=20, pady=(10, 0)
+        )
         name_var = ttk.StringVar(value="")
         ttk.Entry(dialog, textvariable=name_var, width=45).pack(padx=20, pady=(0, 5))
 
         # 备注
-        ttk.Label(dialog, text="备注（可选）:", font=self.app.get_font(size=10)).pack(anchor=W, padx=20, pady=(5, 0))
+        ttk.Label(dialog, text="备注（可选）:", font=self.app.get_font(size=10)).pack(
+            anchor=W, padx=20, pady=(5, 0)
+        )
         desc_var = ttk.StringVar()
         ttk.Entry(dialog, textvariable=desc_var, width=45).pack(padx=20, pady=(0, 10))
 
@@ -380,9 +422,9 @@ class OrderInfoDataMixin:
         ttk.Label(
             dialog,
             text="将根据所选类型保存对应字段数据。\n"
-                 "- 客户信息：保存客户公司名、地址、联系人等\n"
-                 "- 运输信息：保存运输方式、装运港、贸易条款等\n"
-                 "- 整单模板：保存全部表单数据",
+            "- 客户信息：保存客户公司名、地址、联系人等\n"
+            "- 运输信息：保存运输方式、装运港、贸易条款等\n"
+            "- 整单模板：保存全部表单数据",
             font=self.app.get_font(size=9),
             bootstyle="secondary",
             wraplength=400,
@@ -419,6 +461,7 @@ class OrderInfoDataMixin:
 
             try:
                 from src.gui.services.template_block_service import TemplateBlockService
+
                 block_id = TemplateBlockService.save_block(
                     block_type, block_name, block_data, desc_var.get().strip()
                 )
@@ -429,8 +472,12 @@ class OrderInfoDataMixin:
                 logger.exception("[错误]: 保存模板块失败")
                 messagebox.showerror("保存失败", f"[错误]: {e}")
 
-        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(side=LEFT, padx=(20, 10))
-        ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=LEFT)
+        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(
+            side=LEFT, padx=(20, 10)
+        )
+        ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(
+            side=LEFT
+        )
 
     def _fill_from_order_data_dict(self: OrderInfoPage, data: dict[str, Any]) -> None:
         """从字典数据填充表单（用于套用模板后刷新）.
@@ -442,16 +489,51 @@ class OrderInfoDataMixin:
             return
 
         for section, fields in [
-            ("order_meta", ["invoice_no", "contract_no", "date", "order_no",
-                           "transport_mode", "vessel_flight", "bill_of_lading_no",
-                           "trade_term", "payment_term", "currency",
-                           "country_of_origin", "goods_summary",
-                           "declaration_elements_template", "package_type"]),
-            ("customer", ["company_name_en", "company_name_cn", "country",
-                         "address", "contact_person", "phone", "mobile", "destination"]),
-            ("origin", ["export_port", "domestic_source", "manufacturer",
-                       "business_entity", "trade_mode", "tax_nature",
-                       "settlement_method", "tax_rebate"]),
+            (
+                "order_meta",
+                [
+                    "invoice_no",
+                    "contract_no",
+                    "date",
+                    "order_no",
+                    "transport_mode",
+                    "vessel_flight",
+                    "bill_of_lading_no",
+                    "trade_term",
+                    "payment_term",
+                    "currency",
+                    "country_of_origin",
+                    "goods_summary",
+                    "declaration_elements_template",
+                    "package_type",
+                ],
+            ),
+            (
+                "customer",
+                [
+                    "company_name_en",
+                    "company_name_cn",
+                    "country",
+                    "address",
+                    "contact_person",
+                    "phone",
+                    "mobile",
+                    "destination",
+                ],
+            ),
+            (
+                "origin",
+                [
+                    "export_port",
+                    "domestic_source",
+                    "manufacturer",
+                    "business_entity",
+                    "trade_mode",
+                    "tax_nature",
+                    "settlement_method",
+                    "tax_rebate",
+                ],
+            ),
         ]:
             section_data = data.get(section, {})
             for field in fields:

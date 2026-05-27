@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """GUI 主应用窗口 — 阶段 9.1 / P5 GUI 现代化.
 
 基于 ttkbootstrap（Flatly 主题），提供：
@@ -12,10 +11,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import ctypes
 import logging
 import sys
-from pathlib import Path
 from tkinter import font as tkfont
 from tkinter import messagebox
 from typing import TYPE_CHECKING, Any
@@ -28,25 +27,23 @@ from ttkbootstrap.constants import *
 
 from config.constants import APP_NAME, APP_VERSION
 from src.gui.page_base import PageBase
+from src.gui.pages.customer_page import CustomerPage
+from src.gui.pages.generate_page import GeneratePage
+from src.gui.pages.import_page import ImportPage
+from src.gui.pages.line_item_table_page import LineItemTablePage
+
+# 页面导入
+from src.gui.pages.order_info_page import OrderInfoPage
+from src.gui.pages.product_page import ProductPage
+from src.gui.pages.template_page import TemplatePage
+from src.gui.pages.tree_editor_page import TreeEditorPage
 from src.gui.styles import (
-    FONT_FAMILY,
-    FONT_SIZE_NORMAL,
     FONT_SIZE_NAV,
-    FONT_SIZE_SMALL,
+    FONT_SIZE_NORMAL,
     FONT_SIZE_TITLE,
     NAV_PANEL_WIDTH,
     apply_theme,
 )
-
-# 页面导入
-from src.gui.pages.order_info_page import OrderInfoPage
-from src.gui.pages.tree_editor_page import TreeEditorPage
-from src.gui.pages.line_item_table_page import LineItemTablePage
-from src.gui.pages.generate_page import GeneratePage
-from src.gui.pages.template_page import TemplatePage
-from src.gui.pages.import_page import ImportPage
-from src.gui.pages.customer_page import CustomerPage
-from src.gui.pages.product_page import ProductPage
 
 logger = logging.getLogger(__name__)
 
@@ -157,12 +154,14 @@ class GuiApp:
     def _init_preferences() -> object:
         """延迟导入偏好设置服务，避免启动时的循环依赖."""
         from src.gui.services.preferences_service import PreferencesService
+
         return PreferencesService()
 
     @staticmethod
     def _init_draft_service() -> object:
         """延迟导入草稿服务."""
         from src.gui.services.draft_service import DraftService
+
         return DraftService()
 
     # ==================== DPI 感知 ====================
@@ -199,10 +198,8 @@ class GuiApp:
             self._center_window()
 
         if is_maximized:
-            try:
+            with contextlib.suppress(Exception):
                 self.root.state("zoomed")
-            except Exception:
-                pass
 
     def _center_window(self) -> None:
         """将窗口居中显示."""
@@ -374,9 +371,7 @@ class GuiApp:
     def _setup_ui(self) -> None:
         """构建主窗口 UI：顶部标题栏 + 内容区（导航 + 工作区）+ 底部状态栏."""
         # ---- 顶部标题栏 ----
-        self._header_frame = ttk.Frame(
-            self.root, style="Header.TFrame", padding=(15, 10)
-        )
+        self._header_frame = ttk.Frame(self.root, style="Header.TFrame", padding=(15, 10))
         self._header_frame.pack(fill=X)
 
         ttk.Label(
@@ -398,9 +393,7 @@ class GuiApp:
         self._main_paned.pack(fill=BOTH, expand=YES, padx=0, pady=0)
 
         # 左侧导航栏
-        self._nav_frame = ttk.Frame(
-            self._main_paned, width=NAV_PANEL_WIDTH, bootstyle="secondary"
-        )
+        self._nav_frame = ttk.Frame(self._main_paned, width=NAV_PANEL_WIDTH, bootstyle="secondary")
         self._main_paned.add(self._nav_frame, weight=0)
         self._setup_navigation()
 
@@ -431,9 +424,7 @@ class GuiApp:
             bootstyle="inverse-secondary",
         ).pack(anchor=W)
 
-        ttk.Separator(self._nav_frame, orient=HORIZONTAL).pack(
-            fill=X, padx=10, pady=10
-        )
+        ttk.Separator(self._nav_frame, orient=HORIZONTAL).pack(fill=X, padx=10, pady=10)
 
         # 导航按钮（纯文字，无 Emoji）
         nav_items: list[tuple[str, str]] = [
@@ -459,9 +450,7 @@ class GuiApp:
             btn.pack(fill=X, padx=12, pady=3)
             self._nav_buttons[page_name] = btn
 
-        ttk.Separator(self._nav_frame, orient=HORIZONTAL).pack(
-            fill=X, padx=10, pady=10
-        )
+        ttk.Separator(self._nav_frame, orient=HORIZONTAL).pack(fill=X, padx=10, pady=10)
 
         # 退出按钮
         ttk.Button(
@@ -568,9 +557,7 @@ class GuiApp:
         self._status_var.set(message)
         self.root.update_idletasks()
 
-    def get_font(
-        self, bold: bool = False, size: int | None = None
-    ) -> tuple:
+    def get_font(self, bold: bool = False, size: int | None = None) -> tuple:
         """获取应用标准字体.
 
         Args:
@@ -622,6 +609,7 @@ class GuiApp:
 
 
 # ==================== 模块入口 ====================
+
 
 def launch_gui() -> None:
     """启动 GUI 应用（便捷函数）."""

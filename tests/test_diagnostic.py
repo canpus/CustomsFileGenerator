@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """阶段 8 里程碑测试：诊断包导出 + 数据脱敏.
 
 运行方式：
@@ -13,12 +12,9 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 import zipfile
-from pathlib import Path
 
-import msgspec
 import pytest
 
 from src.models.order_data import (
@@ -31,7 +27,6 @@ from src.models.order_data import (
     Product,
     Totals,
 )
-
 
 # ==================== 辅助函数 ====================
 
@@ -321,4 +316,4 @@ def test_sanitize_file_paths():
     assert "D:\\Coding_Programs" not in sanitized
     assert "C:\\Users" not in sanitized
 
-    print(f"✅ 路径脱敏测试通过")
+    print("✅ 路径脱敏测试通过")

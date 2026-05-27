@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 """断言引擎 — xlsx 各维度检查函数."""
 
 from __future__ import annotations
-
-from typing import List
 
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -22,7 +19,7 @@ def _assert_font(
     if not font_rules:
         return
 
-    check_cells: List[str] = font_rules.get("check_cells", [])
+    check_cells: list[str] = font_rules.get("check_cells", [])
     expected_name: str = font_rules.get("expected", {}).get("name", "")
     tolerance: dict = font_rules.get("tolerance", {})
     level_str: str = font_rules.get("level", "warning")
@@ -36,19 +33,13 @@ def _assert_font(
             continue
 
         gen_font_name: str = (gen_cell.font.name or "").strip() if gen_cell.font else ""
-        tpl_font_name: str = (tpl_cell.font.name or "").strip() if tpl_cell.font else ""
 
         if expected_name and gen_font_name and gen_font_name != expected_name:
             name_exact: bool = tolerance.get("name", "exact") == "exact"
-            if name_exact:
+            if name_exact or expected_name.lower() != gen_font_name.lower():
                 report.add(
-                    level, "font_name",
-                    f"单元格 {cell_ref} 字体名称不匹配",
-                    f"期望: '{expected_name}', 实际: '{gen_font_name}'",
-                )
-            elif expected_name.lower() != gen_font_name.lower():
-                report.add(
-                    level, "font_name",
+                    level,
+                    "font_name",
                     f"单元格 {cell_ref} 字体名称不匹配",
                     f"期望: '{expected_name}', 实际: '{gen_font_name}'",
                 )
@@ -59,7 +50,8 @@ def _assert_font(
             size_tolerance: float = tolerance.get("size_pt", 0.5)
             if abs(gen_size - tpl_size) > size_tolerance:
                 report.add(
-                    level, "font_size",
+                    level,
+                    "font_size",
                     f"单元格 {cell_ref} 字号偏差超过容差",
                     f"模板: {tpl_size}pt, 生成: {gen_size}pt, 容差: ±{size_tolerance}pt",
                 )
@@ -77,7 +69,7 @@ def _assert_border(
     if not border_rules:
         return
 
-    check_cells: List[str] = border_rules.get("check_cells", [])
+    check_cells: list[str] = border_rules.get("check_cells", [])
     level_str: str = border_rules.get("level", "error")
     level: AssertionLevel = "error" if level_str == "error" else "warning"
 
@@ -87,19 +79,17 @@ def _assert_border(
         except Exception:
             continue
 
-        has_border: bool = (
-            gen_cell.border is not None
-            and (
-                gen_cell.border.left is not None
-                or gen_cell.border.right is not None
-                or gen_cell.border.top is not None
-                or gen_cell.border.bottom is not None
-            )
+        has_border: bool = gen_cell.border is not None and (
+            gen_cell.border.left is not None
+            or gen_cell.border.right is not None
+            or gen_cell.border.top is not None
+            or gen_cell.border.bottom is not None
         )
 
         if not has_border:
             report.add(
-                level, "border",
+                level,
+                "border",
                 f"单元格 {cell_ref} 边框丢失",
                 "边框丢失可能导致报关资料格式不合规",
             )
@@ -117,7 +107,7 @@ def _assert_merge_ranges(
     if not merge_rules:
         return
 
-    expected_ranges: List[str] = merge_rules.get("expected_ranges", [])
+    expected_ranges: list[str] = merge_rules.get("expected_ranges", [])
     level_str: str = merge_rules.get("level", "error")
     level: AssertionLevel = "error" if level_str == "error" else "warning"
 
@@ -128,7 +118,8 @@ def _assert_merge_ranges(
     for expected_range in expected_ranges:
         if expected_range not in gen_merged:
             report.add(
-                level, "merge_range",
+                level,
+                "merge_range",
                 f"合并单元格区域缺失: {expected_range}",
                 "表头合并区域丢失，可能导致格式与模板不一致",
             )
@@ -160,7 +151,8 @@ def _assert_formula(
 
     if not found_formula:
         report.add(
-            level, "formula",
+            level,
+            "formula",
             f"未找到 {expected_pattern} 汇总公式",
             "汇总行公式缺失，数据变更后汇总不会自动更新",
         )
@@ -187,7 +179,8 @@ def _assert_column_count(
 
     if actual < expected:
         report.add(
-            level, "column_count",
+            level,
+            "column_count",
             f"列数不足: 期望至少 {expected} 列, 实际 {actual} 列",
             "列数减少可能导致数据列缺失",
         )

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """报关资料自动生成系统 — 程序入口.
 
 功能：环境自检 + 启动（CLI / GUI 模式）。
@@ -7,10 +6,9 @@
 from __future__ import annotations
 
 import logging
-import os
 import sys
-from pathlib import Path
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 # 确保项目根目录在 sys.path 中
 PROJECT_ROOT: Path = Path(__file__).resolve().parent
@@ -28,7 +26,7 @@ def setup_logging() -> None:
     logs_dir: Path = PROJECT_ROOT / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
 
-    from config.constants import LOG_MAX_BYTES, LOG_BACKUP_COUNT
+    from config.constants import LOG_BACKUP_COUNT, LOG_MAX_BYTES
 
     # 根 logger
     root_logger: logging.Logger = logging.getLogger()
@@ -75,6 +73,7 @@ def setup_logging() -> None:
 
 # ---------- 环境自检 ----------
 
+
 def check_python_version() -> bool:
     """检查 Python 版本是否满足最低要求."""
     from config.constants import MIN_PYTHON_VERSION
@@ -83,7 +82,7 @@ def check_python_version() -> bool:
     if current < MIN_PYTHON_VERSION:
         required_str = f"{MIN_PYTHON_VERSION[0]}.{MIN_PYTHON_VERSION[1]}"
         current_str = f"{current[0]}.{current[1]}"
-        print(f"  [错误]: Python 版本不满足要求")
+        print("  [错误]: Python 版本不满足要求")
         print(f"  [原因]: 当前版本: {current_str}，要求: >= {required_str}")
         print(f"  [排查]: 请从 https://www.python.org/downloads/ 下载并安装 Python {required_str}+")
         return False
@@ -112,8 +111,8 @@ def check_dependencies() -> bool:
 
     if missing:
         print(f"  [错误]: 缺少必要依赖: {', '.join(missing)}")
-        print(f"  [原因]: 依赖未安装或虚拟环境未激活")
-        print(f"  [排查]: 请在终端运行: pip install -r requirements.txt")
+        print("  [原因]: 依赖未安装或虚拟环境未激活")
+        print("  [排查]: 请在终端运行: pip install -r requirements.txt")
         return False
 
     print("  依赖检查: 全部已安装 — 通过")
@@ -137,7 +136,7 @@ def check_template_files() -> bool:
         print(f"  [错误]: 模板文件缺失 {len(missing)}/{total}")
         for fn in missing:
             print(f"    - templates/{fn}")
-        print(f"  [原因]: 模板文件未放入 templates/ 目录")
+        print("  [原因]: 模板文件未放入 templates/ 目录")
         print(f"  [排查]: 请将模板文件复制到 {TEMPLATES_DIR} 目录下")
         return False
 
@@ -154,8 +153,8 @@ def check_output_dir() -> bool:
         return True
     except OSError:
         print(f"  [错误]: 无法创建输出目录: {OUTPUT_DIR}")
-        print(f"  [原因]: 磁盘权限不足或路径无效")
-        print(f"  [排查]: 请检查磁盘权限，或手动创建目录")
+        print("  [原因]: 磁盘权限不足或路径无效")
+        print("  [排查]: 请检查磁盘权限，或手动创建目录")
         return False
 
 
@@ -201,6 +200,7 @@ def run_env_checks() -> bool:
 
 # ========== 主入口 ==========
 
+
 def main() -> None:
     """程序主入口."""
     setup_logging()
@@ -215,6 +215,7 @@ def main() -> None:
         logger.info("启动 GUI 模式")
         try:
             from src.gui.app import launch_gui
+
             launch_gui()
         except ImportError as e:
             logger.error(
@@ -223,7 +224,7 @@ def main() -> None:
                 "[排查]: 请运行 pip install -r requirements.txt",
             )
             print(f"  [错误]: GUI 启动失败 — {e}")
-            print(f"  [排查]: 请确认已安装 ttkbootstrap: pip install ttkbootstrap")
+            print("  [排查]: 请确认已安装 ttkbootstrap: pip install ttkbootstrap")
             sys.exit(1)
     else:
         logger.info("环境自检模式完成")

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """产品管理页 — P7 产品库功能.
 
 提供：
@@ -10,6 +9,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 from tkinter import messagebox
 from typing import Any
@@ -78,9 +78,9 @@ class ProductEditDialog:
             row = ttk.Frame(self._dialog)
             row.pack(fill=X, padx=20, pady=2)
 
-            ttk.Label(
-                row, text=label, font=("Microsoft YaHei", 10), width=18, anchor=W
-            ).pack(side=LEFT)
+            ttk.Label(row, text=label, font=("Microsoft YaHei", 10), width=18, anchor=W).pack(
+                side=LEFT
+            )
 
             default = fallback
             if self._product:
@@ -90,9 +90,7 @@ class ProductEditDialog:
 
             var = ttk.StringVar(value=default)
             self._vars[field] = var
-            ttk.Entry(row, textvariable=var, width=width).pack(
-                side=LEFT, fill=X, expand=YES
-            )
+            ttk.Entry(row, textvariable=var, width=width).pack(side=LEFT, fill=X, expand=YES)
 
         # 按钮
         btn_frame = ttk.Frame(self._dialog)
@@ -128,10 +126,7 @@ class ProductEditDialog:
             messagebox.showwarning("必填字段缺失", "计量单位不能为空。")
             return
 
-        self._result = {
-            field: var.get().strip()
-            for field, var in self._vars.items()
-        }
+        self._result = {field: var.get().strip() for field, var in self._vars.items()}
         self._dialog.destroy()
 
     def show(self) -> dict[str, Any] | None:
@@ -183,9 +178,7 @@ class ProductSelectDialog:
         ).pack(side=LEFT, padx=(0, 10))
 
         self._search_var = ttk.StringVar()
-        search_entry = ttk.Entry(
-            search_frame, textvariable=self._search_var, width=30
-        )
+        search_entry = ttk.Entry(search_frame, textvariable=self._search_var, width=30)
         search_entry.pack(side=LEFT, padx=(0, 10))
         search_entry.bind("<KeyRelease>", lambda e: self._filter())
 
@@ -284,7 +277,8 @@ class ProductSelectDialog:
             self._count_label.configure(text=f"共 {len(self._products)} 个产品")
             return
         filtered = [
-            p for p in self._products
+            p
+            for p in self._products
             if keyword in str(p.get("product_name", "")).lower()
             or keyword in str(p.get("hs_code", "")).lower()
             or keyword in str(p.get("specification", "")).lower()
@@ -303,15 +297,10 @@ class ProductSelectDialog:
         for iid in selection:
             tags = self._tree.item(iid)["tags"]
             if tags and tags[0]:
-                try:
+                with contextlib.suppress(ValueError):
                     selected_ids.add(int(tags[0]))
-                except ValueError:
-                    pass
 
-        self._result = [
-            p for p in self._products
-            if p.get("id") in selected_ids
-        ]
+        self._result = [p for p in self._products if p.get("id") in selected_ids]
         self._dialog.destroy()
 
     @property
@@ -424,14 +413,18 @@ class ProductPage(PageBase):
         ).pack(side=LEFT)
 
         # ---- 产品列表 ----
-        list_frame = ttk.Labelframe(
-            self.frame, text="产品列表", padding=10, bootstyle="info"
-        )
+        list_frame = ttk.Labelframe(self.frame, text="产品列表", padding=10, bootstyle="info")
         list_frame.pack(fill=BOTH, expand=YES)
 
         columns = (
-            "id", "product_name", "specification", "hs_code",
-            "unit", "unit_price", "currency", "destination_country",
+            "id",
+            "product_name",
+            "specification",
+            "hs_code",
+            "unit",
+            "unit_price",
+            "currency",
+            "destination_country",
         )
         self._product_tree = ttk.Treeview(
             list_frame,
@@ -456,9 +449,7 @@ class ProductPage(PageBase):
         self._product_tree.column("currency", width=50, anchor=CENTER)
         self._product_tree.column("destination_country", width=70, anchor=CENTER)
 
-        scrollbar = ttk.Scrollbar(
-            list_frame, orient=VERTICAL, command=self._product_tree.yview
-        )
+        scrollbar = ttk.Scrollbar(list_frame, orient=VERTICAL, command=self._product_tree.yview)
         self._product_tree.configure(yscrollcommand=scrollbar.set)
 
         self._product_tree.pack(side=LEFT, fill=BOTH, expand=YES)
@@ -493,9 +484,7 @@ class ProductPage(PageBase):
             unit_price = _parse_float(data.pop("unit_price", "0"))
             net_weight = _parse_float(data.pop("net_weight_per_unit_kg", "0"))
 
-            CustomerRepository_like_kwargs: dict[str, Any] = {
-                k: v for k, v in data.items() if v
-            }
+            customer_repo_like_kwargs: dict[str, Any] = {k: v for k, v in data.items() if v}
 
             ProductRepository.insert(
                 product_name=product_name,
@@ -503,7 +492,7 @@ class ProductPage(PageBase):
                 unit=unit,
                 unit_price=unit_price,
                 net_weight_per_unit_kg=net_weight,
-                **CustomerRepository_like_kwargs,
+                **customer_repo_like_kwargs,
             )
             messagebox.showinfo("新增成功", f"产品「{product_name}」已添加。")
             self._refresh_list()

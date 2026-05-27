@@ -26,6 +26,7 @@ indent-style = "space"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # 允许 __init__.py 中未使用的导入
+"src/gui/**/*.py" = ["F403", "F405"]  # tkinter constants 的 import * 是标准模式
 
 [tool.mypy]
 python_version = "3.11"
@@ -34,6 +35,10 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unused_configs = true
 ignore_missing_imports = true  # 第三方库类型缺失时不报错
+
+[[tool.mypy.overrides]]
+module = "src.gui.*"
+ignore_errors = true  # tkinter 星导入 + Mixin 模式，mypy 无法正确分析
 
 [tool.pytest.ini_options]
 minversion = "7.0"

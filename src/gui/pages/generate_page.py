@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """生成与预览页 — 阶段 9.6（3 文件模式）.
 
 提供：
@@ -57,13 +56,15 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         title_frame.pack(fill=X, padx=5, pady=(5, 10))
 
         ttk.Label(
-            title_frame, text="生成报关资料",
+            title_frame,
+            text="生成报关资料",
             font=self.app.get_heading_font(),
             bootstyle="primary",
         ).pack(side=LEFT)
 
         ttk.Label(
-            title_frame, text="3 文件模式（报关单暂未就绪）",
+            title_frame,
+            text="3 文件模式（报关单暂未就绪）",
             font=self.app.get_font(size=9),
             bootstyle="warning",
         ).pack(side=RIGHT)
@@ -83,7 +84,10 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         self._progress_label.pack(anchor=W, pady=(0, 5))
 
         self._progress_bar = ttk.Progressbar(
-            progress_frame, mode="determinate", length=400, bootstyle="success-striped",
+            progress_frame,
+            mode="determinate",
+            length=400,
+            bootstyle="success-striped",
         )
         self._progress_bar.pack(fill=X)
         self._progress_bar["value"] = 0
@@ -93,26 +97,30 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         bottom.pack(fill=X, padx=5, pady=(10, 5))
 
         ttk.Button(
-            bottom, text="← 返回编辑商品明细",
+            bottom,
+            text="← 返回编辑商品明细",
             bootstyle="secondary-outline",
             command=lambda: self.app.switch_page("line_items"),
         ).pack(side=LEFT)
 
         self._open_folder_btn = ttk.Button(
-            bottom, text="打开输出文件夹",
+            bottom,
+            text="打开输出文件夹",
             bootstyle="info-outline",
             command=self._on_open_folder,
         )
         self._open_folder_btn.pack(side=LEFT, padx=(10, 0))
 
         self._diagnostic_btn = ttk.Button(
-            bottom, text="导出诊断包",
+            bottom,
+            text="导出诊断包",
             bootstyle="warning-outline",
             command=self._on_export_diagnostic,
         )
 
         self._generate_btn = ttk.Button(
-            bottom, text="一键生成报关资料",
+            bottom,
+            text="一键生成报关资料",
             bootstyle="success",
             command=self._on_generate,
         )
@@ -124,15 +132,21 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         summary_frame.pack(fill=X, pady=(0, 10))
 
         self._summary_text = ttk.Text(
-            summary_frame, height=6, wrap="word",
-            font=self.app.get_font(size=10), state="disabled",
+            summary_frame,
+            height=6,
+            wrap="word",
+            font=self.app.get_font(size=10),
+            state="disabled",
         )
         self._summary_text.pack(fill=X)
 
     def _build_result_section(self) -> None:
         """构建生成结果区域."""
         self._result_frame = ttk.Labelframe(
-            self.frame, text="生成结果", padding=10, bootstyle="success",
+            self.frame,
+            text="生成结果",
+            padding=10,
+            bootstyle="success",
         )
         self._result_frame.pack(fill=X, pady=(0, 10))
 
@@ -152,7 +166,9 @@ class GeneratePage(PageBase, GenerateEventsMixin):
             icon_label.pack(side=LEFT, padx=(0, 5))
             self._result_icons[file_type] = icon_label
 
-            ttk.Label(row, text=label, font=self.app.get_font(bold=True, size=10), width=15, anchor=W).pack(side=LEFT)
+            ttk.Label(
+                row, text=label, font=self.app.get_font(bold=True, size=10), width=15, anchor=W
+            ).pack(side=LEFT)
 
             status_var = ttk.StringVar(value=default_status)
             status_label = ttk.Label(row, textvariable=status_var, font=self.app.get_font(size=9))
@@ -164,8 +180,10 @@ class GeneratePage(PageBase, GenerateEventsMixin):
     def _reset_results(self) -> None:
         """重置结果状态."""
         defaults = {
-            "packing": "等待生成...", "invoice": "等待生成...",
-            "contract": "等待生成...", "customs": "⏳ 暂未就绪（阶段 6 开发中）",
+            "packing": "等待生成...",
+            "invoice": "等待生成...",
+            "contract": "等待生成...",
+            "customs": "⏳ 暂未就绪（阶段 6 开发中）",
         }
         icons = {"packing": "⏳", "invoice": "⏳", "contract": "⏳", "customs": "⏳"}
         for ft in defaults:
@@ -220,8 +238,7 @@ class GeneratePage(PageBase, GenerateEventsMixin):
             f"托盘: {totals.total_pallets} | 纸箱: {totals.total_cartons} | "
             f"总毛重: {totals.total_gross_weight_kg} kg | "
             f"总净重: {totals.total_net_weight_kg} kg",
-            f"总体积: {totals.total_volume_cbm} m³ | "
-            f"总金额: ${totals.total_amount:,.2f}",
+            f"总体积: {totals.total_volume_cbm} m³ | 总金额: ${totals.total_amount:,.2f}",
             f"输出目录: {OUTPUT_DIR}",
         ]
 

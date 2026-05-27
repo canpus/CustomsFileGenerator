@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """分块模板仓库 — 管理 template_blocks 表的 CRUD 操作.
 
 支持按 block_type 分类存储和检索可复用数据块。
@@ -58,9 +57,7 @@ class TemplateBlockRepository:
         except (TypeError, ValueError) as e:
             logger.exception("序列化模板数据块失败")
             raise ValueError(
-                f"[错误]: 数据块序列化失败\n"
-                f"[原因]: {e}\n"
-                f"[排查]: 请确认数据中不包含不可序列化的对象"
+                f"[错误]: 数据块序列化失败\n[原因]: {e}\n[排查]: 请确认数据中不包含不可序列化的对象"
             ) from e
 
         conn = get_connection()
@@ -73,6 +70,7 @@ class TemplateBlockRepository:
             )
             conn.commit()
             logger.info("保存分块模板: %s / %s (ID=%d)", block_type, block_name, cursor.lastrowid)
+            assert cursor.lastrowid is not None, "INSERT 后未获取 rowid"
             return cursor.lastrowid
         except Exception:
             conn.rollback()

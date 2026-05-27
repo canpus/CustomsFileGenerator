@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """客户数据仓库 — 从 repository.py 拆分."""
 
 from __future__ import annotations
@@ -52,11 +51,20 @@ class CustomerRepository:
                    (company_name_en, company_name_cn, country, address,
                     contact_person, phone, mobile, destination)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (company_name_en, company_name_cn, country, address,
-                 contact_person, phone, mobile, destination),
+                (
+                    company_name_en,
+                    company_name_cn,
+                    country,
+                    address,
+                    contact_person,
+                    phone,
+                    mobile,
+                    destination,
+                ),
             )
             conn.commit()
             logger.info("新增客户: %s (ID=%d)", company_name_en, cursor.lastrowid)
+            assert cursor.lastrowid is not None, "INSERT 后未获取 rowid"
             return cursor.lastrowid
         except Exception:
             conn.rollback()
@@ -139,8 +147,14 @@ class CustomerRepository:
         # 仅包含已知安全列名（company_name_en 等 8 个字段），
         # 不存在 SQL 注入风险。
         allowed = {
-            "company_name_en", "company_name_cn", "country", "address",
-            "contact_person", "phone", "mobile", "destination",
+            "company_name_en",
+            "company_name_cn",
+            "country",
+            "address",
+            "contact_person",
+            "phone",
+            "mobile",
+            "destination",
         }
         updates = {k: v for k, v in fields.items() if k in allowed}
         if not updates:

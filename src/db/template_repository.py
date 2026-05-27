@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """订单模板仓库 — 从 repository.py 拆分.
 
 将 OrderData 对象序列化为 JSON 存入 SQLite。
@@ -10,7 +9,7 @@ import logging
 from typing import Any
 
 from src.db.connection import get_connection
-from src.models.order_data import OrderData, encode_order, decode_order
+from src.models.order_data import OrderData, decode_order, encode_order
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +51,18 @@ class TemplateRepository:
                 """INSERT INTO order_templates
                    (template_name, order_json, description, invoice_no, customer_name, product_count)
                    VALUES (?, ?, ?, ?, ?, ?)""",
-                (template_name, order_json_str, description, invoice_no, customer_name, product_count),
+                (
+                    template_name,
+                    order_json_str,
+                    description,
+                    invoice_no,
+                    customer_name,
+                    product_count,
+                ),
             )
             conn.commit()
             logger.info("保存模板: %s (ID=%d)", template_name, cursor.lastrowid)
+            assert cursor.lastrowid is not None, "INSERT 后未获取 rowid"
             return cursor.lastrowid
         except Exception:
             conn.rollback()
@@ -84,13 +91,13 @@ class TemplateRepository:
             order = decode_order(row["order_json"])
             logger.info("加载模板 ID=%d: %s", template_id, row["template_name"])
             return order
-        except Exception:
+        except Exception as err:
             logger.exception("反序列化模板 ID=%d 失败", template_id)
             raise ValueError(
                 f"[错误]: 模板 ID={template_id} 数据已损坏，无法加载\n"
                 f"[原因]: 数据库中存储的 JSON 数据无法解析\n"
                 f"[排查]: 请删除该模板并重新保存"
-            )
+            ) from err
 
     @staticmethod
     def list_all(limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:

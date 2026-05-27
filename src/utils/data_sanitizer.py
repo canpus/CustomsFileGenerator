@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """数据脱敏工具 — 阶段 8.4.
 
 对订单数据中的敏感字段进行脱敏处理，用于诊断包导出。
@@ -16,15 +15,11 @@
 from __future__ import annotations
 
 import copy
-import json
 import logging
 import re
-import sys
 from pathlib import Path
-from typing import Any
 
-import msgspec
-
+from config.constants import TradeTerm, TransportModeCN
 from src.models.order_data import (
     Carton,
     Customer,
@@ -34,8 +29,6 @@ from src.models.order_data import (
     Pallet,
     Product,
     Totals,
-    TemplateMeta,
-    PackageType,
     encode_order,
 )
 
@@ -101,9 +94,13 @@ def sanitize_order_data(order: OrderData) -> OrderData:
     sanitized_customer = Customer(
         company_name_en=_truncate_first_two(order.customer.company_name_en),
         country=order.customer.country,
-        company_name_cn=_truncate_first_two(order.customer.company_name_cn) if order.customer.company_name_cn else "",
+        company_name_cn=_truncate_first_two(order.customer.company_name_cn)
+        if order.customer.company_name_cn
+        else "",
         address=_truncate_first_10(order.customer.address),
-        contact_person=_truncate_first_two(order.customer.contact_person) if order.customer.contact_person else "",
+        contact_person=_truncate_first_two(order.customer.contact_person)
+        if order.customer.contact_person
+        else "",
         phone="[REDACTED]" if order.customer.phone else "",
         mobile="[REDACTED]" if order.customer.mobile else "",
         destination=order.customer.destination,
@@ -187,6 +184,7 @@ def sanitize_file_paths(text: str, project_root: Path | None = None) -> str:
     if project_root is None:
         try:
             from config.constants import PROJECT_ROOT
+
             project_root = PROJECT_ROOT
         except Exception:
             project_root = None
@@ -252,11 +250,11 @@ if __name__ == "__main__":
             invoice_no="20251202-01",
             contract_no="PO25-018",
             date="2025-12-26",
-            trade_term="FOB",
+            trade_term=TradeTerm("FOB"),
             payment_term="100% T/T IN ADVANCE",
             country_of_origin="China",
             order_no="",
-            transport_mode="海运",
+            transport_mode=TransportModeCN("海运"),
         ),
         customer=Customer(
             company_name_en="LG CHEM. LTD.",
@@ -317,26 +315,30 @@ if __name__ == "__main__":
     sanitized = sanitize_order_data(test_order)
 
     print("\n[脱敏结果]:")
-    print(f"  company_name_en: \"{sanitized.customer.company_name_en}\"")
-    print(f"  company_name_cn: \"{sanitized.customer.company_name_cn}\"")
-    print(f"  phone: \"{sanitized.customer.phone}\"")
-    print(f"  mobile: \"{sanitized.customer.mobile}\"")
-    print(f"  address: \"{sanitized.customer.address}\"")
-    print(f"  contact_person: \"{sanitized.customer.contact_person}\"")
+    print(f'  company_name_en: "{sanitized.customer.company_name_en}"')
+    print(f'  company_name_cn: "{sanitized.customer.company_name_cn}"')
+    print(f'  phone: "{sanitized.customer.phone}"')
+    print(f'  mobile: "{sanitized.customer.mobile}"')
+    print(f'  address: "{sanitized.customer.address}"')
+    print(f'  contact_person: "{sanitized.customer.contact_person}"')
 
     for pallet in sanitized.pallets:
         for carton in pallet.cartons:
             for p in carton.products:
-                print(f"  product.seq_no={p.seq_no}: unit_price={p.unit_price}, product_name=\"{p.product_name}\", hs_code=\"{p.hs_code}\"")
+                print(
+                    f'  product.seq_no={p.seq_no}: unit_price={p.unit_price}, product_name="{p.product_name}", hs_code="{p.hs_code}"'
+                )
 
-    print(f"  invoice_no: \"{sanitized.order_meta.invoice_no}\"")
+    print(f'  invoice_no: "{sanitized.order_meta.invoice_no}"')
 
     # 验证关键规则
     print("\n[验证]:")
-    assert sanitized.customer.company_name_en == "LG***", f"company_name_en 脱敏失败: {sanitized.customer.company_name_en}"
-    assert sanitized.customer.phone == "[REDACTED]", f"phone 脱敏失败"
-    assert sanitized.customer.mobile == "[REDACTED]", f"mobile 脱敏失败"
-    assert sanitized.customer.address.startswith("Mutlukent "), f"address 脱敏失败"
+    assert sanitized.customer.company_name_en == "LG***", (
+        f"company_name_en 脱敏失败: {sanitized.customer.company_name_en}"
+    )
+    assert sanitized.customer.phone == "[REDACTED]", "phone 脱敏失败"
+    assert sanitized.customer.mobile == "[REDACTED]", "mobile 脱敏失败"
+    assert sanitized.customer.address.startswith("Mutlukent "), "address 脱敏失败"
     assert sanitized.order_meta.invoice_no == "20251202-01", "invoice_no 不应脱敏"
 
     # 验证 product unit_price
@@ -351,11 +353,11 @@ if __name__ == "__main__":
 
     # 测试路径脱敏
     test_error = (
-        "File \"D:\\Coding_Programs\\CustomsFileGenerator\\src\\generators\\packing_generator.py\", line 42\n"
-        "File \"C:\\Users\\admin\\.pyenv\\pyenv-win\\versions\\3.12.0\\lib\\os.py\", line 123"
+        'File "D:\\Coding_Programs\\CustomsFileGenerator\\src\\generators\\packing_generator.py", line 42\n'
+        'File "C:\\Users\\admin\\.pyenv\\pyenv-win\\versions\\3.12.0\\lib\\os.py", line 123'
     )
     sanitized_err = sanitize_file_paths(test_error)
-    print(f"\n[路径脱敏测试]:")
+    print("\n[路径脱敏测试]:")
     print(f"  原始: {test_error[:80]}...")
     print(f"  脱敏: {sanitized_err[:80]}...")
 

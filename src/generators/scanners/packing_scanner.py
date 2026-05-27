@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
 """装箱单模板锚点扫描器."""
 
 from __future__ import annotations
 
 import logging
-from typing import List
 
 from openpyxl.worksheet.worksheet import Worksheet
 
@@ -55,22 +53,28 @@ def scan_packing_template(ws: Worksheet, rules: dict | None = None) -> AnchorRes
 
     # 查找标题行
     header_anchor: dict = template_rules.get("header_anchor", {})
-    row_keywords: List[str] = header_anchor.get("row_keywords", ["序号", "No.", "QTY.", "Item"])
-    col_keywords: List[str] = header_anchor.get(
+    row_keywords: list[str] = header_anchor.get("row_keywords", ["序号", "No.", "QTY.", "Item"])
+    col_keywords: list[str] = header_anchor.get(
         "col_keywords", ["商品描述", "Description", "Spec."]
     )
 
     search_start: int = max(template_rules.get("header_search_start", 6), 1)
     result.header_row = _find_row_by_keywords(
-        ws, row_keywords, col_keywords,
-        row_start=search_start, row_end=min(search_limit, 30),
+        ws,
+        row_keywords,
+        col_keywords,
+        row_start=search_start,
+        row_end=min(search_limit, 30),
         require_both=True,
     )
 
     if result.header_row <= 0:
         result.header_row = _find_row_by_keywords(
-            ws, row_keywords, None,
-            row_start=search_start, row_end=min(search_limit, 30),
+            ws,
+            row_keywords,
+            None,
+            row_start=search_start,
+            row_end=min(search_limit, 30),
         )
 
     # 计算数据起始行
@@ -85,35 +89,35 @@ def scan_packing_template(ws: Worksheet, rules: dict | None = None) -> AnchorRes
 
     # 查找汇总行
     summary_anchor: dict = template_rules.get("summary_anchor", {})
-    summary_row_keywords: List[str] = summary_anchor.get(
+    summary_row_keywords: list[str] = summary_anchor.get(
         "row_keywords", ["Total", "TOTAL", "合计", "总"]
     )
-    summary_col_keywords: List[str] | None = summary_anchor.get("col_keywords")
+    summary_col_keywords: list[str] | None = summary_anchor.get("col_keywords")
 
     summary_search_start: int = max(result.data_start_row + 1, 10)
     result.summary_rows = _find_summary_rows(
-        ws, summary_row_keywords, summary_col_keywords,
-        row_start=summary_search_start, row_end=100,
+        ws,
+        summary_row_keywords,
+        summary_col_keywords,
+        row_start=summary_search_start,
+        row_end=100,
     )
 
     if result.summary_rows:
         result.summary_row = result.summary_rows[0]
-        result.data_end_row = _estimate_data_end_row(
-            ws, result.data_start_row, result.summary_row
-        )
+        result.data_end_row = _estimate_data_end_row(ws, result.data_start_row, result.summary_row)
     else:
-        result.errors.append(
-            "[错误]: 装箱单模板汇总行扫描失败，未找到'Total'/'合计'等关键词"
-        )
+        result.errors.append("[错误]: 装箱单模板汇总行扫描失败，未找到'Total'/'合计'等关键词")
 
     if not result.is_valid:
-        result.errors.append(
-            "[错误]: 装箱单模板锚点扫描不完整，请确认模板是否与原厂一致"
-        )
+        result.errors.append("[错误]: 装箱单模板锚点扫描不完整，请确认模板是否与原厂一致")
 
     logger.info(
         "装箱单锚点扫描: header=%d, data_start=%d, data_end=%d, summary=%d, errors=%d",
-        result.header_row, result.data_start_row,
-        result.data_end_row, result.summary_row, len(result.errors),
+        result.header_row,
+        result.data_start_row,
+        result.data_end_row,
+        result.summary_row,
+        len(result.errors),
     )
     return result

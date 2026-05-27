@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """报关资料自动生成系统 — 统一数据模型（msgspec.Struct）.
 
 严格遵循 plan_v6.md 附录 A 之 JSON Schema 定义。
@@ -11,11 +10,9 @@ from typing import Literal
 
 import msgspec
 
-
 # ==================== TradeTerm / TransportMode（统一来源于 config.constants） ====================
-
-from config.constants import TradeTerm, TransportModeCN as TransportMode  # noqa: E402
-
+from config.constants import TradeTerm  # noqa: E402
+from config.constants import TransportModeCN as TransportMode
 
 # ==================== PackageType 包装类型 ====================
 
@@ -23,6 +20,7 @@ PackageType = Literal["pallet", "carton", "package"]
 
 
 # ==================== Product 商品 ====================
+
 
 class Product(msgspec.Struct, frozen=True):
     """单个商品.
@@ -57,6 +55,7 @@ class Product(msgspec.Struct, frozen=True):
 
 # ==================== Carton 纸箱 ====================
 
+
 class Carton(msgspec.Struct, frozen=True):
     """单个纸箱（含箱内商品列表）.
 
@@ -83,6 +82,7 @@ class Carton(msgspec.Struct, frozen=True):
 
 # ==================== Pallet 托盘 ====================
 
+
 class Pallet(msgspec.Struct, frozen=True):
     """单个托盘（含纸箱列表）.
 
@@ -105,6 +105,7 @@ class Pallet(msgspec.Struct, frozen=True):
 
 
 # ==================== OrderMeta 订单元信息 ====================
+
 
 class OrderMeta(msgspec.Struct, frozen=True):
     """订单元信息.
@@ -134,7 +135,7 @@ class OrderMeta(msgspec.Struct, frozen=True):
     country_of_origin: str
 
     order_no: str = msgspec.field(default="")
-    transport_mode: TransportMode = msgspec.field(default="海运")
+    transport_mode: TransportMode = msgspec.field(default=TransportMode("海运"))
     vessel_flight: str = msgspec.field(default="")
     bill_of_lading_no: str = msgspec.field(default="")
     currency: str = msgspec.field(default="USD")
@@ -144,6 +145,7 @@ class OrderMeta(msgspec.Struct, frozen=True):
 
 
 # ==================== Customer 客户信息 ====================
+
 
 class Customer(msgspec.Struct, frozen=True):
     """客户信息.
@@ -172,6 +174,7 @@ class Customer(msgspec.Struct, frozen=True):
 
 # ==================== Origin 产地/发货信息 ====================
 
+
 class Origin(msgspec.Struct, frozen=True):
     """产地与发货人信息.
 
@@ -198,6 +201,7 @@ class Origin(msgspec.Struct, frozen=True):
 
 # ==================== Totals 汇总数据 ====================
 
+
 class Totals(msgspec.Struct, frozen=True):
     """订单汇总数据.
 
@@ -223,6 +227,7 @@ class Totals(msgspec.Struct, frozen=True):
 
 # ==================== TemplateMeta 模板元信息 ====================
 
+
 class TemplateMeta(msgspec.Struct, frozen=True):
     """模板元信息（用于模板保存/加载）.
 
@@ -238,6 +243,7 @@ class TemplateMeta(msgspec.Struct, frozen=True):
 
 
 # ==================== OrderData 根模型 ====================
+
 
 class OrderData(msgspec.Struct, frozen=True):
     """报关订单根数据结构.

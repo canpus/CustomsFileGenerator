@@ -166,27 +166,21 @@ class PackingGenerator(BaseGenerator):
         # D3:K3 合并区域 - 客户抬头
         safe_write_cell(ws, 3, "D", customer_name)
 
-        # A4:C4 合并区域 - 发票号（追加在标签后）
-        safe_write_cell(ws, 4, "A",
-                        f"Invoice No. 发票号: {order.order_meta.invoice_no}")
+        # A4:C4 合并区域 - 发票号（模板已有标签文本，只写值）
+        safe_write_cell(ws, 4, "A", order.order_meta.invoice_no)
         # F4:H4 合并区域 - 日期
-        safe_write_cell(ws, 4, "F",
-                        f"Date日期: {order.order_meta.date}")
+        safe_write_cell(ws, 4, "F", order.order_meta.date)
 
         # A5:C5 合并区域 - 合同号
-        safe_write_cell(ws, 5, "A",
-                        f"Contact No. 合同号: {order.order_meta.contract_no}")
+        safe_write_cell(ws, 5, "A", order.order_meta.contract_no)
         # F5:H5 合并区域 - 付款方式
-        safe_write_cell(ws, 5, "F",
-                        f"Payment付款方式: {order.order_meta.payment_term}")
+        safe_write_cell(ws, 5, "F", order.order_meta.payment_term)
 
         # A6:C6 合并区域 - 产地
-        safe_write_cell(ws, 6, "A",
-                        f"Country of origin产地: {order.order_meta.country_of_origin}")
+        safe_write_cell(ws, 6, "A", order.order_meta.country_of_origin)
         # F6:H6 合并区域 - 目的地
         destination: str = order.customer.destination or order.customer.country
-        safe_write_cell(ws, 6, "F",
-                        f"Destination 目的地: {destination}")
+        safe_write_cell(ws, 6, "F", destination)
 
         logger.info("装箱单表头填充完成")
 

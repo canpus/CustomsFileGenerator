@@ -131,7 +131,52 @@ def update_sum_formula(
         logger.info("公式修正完成: 共修正 %d 个 SUM 公式", updated_count)
 
 
-# ==================== 数据行调整 ====================
+def delete_reserved_rows(ws: Worksheet, data_start_row: int, data_end_row: int, actual_row_count: int) -> int:
+    """删除数据区中未使用的预留空行.
+
+    当使用大容量模板（如 50 行）填充少量数据（如 3 行）时，
+    数据区尾部会有多余预留行。此函数将其安全删除并返回新的数据结束行号。
+
+    与 resize_data_rows 的区别：
+    - resize_data_rows 同时支持扩容和缩容
+    - delete_reserved_rows 仅删除额外预留行，语义更明确
+
+    Args:
+        ws: 工作表对象.
+        data_start_row: 数据起始行号（1-based）.
+        data_end_row: 模板预设的数据结束行号（1-based）.
+        actual_row_count: 实际数据行数.
+
+    Returns:
+        新的数据结束行号.
+
+    Raises:
+        ValueError: 参数无效时抛出.
+    """
+    if data_start_row <= 0 or data_end_row <= 0:
+        raise ValueError(
+            f"[错误]: 行号必须为正整数，start={data_start_row}, end={data_end_row}"
+        )
+    if actual_row_count <= 0:
+        raise ValueError(f"[错误]: 实际行数必须为正整数，actual={actual_row_count}")
+    if data_start_row > data_end_row:
+        raise ValueError(
+            f"[错误]: 数据起始行({data_start_row}) > 结束行({data_end_row})"
+        )
+
+    actual_end_row: int = data_start_row + actual_row_count - 1
+    reserved_start: int = actual_end_row + 1
+
+    if reserved_start > data_end_row:
+        return data_end_row
+
+    delete_count: int = data_end_row - reserved_start + 1
+    logger.info(
+        "删除预留空行: 第 %d 行 → 第 %d 行（共 %d 行），新数据结束行=%d",
+        reserved_start, data_end_row, delete_count, actual_end_row,
+    )
+    delete_rows_safely(ws, reserved_start, data_end_row)
+    return actual_end_row
 
 
 def resize_data_rows(

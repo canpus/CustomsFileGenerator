@@ -17,6 +17,7 @@ from typing import Callable, Dict, List, Optional
 
 from config.constants import (
     FILE_PREFIX_MAP,
+    MAX_TEMPLATE_ROWS,
     OUTPUT_DIR,
     TEMPLATE_CONTRACT_PATH,
     TEMPLATE_INVOICE_PATH,
@@ -186,6 +187,26 @@ class Orchestrator:
                 )
         else:
             logger.info("已跳过订单数据校验（skip_validation=True）")
+
+        # 步骤 1.5：容量预检（超过最大行数则阻断全部生成）
+        self._report_progress(progress_callback, "正在检查模板容量...", 0.06)
+        for _file_type, display_name, generator in self._generators:
+            try:
+                flat_rows: list[dict] = generator._flatten_data(order)
+                n_rows: int = len(flat_rows)
+                if n_rows > MAX_TEMPLATE_ROWS:
+                    raise ValueError(
+                        f"[错误]: {display_name}数据行数 {n_rows} 超过最大模板容量 {MAX_TEMPLATE_ROWS}\n"
+                        f"[原因]: 当前模板仅支持最多 {MAX_TEMPLATE_ROWS} 行商品明细\n"
+                        f"[排查]: 请将订单拆分为多个子订单，每个不超过 {MAX_TEMPLATE_ROWS} 行"
+                    )
+                logger.info("容量预检通过: %s (%d 行)", display_name, n_rows)
+            except ValueError:
+                raise
+            except Exception as e:
+                logger.warning(
+                    "[警告]: %s 容量预检跳过（展平数据失败）: %s", display_name, e
+                )
 
         # 步骤 2：模板完整性检查
         self._report_progress(progress_callback, "正在检查模板文件...", 0.05)

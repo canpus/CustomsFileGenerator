@@ -82,23 +82,23 @@ class ContractGenerator(BaseGenerator):
         cust = order.customer
         origin = order.origin
 
-        # C3:G3 - 买方抬头（客户公司全称）
-        safe_write_cell(ws, 3, "C", f"To: {cust.company_name_en}")
+        # C3:G3 - 买方抬头（客户公司全称，模板已有 "To:" 标签）
+        safe_write_cell(ws, 3, "C", cust.company_name_en)
 
-        # C4 - 发票号
-        safe_write_cell(ws, 4, "C", f"Invoice No.: {meta.invoice_no}")
+        # C4 - 发票号（模板已有 "Invoice No.:" 标签）
+        safe_write_cell(ws, 4, "C", meta.invoice_no)
 
-        # G4 - 日期
-        safe_write_cell(ws, 4, "G", f"Date: {meta.date}")
+        # G4 - 日期（模板已有 "Date:" 标签）
+        safe_write_cell(ws, 4, "G", meta.date)
 
-        # C5 - 合同号
-        safe_write_cell(ws, 5, "C", f"Contract No.: {meta.contract_no}")
+        # C5 - 合同号（模板已有 "Contract No.:" 标签）
+        safe_write_cell(ws, 5, "C", meta.contract_no)
 
-        # C6 - 订单号
+        # C6 - 订单号（模板已有 "Order No.:" 标签）
         if meta.order_no:
-            safe_write_cell(ws, 6, "C", f"Order No.: {meta.order_no}")
+            safe_write_cell(ws, 6, "C", meta.order_no)
 
-        # D6:G6 - 发货口岸
+        # D6:G6 - 发货口岸（路由信息，非标签，保留完整内容）
         export_port: str = origin.export_port or "Shenzhen"
         destination: str = cust.destination or cust.country
         safe_write_cell(

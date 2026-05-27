@@ -1,11 +1,22 @@
 {
-  "$schema": "内部配置 — 锚点扫描规则",
-  "version": "6.0.1-a",
-  "description": "定义各 XLSX 模板的锚点扫描规则。扫描引擎通过关键词匹配定位数据起始行和汇总行，不依赖硬编码行号。",
+  "$schema": "内部配置 — 锚点扫描规则 + 模板容量配置",
+  "version": "6.1.0",
+  "description": "定义各 XLSX 模板的锚点扫描规则和容量选择参数。扫描引擎通过关键词匹配定位数据起始行和汇总行，不依赖硬编码行号。",
 
   "scanner": {
     "search_rows_limit": 30,
     "comment": "扫描前 N 行寻找关键词，超出行号范围则报错"
+  },
+
+  "capacities": {
+    "_comment": "模板容量配置。生成器根据订单明细行数自动选择对应容量的模板文件。超过 max_rows 则阻断生成。",
+    "thresholds": [
+      {"max_rows": 20, "suffix": "_20"},
+      {"max_rows": 50, "suffix": "_50"},
+      {"max_rows": 100, "suffix": "_100"}
+    ],
+    "default_suffix": "_50",
+    "absolute_max_rows": 100
   },
 
   "templates": {

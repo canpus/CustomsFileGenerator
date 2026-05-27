@@ -160,11 +160,11 @@ class InvoiceGenerator(BaseGenerator):
         meta = order.order_meta
         cust = order.customer
 
-        # D6:F6 - 日期
-        safe_write_cell(ws, 6, "D", f"Date: {meta.date}")
+        # D6:F6 - 日期（模板已有标签，只写值）
+        safe_write_cell(ws, 6, "D", meta.date)
 
         # B7:F7 - 发票号
-        safe_write_cell(ws, 7, "B", f"Invoice No.: {meta.invoice_no}")
+        safe_write_cell(ws, 7, "B", meta.invoice_no)
 
         # B8:F8 - 货品名称
         goods: str = meta.goods_summary or self._build_goods_summary(order)
@@ -177,29 +177,29 @@ class InvoiceGenerator(BaseGenerator):
         if cust.address:
             safe_write_cell(ws, 10, "B", cust.address)
 
-        # B11 - 联系人
+        # B11 - 联系人（模板已有 "Attn:" 标签）
         if cust.contact_person:
-            safe_write_cell(ws, 11, "B", f"Attn: {cust.contact_person}")
+            safe_write_cell(ws, 11, "B", cust.contact_person)
 
-        # E11:F11 - 电话
+        # E11:F11 - 电话（模板已有 "Tel:" 标签）
         if cust.phone:
-            safe_write_cell(ws, 11, "E", f"Tel: {cust.phone}")
+            safe_write_cell(ws, 11, "E", cust.phone)
 
-        # B12 - 装运港
+        # B12 - 装运港（模板已有 "Port of Loading:" 标签）
         origin = order.origin
         if origin.export_port:
-            safe_write_cell(ws, 12, "B", f"Port of Loading: {origin.export_port}")
+            safe_write_cell(ws, 12, "B", origin.export_port)
 
-        # E12:F12 - 手机号
+        # E12:F12 - 手机号（模板已有 "Mobile:" 标签）
         if cust.mobile:
-            safe_write_cell(ws, 12, "E", f"Mobile: {cust.mobile}")
+            safe_write_cell(ws, 12, "E", cust.mobile)
 
-        # B13 - 合同号
-        safe_write_cell(ws, 13, "B", f"Contract No.: {meta.contract_no}")
+        # B13 - 合同号（模板已有 "Contract No.:" 标签）
+        safe_write_cell(ws, 13, "B", meta.contract_no)
 
-        # E13:F13 - 卸货港/目的地
+        # E13:F13 - 卸货港/目的地（模板已有 "Port of Discharge:" 标签）
         destination: str = cust.destination or cust.country
-        safe_write_cell(ws, 13, "E", f"Port of Discharge: {destination}")
+        safe_write_cell(ws, 13, "E", destination)
 
         logger.info("发票表头填充完成")
 

@@ -17,7 +17,12 @@ from typing import Callable
 import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 
-from config.constants import FILE_PREFIX_MAP, OUTPUT_DIR
+from config.constants import (
+    FILE_PREFIX_MAP,
+    MAX_TEMPLATE_ROWS,
+    OUTPUT_DIR,
+    TEMPLATE_CAPACITY_THRESHOLDS,
+)
 from src.generators.template_anchor_scanner import AnchorResult
 from src.generators.xlsx_utils import resize_data_rows
 from src.models.order_data import OrderData
@@ -108,9 +113,14 @@ class BaseGenerator(abc.ABC):
             target_row_count,
         )
 
-        # 步骤 2：沙箱复制模板
+        # 步骤 1.5：根据数据行数自动选择合适容量的模板
+        self._report_progress(progress_callback, "正在选择模板容量...", 0.08)
+        selected_template: Path = self._select_template_by_rows(target_row_count)
+        logger.info("已选择模板: %s", selected_template.name)
+
+        # 步骤 2：沙箱复制模板（使用选中的容量模板）
         self._report_progress(progress_callback, "正在准备模板...", 0.10)
-        sandbox_path: Path = self._create_sandbox_copy()
+        sandbox_path: Path = self._create_sandbox_copy(selected_template)
 
         try:
             wb = openpyxl.load_workbook(sandbox_path)
@@ -266,6 +276,71 @@ class BaseGenerator(abc.ABC):
 
     # ==================== 共享工具方法 ====================
 
+    def _select_template_by_rows(self, n_rows: int) -> Path:
+        """根据数据行数自动选择合适容量的模板文件.
+
+        容量选择规则：
+        - n_rows <= 20  → *_20.xlsx
+        - n_rows <= 50  → *_50.xlsx（或默认模板）
+        - n_rows <= 100 → *_100.xlsx
+        - n_rows > 100  → 抛出 ValueError 阻断生成
+
+        若对应容量模板文件不存在，自动降级到默认模板（50 行基准）。
+
+        Args:
+            n_rows: 数据行数.
+
+        Returns:
+            选中的模板文件路径.
+
+        Raises:
+            ValueError: 数据行数超过最大模板容量时抛出.
+        """
+        if n_rows <= 0:
+            raise ValueError(
+                f"[错误]: 数据行数必须为正整数，当前={n_rows}\n"
+                f"[原因]: 订单无有效数据行\n"
+                f"[排查]: 请确认订单包含至少一行商品明细"
+            )
+
+        if n_rows > MAX_TEMPLATE_ROWS:
+            raise ValueError(
+                f"[错误]: 数据行数 {n_rows} 超过最大模板容量 {MAX_TEMPLATE_ROWS}\n"
+                f"[原因]: 当前模板仅支持最多 {MAX_TEMPLATE_ROWS} 行商品明细\n"
+                f"[排查]: 请将订单拆分为多个子订单，每个不超过 {MAX_TEMPLATE_ROWS} 行"
+            )
+
+        base_path: Path = self._template_path
+        stem: str = base_path.stem
+        suffix: str = base_path.suffix
+
+        # 选择容量后缀
+        capacity_suffix: str = ""
+        for threshold, suffix_label in TEMPLATE_CAPACITY_THRESHOLDS:
+            if n_rows <= threshold:
+                capacity_suffix = suffix_label
+                break
+
+        if not capacity_suffix:
+            capacity_suffix = "_100"
+
+        # 50 行容量使用默认模板（无后缀），其他容量使用带后缀的变体
+        if capacity_suffix == "_50":
+            # 优先使用带 _50 后缀的文件，不存在则用基准模板
+            capacity_path: Path = base_path.parent / f"{stem}_50{suffix}"
+            if capacity_path.exists():
+                return capacity_path
+            return base_path
+
+        capacity_path = base_path.parent / f"{stem}{capacity_suffix}{suffix}"
+        if not capacity_path.exists():
+            logger.warning(
+                "[警告]: 容量模板 %s 不存在，降级使用基准模板 %s",
+                capacity_path.name, base_path.name,
+            )
+            return base_path
+        return capacity_path
+
     def _find_actual_summary_row(
         self, ws: Worksheet, anchor: AnchorResult, keywords: list[str]
     ) -> int:
@@ -292,8 +367,11 @@ class BaseGenerator(abc.ABC):
                         return row
         return anchor.summary_row
 
-    def _create_sandbox_copy(self) -> Path:
+    def _create_sandbox_copy(self, template_path: Path | None = None) -> Path:
         """在临时目录创建模板的沙箱副本.
+
+        Args:
+            template_path: 模板文件路径，默认使用 self._template_path.
 
         Returns:
             沙箱副本的路径.
@@ -301,11 +379,12 @@ class BaseGenerator(abc.ABC):
         Raises:
             FileNotFoundError: 模板文件不存在时抛出.
         """
-        if not self._template_path.exists():
+        source: Path = template_path if template_path else self._template_path
+        if not source.exists():
             raise FileNotFoundError(
-                f"[错误]: {self._get_display_name()}模板文件不存在: {self._template_path}\n"
+                f"[错误]: {self._get_display_name()}模板文件不存在: {source}\n"
                 f"[原因]: 模板文件可能被删除、移动或改名\n"
-                f"[排查]: 请将 {self._template_path.name} 放入 templates/ 目录"
+                f"[排查]: 请将 {source.name} 放入 templates/ 目录"
             )
 
         temp_dir: str = tempfile.gettempdir()
@@ -313,7 +392,7 @@ class BaseGenerator(abc.ABC):
             f"{self._get_template_type()}_sandbox_{id(self)}.xlsx"
         )
         sandbox_path: Path = Path(temp_dir) / sandbox_name
-        shutil.copy2(self._template_path, sandbox_path)
+        shutil.copy2(source, sandbox_path)
         logger.debug("沙箱副本已创建: %s", sandbox_path)
         return sandbox_path
 

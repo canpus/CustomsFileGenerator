@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Callable
 
 import openpyxl
+from openpyxl.worksheet.worksheet import Worksheet
 
 from config.constants import FILE_PREFIX_MAP, OUTPUT_DIR
 from src.generators.template_anchor_scanner import AnchorResult
@@ -175,8 +176,8 @@ class BaseGenerator(abc.ABC):
         except Exception:
             try:
                 wb.close()
-            except Exception:
-                pass
+            except Exception as close_err:
+                logger.warning("[警告]: 工作簿关闭失败: %s", close_err)
             raise
         finally:
             self._cleanup_sandbox(sandbox_path)
@@ -264,6 +265,32 @@ class BaseGenerator(abc.ABC):
         ...
 
     # ==================== 共享工具方法 ====================
+
+    def _find_actual_summary_row(
+        self, ws: Worksheet, anchor: AnchorResult, keywords: list[str]
+    ) -> int:
+        """在锚点附近搜索实际的汇总行位置.
+
+        从锚点标记的汇总行开始，向下搜索包含指定关键词的行。
+
+        Args:
+            ws: 工作表对象.
+            anchor: 锚点扫描结果.
+            keywords: 用于识别汇总行的关键词列表.
+
+        Returns:
+            实际汇总行号（1-based）.
+        """
+        search_start: int = anchor.summary_row
+        search_end: int = min(search_start + 20, ws.max_row or search_start + 20)
+
+        for row in range(search_start, search_end + 1):
+            for col in range(1, ws.max_column + 1):
+                cell_value: str = str(ws.cell(row=row, column=col).value or "")
+                for keyword in keywords:
+                    if keyword in cell_value:
+                        return row
+        return anchor.summary_row
 
     def _create_sandbox_copy(self) -> Path:
         """在临时目录创建模板的沙箱副本.

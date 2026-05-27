@@ -9,36 +9,19 @@
 
 from __future__ import annotations
 
-import copy
 import logging
-import shutil
-import tempfile
 from pathlib import Path
-from typing import Callable
 
-import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 
-from config.constants import (
-    FILE_PREFIX_MAP,
-    OUTPUT_DIR,
-    TEMPLATE_PACKING_PATH,
-)
+from config.constants import TEMPLATE_PACKING_PATH
+from src.generators.base_generator import BaseGenerator
 from src.generators.template_anchor_scanner import (
     AnchorResult,
     scan_packing_template,
 )
-from src.generators.xlsx_utils import (
-    resize_data_rows,
-    safe_write_cell,
-    update_sum_formula,
-)
-from src.models.order_data import (
-    Carton,
-    OrderData,
-    Pallet,
-    Product,
-)
+from src.generators.xlsx_utils import safe_write_cell, update_sum_formula
+from src.models.order_data import OrderData
 
 logger = logging.getLogger(__name__)
 
@@ -132,182 +115,36 @@ def flatten_for_packing(order: OrderData) -> list[dict]:
 # ==================== PackingGenerator 类 ====================
 
 
-class PackingGenerator:
+class PackingGenerator(BaseGenerator):
     """装箱单生成器.
 
     负责将 OrderData 填充到装箱单 XLSX 模板中，产出最终装箱单文件。
+    继承 BaseGenerator，仅保留装箱单特有的表头填充、明细填充、汇总修正逻辑。
 
     使用方式：
         gen = PackingGenerator()
         output_path = gen.generate(order, output_dir, progress_callback)
     """
 
-    def __init__(self, template_path: str | Path | None = None):
-        """初始化装箱单生成器.
+    def _get_default_template_path(self) -> Path:
+        """返回默认模板路径."""
+        return TEMPLATE_PACKING_PATH
 
-        Args:
-            template_path: 装箱单模板路径，默认使用 config/constants 中的路径.
-        """
-        self._template_path: Path = (
-            Path(template_path) if template_path else TEMPLATE_PACKING_PATH
-        )
+    def _get_template_type(self) -> str:
+        """返回模板类型标识."""
+        return "packing"
 
-    # ---- 公开 API ----
+    def _get_display_name(self) -> str:
+        """返回生成器显示名称."""
+        return "装箱单"
 
-    def generate(
-        self,
-        order: OrderData,
-        output_dir: str | Path | None = None,
-        progress_callback: Callable[[str, float], None] | None = None,
-    ) -> Path:
-        """生成装箱单文件.
+    def _scan_anchor(self, ws: Worksheet) -> AnchorResult:
+        """扫描装箱单模板锚点."""
+        return scan_packing_template(ws)
 
-        完整流程：
-        1. 校验 order 非空
-        2. 展平数据
-        3. 沙箱复制模板
-        4. 锚点扫描
-        5. 行数调整（扩容/缩容）
-        6. 填充表头
-        7. 填充明细行
-        8. 更新汇总公式
-        9. 保存到输出目录
-
-        Args:
-            order: 订单数据.
-            output_dir: 输出目录，默认为 config/constants.OUTPUT_DIR.
-            progress_callback: 进度回调，签名为 (step_description: str, progress: float 0-1).
-
-        Returns:
-            生成的装箱单文件路径.
-
-        Raises:
-            ValueError: 订单数据无效时抛出.
-            FileNotFoundError: 模板文件不存在时抛出.
-        """
-        # ---- 步骤 0：入口断言 ----
-        if order is None:
-            raise ValueError("[错误]: 订单数据为 None, 无法生成装箱单")
-        if not order.pallets:
-            raise ValueError("[错误]: 订单无托盘数据, 无法生成装箱单")
-
-        # ---- 步骤 1：展平数据 ----
-        self._report_progress(progress_callback, "正在解析订单数据...", 0.05)
-        rows: list[dict] = flatten_for_packing(order)
-        target_row_count: int = len(rows)
-
-        logger.info(
-            "开始生成装箱单: 发票号=%s, 托盘数=%d, 明细行数=%d",
-            order.order_meta.invoice_no,
-            len(order.pallets),
-            target_row_count,
-        )
-
-        # ---- 步骤 2：沙箱复制模板到临时目录 ----
-        self._report_progress(progress_callback, "正在准备模板...", 0.10)
-        sandbox_path: Path = self._create_sandbox_copy()
-
-        try:
-            wb = openpyxl.load_workbook(sandbox_path)
-            ws: Worksheet = wb.active if wb.active else wb.worksheets[0]
-
-            # ---- 步骤 3：锚点扫描 ----
-            self._report_progress(progress_callback, "正在扫描模板锚点...", 0.15)
-            anchor: AnchorResult = scan_packing_template(ws)
-
-            if not anchor.is_valid:
-                error_details: str = "; ".join(anchor.errors)
-                raise ValueError(
-                    f"[错误]: 装箱单模板锚点扫描失败\n"
-                    f"[原因]: {error_details}\n"
-                    f"[排查]: 请确认模板文件是否与原厂一致，"
-                    f"或从 src/assets/backup_templates/ 恢复出厂模板"
-                )
-
-            logger.info(
-                "锚点扫描成功: data_start=%d, data_end=%d, summary=%d",
-                anchor.data_start_row, anchor.data_end_row, anchor.summary_row,
-            )
-
-            # ---- 步骤 4：行数调整 ----
-            self._report_progress(progress_callback, "正在调整数据行数...", 0.20)
-            new_data_end: int = resize_data_rows(
-                ws,
-                anchor.data_start_row,
-                anchor.data_end_row,
-                target_row_count,
-                anchor.data_start_row,
-            )
-            logger.info("数据行调整完成: 新结束行=%d", new_data_end)
-
-            # ---- 步骤 5：填充表头 ----
-            self._report_progress(progress_callback, "正在填充表头信息...", 0.30)
-            self._fill_header(ws, order)
-
-            # ---- 步骤 6：填充明细行 ----
-            self._report_progress(progress_callback, "正在填充商品明细...", 0.40)
-            self._fill_data_rows(ws, anchor.data_start_row, rows, anchor)
-
-            # ---- 步骤 7：更新汇总公式 ----
-            self._report_progress(progress_callback, "正在更新汇总公式...", 0.80)
-            self._fix_summary_formulas(ws, anchor, new_data_end)
-
-            # ---- 步骤 8：保存到输出目录 ----
-            self._report_progress(progress_callback, "正在保存文件...", 0.90)
-            output_path: Path = self._resolve_output_path(order, output_dir)
-            wb.save(output_path)
-            wb.close()
-
-            logger.info("装箱单已生成: %s", output_path)
-            self._report_progress(progress_callback, "装箱单生成完成", 1.0)
-
-            return output_path
-
-        except Exception:
-            # 确保出错时关闭工作簿
-            try:
-                wb.close()
-            except Exception:
-                pass
-            raise
-        finally:
-            # 清理沙箱临时文件
-            self._cleanup_sandbox(sandbox_path)
-
-    # ---- 私有方法 ----
-
-    def _create_sandbox_copy(self) -> Path:
-        """在临时目录创建模板的沙箱副本.
-
-        Returns:
-            沙箱副本的路径.
-
-        Raises:
-            FileNotFoundError: 模板文件不存在时抛出.
-        """
-        if not self._template_path.exists():
-            raise FileNotFoundError(
-                f"[错误]: 装箱单模板文件不存在: {self._template_path}\n"
-                f"[原因]: 模板文件可能被删除、移动或改名\n"
-                f"[排查]: 请将 template_packing.xlsx 放入 templates/ 目录"
-            )
-
-        temp_dir: str = tempfile.gettempdir()
-        sandbox_name: str = f"packing_sandbox_{id(self)}.xlsx"
-        sandbox_path: Path = Path(temp_dir) / sandbox_name
-        shutil.copy2(self._template_path, sandbox_path)
-        logger.debug("沙箱副本已创建: %s", sandbox_path)
-        return sandbox_path
-
-    @staticmethod
-    def _cleanup_sandbox(sandbox_path: Path) -> None:
-        """清理沙箱临时文件."""
-        try:
-            if sandbox_path.exists():
-                sandbox_path.unlink(missing_ok=True)
-                logger.debug("沙箱副本已清理: %s", sandbox_path)
-        except Exception as e:
-            logger.warning("[警告]: 清理沙箱文件失败: %s — %s", sandbox_path, e)
+    def _flatten_data(self, order: OrderData) -> list[dict]:
+        """将 OrderData 展平为装箱单行数据列表."""
+        return flatten_for_packing(order)
 
     def _fill_header(self, ws: Worksheet, order: OrderData) -> None:
         """填充装箱单表头信息.
@@ -443,40 +280,6 @@ class PackingGenerator:
             )
 
         logger.info("汇总公式已修正: 范围 %d→%d", anchor.data_start_row, new_data_end)
-
-    def _resolve_output_path(
-        self, order: OrderData, output_dir: str | Path | None
-    ) -> Path:
-        """确定输出文件路径.
-
-        命名规则：{输出目录}/装箱单_{发票号}.xlsx
-
-        Args:
-            order: 订单数据.
-            output_dir: 指定输出目录，None 则使用默认.
-
-        Returns:
-            输出文件路径（确保父目录存在）.
-        """
-        out_dir: Path = Path(output_dir) if output_dir else OUTPUT_DIR
-        out_dir.mkdir(parents=True, exist_ok=True)
-
-        invoice_no: str = order.order_meta.invoice_no.replace("/", "-").replace("\\", "-")
-        filename: str = f"{FILE_PREFIX_MAP['packing']}_{invoice_no}.xlsx"
-        return out_dir / filename
-
-    @staticmethod
-    def _report_progress(
-        callback: Callable[[str, float], None] | None,
-        description: str,
-        progress: float,
-    ) -> None:
-        """安全的进度回调."""
-        if callback:
-            try:
-                callback(description, progress)
-            except Exception as e:
-                logger.warning("[警告]: 进度回调执行失败: %s", e)
 
 
 # ========== 运行说明 ==========

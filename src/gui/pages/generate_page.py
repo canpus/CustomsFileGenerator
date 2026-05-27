@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 import os
 import subprocess
+import sys
 import threading
 from pathlib import Path
 from tkinter import messagebox
@@ -27,6 +28,23 @@ from ttkbootstrap.constants import *
 from config.constants import OUTPUT_DIR
 
 logger = logging.getLogger(__name__)
+
+
+def _open_directory(path: str) -> None:
+    """跨平台打开文件夹.
+
+    Args:
+        path: 文件夹路径.
+    """
+    try:
+        if sys.platform == "win32":
+            os.startfile(path)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", path])
+        else:
+            subprocess.Popen(["xdg-open", path])
+    except Exception as e:
+        logger.warning("[警告]: 打开文件夹失败: %s — %s", path, e)
 
 try:
     from src.gui.app import PageBase, GuiApp
@@ -440,7 +458,7 @@ class GeneratePage(PageBase):
             )
 
             # 打开文件所在目录
-            os.startfile(str(zip_path.parent))
+            _open_directory(str(zip_path.parent))
 
         except Exception as e:
             logger.exception("[错误]: 导出诊断包失败")
@@ -450,7 +468,7 @@ class GeneratePage(PageBase):
         """打开输出文件夹."""
         try:
             OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-            os.startfile(str(OUTPUT_DIR))
+            _open_directory(str(OUTPUT_DIR))
         except Exception as e:
             logger.exception("[错误]: 打开输出文件夹失败")
             messagebox.showerror("打开失败", f"[错误]: 无法打开输出文件夹\n[原因]: {e}")

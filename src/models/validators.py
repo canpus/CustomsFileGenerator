@@ -80,7 +80,6 @@ class ValidationReport:
 
     def add_warning(self, code: str, message: str, reason: str, solution: str) -> None:
         """添加一条 warning 级别消息."""
-        self.passed = False
         self.messages.append(ValidationMessage("warning", code, message, reason, solution))
 
     def add_info(self, code: str, message: str) -> None:

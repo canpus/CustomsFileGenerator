@@ -307,7 +307,7 @@ class InvoiceGenerator(BaseGenerator):
 
         # 在 new_data_end 之后重新定位实际汇总行（含 "Total"/"TOTAL" 关键词）
         actual_summary_row: int = self._find_actual_summary_row(
-            ws, anchor.data_start_row, new_data_end
+            ws, anchor, keywords=["TOTAL", "Total", "合计"]
         )
 
         # 计算总金额
@@ -338,44 +338,6 @@ class InvoiceGenerator(BaseGenerator):
             total_amount, actual_summary_row, amount_upper,
         )
 
-    @staticmethod
-    def _find_actual_summary_row(
-        ws: Worksheet, data_start_row: int, new_data_end: int
-    ) -> int:
-        """在数据区域之后查找实际的汇总行.
-
-        从 new_data_end + 1 开始向后扫描，查找包含
-        "Total"/"TOTAL"/"合计" 等关键词的行。
-
-        Args:
-            ws: 工作表.
-            data_start_row: 数据起始行.
-            new_data_end: 数据结束行.
-
-        Returns:
-            实际汇总行号。若未找到，返回 new_data_end + 1（安全降级）.
-        """
-        from src.generators.template_anchor_scanner import _find_summary_rows
-
-        search_start: int = max(new_data_end + 1, data_start_row + 2)
-        # 搜索范围扩大到 100 行 — 汇总行可能远离数据区
-        summary_rows = _find_summary_rows(
-            ws,
-            ["Total", "TOTAL", "合计", "总金额"],
-            None,
-            row_start=search_start,
-            row_end=search_start + 100,
-        )
-
-        if summary_rows:
-            return summary_rows[0]
-
-        # 降级：返回 new_data_end + 1
-        logger.warning(
-            "[警告]: 未找到实际汇总行，降级使用 new_data_end + 1 = %d",
-            new_data_end + 1,
-        )
-        return new_data_end + 1
 
 
 # ==================== num2words 金额大写 ====================

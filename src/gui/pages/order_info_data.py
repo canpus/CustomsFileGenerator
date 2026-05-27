@@ -310,6 +310,155 @@ class OrderInfoDataMixin:
             f"已从客户库选择: {customer.get('company_name_en', '')}"
         )
 
+    def _on_apply_template(self: OrderInfoPage) -> None:
+        """点击"套用模板"按钮 — 打开分块模板对话框."""
+        from src.gui.components.template_block_dialog import TemplateBlockDialog
+
+        dialog = TemplateBlockDialog(self.frame, self.app)
+        dialog.show()
+
+        # 对话框关闭后 刷新表单（如果数据有变更）
+        data = self.app.current_order_data
+        if data:
+            self._fill_from_order_data_dict(data)
+
+    def _on_save_as_block(self: OrderInfoPage) -> None:
+        """保存当前订单为分块模板."""
+        data = self.collect_data()
+
+        # 检查是否有数据
+        has_data = False
+        for section in ("order_meta", "customer", "origin", "shipping"):
+            if data.get(section):
+                has_data = True
+                break
+
+        if not has_data:
+            messagebox.showinfo("提示", "当前表单没有可保存的数据。\n\n请先填写表单。")
+            return
+
+        # 弹出保存对话框
+        dialog = ttk.Toplevel(self.frame, title="保存为模板块")
+        dialog.geometry("450x320")
+        dialog.transient(self.frame)
+        dialog.grab_set()
+
+        ttk.Label(
+            dialog,
+            text="保存当前表单为模板块",
+            font=self.app.get_font(bold=True, size=12),
+            bootstyle="primary",
+        ).pack(padx=20, pady=(15, 10))
+
+        # 块类型选择
+        type_frame = ttk.Frame(dialog)
+        type_frame.pack(fill=X, padx=20, pady=(0, 5))
+        ttk.Label(type_frame, text="模板类型:", font=self.app.get_font(size=10)).pack(side=LEFT, padx=(0, 8))
+
+        from src.gui.components.template_block_dialog import BLOCK_TYPE_OPTIONS
+        block_type_var = ttk.StringVar(value="customer")
+        type_combo = ttk.Combobox(
+            type_frame,
+            textvariable=block_type_var,
+            values=[opt[1] for opt in BLOCK_TYPE_OPTIONS],
+            state="readonly",
+            width=18,
+        )
+        type_combo.pack(side=LEFT)
+
+        # 块名称
+        ttk.Label(dialog, text="模板名称:", font=self.app.get_font(size=10)).pack(anchor=W, padx=20, pady=(10, 0))
+        name_var = ttk.StringVar(value="")
+        ttk.Entry(dialog, textvariable=name_var, width=45).pack(padx=20, pady=(0, 5))
+
+        # 备注
+        ttk.Label(dialog, text="备注（可选）:", font=self.app.get_font(size=10)).pack(anchor=W, padx=20, pady=(5, 0))
+        desc_var = ttk.StringVar()
+        ttk.Entry(dialog, textvariable=desc_var, width=45).pack(padx=20, pady=(0, 10))
+
+        # 提示信息
+        ttk.Label(
+            dialog,
+            text="将根据所选类型保存对应字段数据。\n"
+                 "- 客户信息：保存客户公司名、地址、联系人等\n"
+                 "- 运输信息：保存运输方式、装运港、贸易条款等\n"
+                 "- 整单模板：保存全部表单数据",
+            font=self.app.get_font(size=9),
+            bootstyle="secondary",
+            wraplength=400,
+        ).pack(padx=20, pady=(5, 10))
+
+        def _do_save() -> None:
+            block_type_label = block_type_var.get()
+            block_type = "customer"
+            for key, lbl in BLOCK_TYPE_OPTIONS:
+                if lbl == block_type_label:
+                    block_type = key
+                    break
+
+            block_name = name_var.get().strip()
+            if not block_name:
+                messagebox.showwarning("提示", "请输入模板名称。")
+                return
+
+            # 根据类型提取要保存的数据
+            block_data: dict[str, Any]
+            if block_type == "customer":
+                block_data = data.get("customer", {})
+            elif block_type == "shipping":
+                block_data = {}
+                block_data.update(data.get("order_meta", {}))
+                block_data.update(data.get("origin", {}))
+            else:
+                # order_full: 保存全部
+                block_data = data
+
+            if not block_data:
+                messagebox.showwarning("提示", "对应类型的表单数据为空，无需保存。")
+                return
+
+            try:
+                from src.gui.services.template_block_service import TemplateBlockService
+                block_id = TemplateBlockService.save_block(
+                    block_type, block_name, block_data, desc_var.get().strip()
+                )
+                messagebox.showinfo("保存成功", f"模板块「{block_name}」已保存（ID={block_id}）。")
+                dialog.destroy()
+                self.app.set_status(f"模板块已保存: {block_name}")
+            except Exception as e:
+                logger.exception("[错误]: 保存模板块失败")
+                messagebox.showerror("保存失败", f"[错误]: {e}")
+
+        ttk.Button(dialog, text="保存", bootstyle="success", command=_do_save).pack(side=LEFT, padx=(20, 10))
+        ttk.Button(dialog, text="取消", bootstyle="secondary-outline", command=dialog.destroy).pack(side=LEFT)
+
+    def _fill_from_order_data_dict(self: OrderInfoPage, data: dict[str, Any]) -> None:
+        """从字典数据填充表单（用于套用模板后刷新）.
+
+        Args:
+            data: collect_data() 格式的字典.
+        """
+        if not data:
+            return
+
+        for section, fields in [
+            ("order_meta", ["invoice_no", "contract_no", "date", "order_no",
+                           "transport_mode", "vessel_flight", "bill_of_lading_no",
+                           "trade_term", "payment_term", "currency",
+                           "country_of_origin", "goods_summary",
+                           "declaration_elements_template", "package_type"]),
+            ("customer", ["company_name_en", "company_name_cn", "country",
+                         "address", "contact_person", "phone", "mobile", "destination"]),
+            ("origin", ["export_port", "domestic_source", "manufacturer",
+                       "business_entity", "trade_mode", "tax_nature",
+                       "settlement_method", "tax_rebate"]),
+        ]:
+            section_data = data.get(section, {})
+            for field in fields:
+                val = section_data.get(field, "")
+                if val and field in self._variables:
+                    self._variables[field].set(str(val))
+
     def _on_clear(self: OrderInfoPage) -> None:
         """清空所有表单."""
         if messagebox.askyesno("确认清空", "确定要清空所有已填写的表单数据吗？"):

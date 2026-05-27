@@ -137,11 +137,17 @@ class GuiApp:
         # 9. 窗口状态保存防抖
         self._save_state_timer: str | None = None
 
-        # 10. 构建 UI
+        # 10. 草稿服务（自动保存/恢复）
+        self._draft_service = self._init_draft_service()
+
+        # 11. 构建 UI
         self._setup_ui()
 
-        # 11. 绑定窗口事件
+        # 12. 绑定窗口事件
         self._bind_window_events()
+
+        # 13. 检查未完成的草稿（延迟到主循环启动后执行）
+        self.root.after(200, self._check_draft_on_startup)
 
         logger.info("GUI 主窗口初始化完成")
 
@@ -152,6 +158,12 @@ class GuiApp:
         """延迟导入偏好设置服务，避免启动时的循环依赖."""
         from src.gui.services.preferences_service import PreferencesService
         return PreferencesService()
+
+    @staticmethod
+    def _init_draft_service() -> object:
+        """延迟导入草稿服务."""
+        from src.gui.services.draft_service import DraftService
+        return DraftService()
 
     # ==================== DPI 感知 ====================
 
@@ -241,20 +253,27 @@ class GuiApp:
     # ==================== 关闭确认 ====================
 
     def _on_closing(self) -> None:
-        """窗口关闭事件处理 — 检查未保存数据."""
+        """窗口关闭事件处理 — 检查未保存数据 + 自动保存草稿."""
+        # 自动保存当前草稿
+        self._autosave()
+
         if self._is_dirty:
             choice = messagebox.askyesnocancel(
                 "确认退出",
                 "当前订单尚未保存为模板。\n\n"
-                "  [是] - 不保存，直接退出\n"
+                "  [是] - 自动保存草稿后退出\n"
                 "  [否] - 返回继续编辑\n"
                 "  [取消] - 返回继续编辑",
             )
             if choice is True:
-                pass  # 不保存，直接退出
+                pass  # 草稿已保存，直接退出
             else:
                 # choice is False or None → 取消关闭
                 return
+
+        # 正常退出：删除草稿（订单已完成）
+        if not self._is_dirty:
+            self._draft_service.delete_draft()
 
         self._save_window_state()
         logger.info("用户退出应用")
@@ -271,6 +290,84 @@ class GuiApp:
         self._is_dirty = value
         if value:
             self.set_status("有未保存的更改")
+
+    # ==================== 草稿自动保存/恢复 ====================
+
+    def _autosave(self) -> None:
+        """自动保存当前编辑状态为草稿.
+
+        仅在设置了脏标记时才触发保存，且受频率控制（5 秒最小间隔）。
+        """
+        if not self._is_dirty:
+            return
+        if not self._current_order_data:
+            return
+
+        try:
+            saved = self._draft_service.save_draft(
+                self._current_order_data, self._current_page_name
+            )
+            if saved:
+                self.set_status("草稿已自动保存")
+        except Exception as e:
+            logger.warning("[警告]: 自动保存草稿失败: %s", e)
+
+    def _check_draft_on_startup(self) -> None:
+        """启动时检查是否存在未完成的草稿，提示用户恢复."""
+        try:
+            if not self._draft_service.has_draft():
+                return
+
+            draft = self._draft_service.load_draft()
+            if draft is None:
+                return
+
+            updated_at = draft.get("updated_at", "未知时间")
+            choice = messagebox.askyesnocancel(
+                "恢复草稿",
+                f"检测到未完成的订单草稿（最后更新: {updated_at}）。\n\n"
+                "是否恢复？\n"
+                "  [是] - 恢复草稿，继续编辑\n"
+                "  [否] - 忽略并删除草稿\n"
+                "  [取消] - 保留草稿，下次再决定",
+            )
+            if choice is True:
+                self._restore_from_draft(draft)
+            elif choice is False:
+                self._draft_service.delete_draft()
+            # choice is None → 取消，保留草稿
+        except Exception as e:
+            logger.warning("[警告]: 草稿检测失败: %s", e)
+
+    def _restore_from_draft(self, draft: dict[str, Any]) -> None:
+        """从草稿恢复订单数据和页面位置.
+
+        Args:
+            draft: 草稿字典，含 order_data、current_page、updated_at.
+        """
+        order_data = draft.get("order_data", {})
+        saved_page = draft.get("current_page", "order_info")
+
+        if order_data:
+            self._current_order_data = order_data
+            self._is_dirty = True
+            logger.info("已从草稿恢复订单数据")
+
+        # 导航到保存时的页面
+        if saved_page and saved_page != self._current_page_name:
+            self.switch_page(saved_page)
+        elif saved_page and saved_page == self._current_page_name:
+            # 已在目标页面，直接刷新表单
+            page = self._pages.get(saved_page)
+            if page is not None:
+                page.on_enter()
+
+        updated_at = draft.get("updated_at", "")
+        self.set_status(f"已恢复草稿（{updated_at}）")
+        messagebox.showinfo(
+            "恢复成功",
+            f"草稿已恢复。\n\n最后编辑: {updated_at}\n当前页面: {saved_page}",
+        )
 
     # ==================== UI 构建 ====================
 
@@ -387,6 +484,9 @@ class GuiApp:
             return
 
         logger.info("切换页面: %s", page_name)
+
+        # 0. 离开前自动保存草稿
+        self._autosave()
 
         # 1. 离开当前页面
         if self._current_page_name and self._current_page_name in self._pages:

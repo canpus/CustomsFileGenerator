@@ -95,6 +95,18 @@ class OrderInfoPage(PageBase, OrderInfoUIMixin, OrderInfoDataMixin):
         ).pack(side=LEFT, padx=(0, 10))
 
         ttk.Button(
+            bottom, text="套用模板...",
+            bootstyle="info-outline",
+            command=self._on_apply_template,
+        ).pack(side=LEFT, padx=(0, 10))
+
+        ttk.Button(
+            bottom, text="保存为模板块...",
+            bootstyle="secondary-outline",
+            command=self._on_save_as_block,
+        ).pack(side=LEFT)
+
+        ttk.Button(
             bottom, text="下一步 → 编辑商品明细",
             bootstyle="success",
             command=self._on_next_step,

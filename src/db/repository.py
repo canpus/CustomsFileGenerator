@@ -13,11 +13,13 @@ from __future__ import annotations
 from src.db.customer_repository import CustomerRepository
 from src.db.history_repository import HistoryRepository
 from src.db.product_repository import ProductRepository
+from src.db.template_block_repository import TemplateBlockRepository
 from src.db.template_repository import TemplateRepository
 
 __all__ = [
     "CustomerRepository",
     "HistoryRepository",
     "ProductRepository",
+    "TemplateBlockRepository",
     "TemplateRepository",
 ]

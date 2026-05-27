@@ -239,7 +239,7 @@ class OrderInfoDataMixin:
             f"现在将进入商品明细编辑页面。",
         )
 
-        self.app.switch_page("tree_editor")
+        self.app.switch_page("line_items")
 
     def _on_import_excel(self: OrderInfoPage) -> None:
         """点击从 Excel 导入按钮."""

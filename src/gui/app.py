@@ -41,6 +41,7 @@ from src.gui.styles import (
 # 页面导入
 from src.gui.pages.order_info_page import OrderInfoPage
 from src.gui.pages.tree_editor_page import TreeEditorPage
+from src.gui.pages.line_item_table_page import LineItemTablePage
 from src.gui.pages.generate_page import GeneratePage
 from src.gui.pages.template_page import TemplatePage
 from src.gui.pages.import_page import ImportPage
@@ -338,7 +339,8 @@ class GuiApp:
         # 导航按钮（纯文字，无 Emoji）
         nav_items: list[tuple[str, str]] = [
             ("新建单据", "order_info"),
-            ("商品明细", "tree_editor"),
+            ("商品明细", "line_items"),
+            ("层级视图（旧）", "tree_editor"),
             ("历史模板", "template"),
             ("数据导入", "import"),
             ("客户管理", "customer"),
@@ -417,6 +419,9 @@ class GuiApp:
         """
         if page_name == "order_info":
             return OrderInfoPage(self._workspace_frame, self)
+
+        elif page_name == "line_items":
+            return LineItemTablePage(self._workspace_frame, self)
 
         elif page_name == "tree_editor":
             return TreeEditorPage(self._workspace_frame, self)

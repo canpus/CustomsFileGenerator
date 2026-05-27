@@ -35,7 +35,7 @@ from src.gui.pages.tree_ui import TreeUIMixin
 logger = logging.getLogger(__name__)
 
 
-class TreeEditorPage(PageBase, TreeUIMixin, TreeDetailMixin, TreeDataMixin, TreeExportMixin, TreeEventsMixin):
+class TreeEditorPage(TreeUIMixin, TreeDetailMixin, TreeDataMixin, TreeExportMixin, TreeEventsMixin, PageBase):
     """托盘-纸箱-商品树状编辑器."""
 
     def __init__(self, parent: ttk.Frame, app: object):

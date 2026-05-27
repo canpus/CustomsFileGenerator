@@ -95,7 +95,7 @@ class GeneratePage(PageBase, GenerateEventsMixin):
         ttk.Button(
             bottom, text="← 返回编辑商品明细",
             bootstyle="secondary-outline",
-            command=lambda: self.app.switch_page("tree_editor"),
+            command=lambda: self.app.switch_page("line_items"),
         ).pack(side=LEFT)
 
         self._open_folder_btn = ttk.Button(
